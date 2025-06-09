@@ -1,0 +1,172 @@
+/* Updated color scheme and design system */
+:root {
+    --primary-gradient: linear-gradient(135deg, #EF6161 0%, #f3af3d 100%);
+    --primary-color: #EF6161;
+    --accent-color: #f3af3d;
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --hover-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    
+    /* Colors for badges and icons */
+    --blue: #3f6ad8;
+    --blue-light: rgba(63, 106, 216, 0.1);
+    --red: #EF6161;
+    --red-light: rgba(239, 97, 97, 0.1);
+    --green: #3ac47d;
+    --green-light: rgba(58, 196, 125, 0.1);
+    --orange: #f7b924;
+    --orange-light: rgba(247, 185, 36, 0.1);
+    --purple: #794c8a;
+    --purple-light: rgba(121, 76, 138, 0.1);
+    --teal: #16aaff;
+    --teal-light: rgba(22, 170, 255, 0.1);
+    --gray: #6c757d;
+    --gray-light: rgba(108, 117, 125, 0.1);
+    
+    /* BCCTAP Color Palette */
+    
+    /* Main brand colors */
+    --dark-gray: #333333;
+    --light-gray: #f5f5f5;
+    --gray-text: #555555;
+    
+    /* Admin interface colors */
+    --blue-card: #3b82f6;
+    --green-card: #10b981;
+    --yellow-card: #f59e0b;
+    --purple-card: #8b5cf6;
+    --sidebar-dark: #1e293b;
+    --sidebar-darker: #0f172a;
+    
+    /* Status colors */
+    --success-bg: #d1fae5;
+    --success-text: #065f46;
+    --warning-bg: #fef3c7;
+    --warning-text: #92400e;
+    --error-bg: #fee2e2;
+    --error-text: #b91c1c;
+    --info-bg: #e0f2fe;
+    --info-text: #0369a1;
+}
+
+/* Override Tailwind colors */
+.bg-indigo-800, .bg-indigo-700 {
+    background-color: var(--primary-color) !important;
+    background-image: var(--primary-gradient) !important;
+}
+
+.bg-indigo-900 {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-indigo-50, .bg-indigo-100, .bg-indigo-200 {
+    background-color: var(--red-light) !important;
+}
+
+.text-indigo-600, .text-indigo-700, .text-indigo-800 {
+    color: var(--primary-color) !important;
+}
+
+.hover\:bg-indigo-700:hover {
+    background-color: var(--accent-color) !important;
+}
+
+.hover\:bg-indigo-50:hover {
+    background-color: var(--red-light) !important;
+}
+
+.hover\:text-indigo-500:hover, .hover\:text-indigo-800:hover {
+    color: var(--accent-color) !important;
+}
+
+.border-indigo-500 {
+    border-color: var(--primary-color) !important;
+}
+
+.focus\:border-indigo-500:focus {
+    border-color: var(--primary-color) !important;
+}
+
+.focus\:ring-indigo-500:focus {
+    --tw-ring-color: var(--primary-color) !important;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color);
+}
+
+/* Alert styling */
+.alert-success {
+    background-color: var(--green-light);
+    border: 1px solid var(--green);
+    color: var(--green);
+}
+
+.alert-danger {
+    background-color: var(--red-light);
+    border: 1px solid var(--red);
+    color: var(--red);
+}
+
+.alert-warning {
+    background-color: var(--orange-light);
+    border: 1px solid var(--orange);
+    color: var(--orange);
+}
+
+.alert-info {
+    background-color: var(--blue-light);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+}
+
+/* QR Scanner */
+.scanner-laser {
+    background: var(--primary-color);
+}
+
+.scanner-overlay {
+    border: 2px solid var(--primary-color);
+}
+
+/* Primary gradient */
+.bg-primary-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+}
+
+/* Secondary gradients */
+.bg-blue-gradient {
+    background: linear-gradient(135deg, #60a5fa, var(--blue-card));
+}
+
+.bg-green-gradient {
+    background: linear-gradient(135deg, #34d399, var(--green-card));
+}
+
+.bg-yellow-gradient {
+    background: linear-gradient(135deg, #fcd34d, var(--yellow-card));
+}
+
+.bg-purple-gradient {
+    background: linear-gradient(135deg, #a78bfa, var(--purple-card));
+}
+
+/* Sidebar gradient */
+.bg-sidebar-gradient {
+    background: linear-gradient(135deg, var(--sidebar-dark), var(--sidebar-darker));
+}
+
+/* Button colors */
+.btn-accent {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-accent:hover {
+    background-color: #e29d30;
+} 

@@ -1,0 +1,988 @@
+2025-05-28 15:53:58 - Attempting to authenticate: 2021116435
+2025-05-28 15:54:00 - HTTP Status: 200
+2025-05-28 15:54:00 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 15:54:00 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 15:54:00 - Authentication successful
+2025-05-28 15:56:18 - Attempting to authenticate: 2021116435
+2025-05-28 15:56:19 - HTTP Status: 200
+2025-05-28 15:56:19 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 15:56:19 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 15:56:19 - Authentication successful
+2025-05-28 16:12:34 - Attempting to authenticate: 2021116435
+2025-05-28 16:12:35 - HTTP Status: 200
+2025-05-28 16:12:35 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 16:12:35 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 16:12:35 - Authentication successful
+2025-05-28 16:13:33 - Attempting to authenticate: 2021116435
+2025-05-28 16:13:34 - HTTP Status: 200
+2025-05-28 16:13:34 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 16:13:34 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 16:13:34 - Authentication successful
+2025-05-28 16:16:15 - Attempting to authenticate: 2021116435
+2025-05-28 16:16:16 - HTTP Status: 200
+2025-05-28 16:16:16 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 16:16:16 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 16:16:16 - Authentication successful
+2025-05-28 16:37:41 - Attempting to authenticate: 2021116435
+2025-05-28 16:37:42 - HTTP Status: 200
+2025-05-28 16:37:42 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 16:37:42 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 16:37:42 - Authentication successful
+2025-05-28 16:41:51 - Attempting to authenticate: 2021116435
+2025-05-28 16:41:52 - HTTP Status: 200
+2025-05-28 16:41:52 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 16:41:52 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 16:41:52 - Authentication successful
+2025-05-28 16:46:14 - Attempting to authenticate: 2021116435
+2025-05-28 16:46:15 - HTTP Status: 200
+2025-05-28 16:46:15 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 16:46:15 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 16:46:15 - Authentication successful
+2025-05-28 16:57:34 - Attempting to authenticate: 2021116435
+2025-05-28 16:57:36 - HTTP Status: 200
+2025-05-28 16:57:36 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 16:57:36 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 16:57:36 - Authentication successful
+2025-05-28 17:01:25 - Attempting to authenticate: 2021116435
+2025-05-28 17:01:26 - HTTP Status: 200
+2025-05-28 17:01:26 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 17:01:26 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 17:01:26 - Authentication successful
+2025-05-28 17:04:52 - Attempting to authenticate: 2021116435
+2025-05-28 17:04:54 - HTTP Status: 200
+2025-05-28 17:04:54 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-28 17:04:54 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-28 17:04:54 - Authentication successful
+2025-05-30 22:44:09 - Attempting to authenticate: 2021116435
+2025-05-30 22:44:11 - HTTP Status: 200
+2025-05-30 22:44:11 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 22:44:11 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 22:44:11 - Authentication successful
+2025-05-30 22:52:46 - Attempting to authenticate: 2021116435
+2025-05-30 22:52:48 - HTTP Status: 200
+2025-05-30 22:52:48 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 22:52:48 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 22:52:48 - Authentication successful
+2025-05-30 22:55:23 - Attempting to authenticate: 2021116435
+2025-05-30 22:55:24 - HTTP Status: 200
+2025-05-30 22:55:24 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 22:55:24 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 22:55:24 - Authentication successful
+2025-05-30 23:03:42 - Attempting to authenticate: 2021116435
+2025-05-30 23:03:44 - HTTP Status: 200
+2025-05-30 23:03:44 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:03:44 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:03:44 - Authentication successful
+2025-05-30 23:09:20 - Attempting to authenticate: 2021116435
+2025-05-30 23:09:21 - HTTP Status: 200
+2025-05-30 23:09:21 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:09:21 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:09:21 - Authentication successful
+2025-05-30 23:18:37 - Attempting to authenticate: 2021116435
+2025-05-30 23:18:38 - HTTP Status: 200
+2025-05-30 23:18:38 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:18:38 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:18:38 - Authentication successful
+2025-05-30 23:29:53 - Attempting to authenticate: 2021116435
+2025-05-30 23:29:55 - HTTP Status: 200
+2025-05-30 23:29:55 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:29:55 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:29:55 - Authentication successful
+2025-05-30 23:30:16 - Attempting to authenticate: 2021116435
+2025-05-30 23:30:17 - HTTP Status: 200
+2025-05-30 23:30:17 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:30:17 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:30:17 - Authentication successful
+2025-05-30 23:30:40 - Attempting to authenticate: 2021116435
+2025-05-30 23:30:41 - HTTP Status: 200
+2025-05-30 23:30:41 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:30:41 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:30:41 - Authentication successful
+2025-05-30 23:30:55 - Attempting to authenticate: 2021116435
+2025-05-30 23:30:57 - HTTP Status: 200
+2025-05-30 23:30:57 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:30:57 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:30:57 - Authentication successful
+2025-05-30 23:31:18 - Attempting to authenticate: 2021116435
+2025-05-30 23:31:19 - HTTP Status: 200
+2025-05-30 23:31:19 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:31:19 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:31:19 - Authentication successful
+2025-05-30 23:32:15 - Attempting to authenticate: 2021116435
+2025-05-30 23:32:16 - HTTP Status: 200
+2025-05-30 23:32:16 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:32:16 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:32:16 - Authentication successful
+2025-05-30 23:42:33 - Attempting to authenticate: 2021116435
+2025-05-30 23:42:34 - HTTP Status: 200
+2025-05-30 23:42:34 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:42:34 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:42:34 - Authentication successful
+2025-05-30 23:44:13 - Attempting to authenticate: 2021116435
+2025-05-30 23:44:15 - HTTP Status: 200
+2025-05-30 23:44:15 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:44:15 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:44:15 - Authentication successful
+2025-05-30 23:44:44 - Attempting to authenticate: 2021116435
+2025-05-30 23:44:45 - HTTP Status: 200
+2025-05-30 23:44:45 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-30 23:44:45 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-30 23:44:45 - Authentication successful
+2025-05-31 01:31:03 - Attempting to authenticate: 2021116435
+2025-05-31 01:31:05 - HTTP Status: 200
+2025-05-31 01:31:05 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-31 01:31:05 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-31 01:31:05 - Authentication successful
+2025-05-31 01:33:07 - Attempting to authenticate: 2021116435
+2025-05-31 01:33:09 - HTTP Status: 200
+2025-05-31 01:33:09 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-31 01:33:09 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-31 01:33:09 - Authentication successful
+2025-05-31 01:33:30 - Attempting to authenticate: 2021116435
+2025-05-31 01:33:31 - HTTP Status: 200
+2025-05-31 01:33:31 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-31 01:33:31 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-31 01:33:31 - Authentication successful
+2025-05-31 01:51:42 - Attempting to authenticate: 2021116435
+2025-05-31 01:51:44 - HTTP Status: 200
+2025-05-31 01:51:44 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-31 01:51:44 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-31 01:51:44 - Authentication successful
+2025-05-31 01:55:00 - Attempting to authenticate: 2021116435
+2025-05-31 01:55:02 - HTTP Status: 200
+2025-05-31 01:55:02 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-31 01:55:02 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-31 01:55:02 - Authentication successful
+2025-05-31 01:56:26 - Attempting to authenticate: 2021116435
+2025-05-31 01:56:28 - HTTP Status: 200
+2025-05-31 01:56:28 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-31 01:56:28 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-31 01:56:28 - Authentication successful
+2025-05-31 02:00:39 - Attempting to authenticate: 2021116435
+2025-05-31 02:00:40 - HTTP Status: 200
+2025-05-31 02:00:40 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-05-31 02:00:40 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-05-31 02:00:40 - Authentication successful
+2025-06-09 13:27:43 - Attempting to authenticate: 2021116435
+2025-06-09 13:27:45 - HTTP Status: 200
+2025-06-09 13:27:45 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-06-09 13:27:45 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-06-09 13:27:45 - Authentication successful
+2025-06-09 13:38:28 - Attempting to authenticate: 2021116435
+2025-06-09 13:38:30 - HTTP Status: 200
+2025-06-09 13:38:30 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-06-09 13:38:30 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-06-09 13:38:30 - Authentication successful
+2025-06-09 13:39:05 - Attempting to authenticate: 2021116435
+2025-06-09 13:39:07 - HTTP Status: 200
+2025-06-09 13:39:07 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-06-09 13:39:07 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-06-09 13:39:07 - Authentication successful
+2025-06-09 13:40:05 - Attempting to authenticate: 2021116435
+2025-06-09 13:40:07 - HTTP Status: 200
+2025-06-09 13:40:07 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-06-09 13:40:07 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-06-09 13:40:07 - Authentication successful
+2025-06-09 14:15:30 - Attempting to authenticate: 2021116435
+2025-06-09 14:15:32 - HTTP Status: 200
+2025-06-09 14:15:32 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"HDA D-64, BRGY. MA-AO, BAGO CITY","is_active":true,"gender":"MALE","last_name":"PELLE","section":"A","middle_name":"DERUEL","login":true,"year_level":4,"email_address":"CHARLIEPELLE5@GMAIL.COM","user_code":"2021116435","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09480691056","rfid":"0439794402","first_name":"CHARLIE"}
+2025-06-09 14:15:32 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => HDA D-64, BRGY. MA-AO, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => PELLE
+    [section] => A
+    [middle_name] => DERUEL
+    [login] => 1
+    [year_level] => 4
+    [email_address] => CHARLIEPELLE5@GMAIL.COM
+    [user_code] => 2021116435
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09480691056
+    [rfid] => 0439794402
+    [first_name] => CHARLIE
+)
+
+2025-06-09 14:15:32 - Authentication successful

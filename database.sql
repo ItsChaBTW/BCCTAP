@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Events table
 CREATE TABLE IF NOT EXISTS events (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    uuid VARCHAR(36) DEFAULT NULL,
     title VARCHAR(100) NOT NULL,
     description TEXT,
     start_date DATE NOT NULL,
@@ -35,6 +36,9 @@ CREATE TABLE IF NOT EXISTS events (
     afternoon_time_out TIME NOT NULL,
     department VARCHAR(100) DEFAULT NULL,
     location VARCHAR(100),
+    location_latitude DECIMAL(10, 8) DEFAULT NULL,
+    location_longitude DECIMAL(11, 8) DEFAULT NULL,
+    geofence_radius INT DEFAULT 100 COMMENT 'Radius in meters',
     created_by INT,
     created_at DATETIME NOT NULL,
     FOREIGN KEY (created_by) REFERENCES users(id)

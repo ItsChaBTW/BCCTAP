@@ -20,12 +20,11 @@ $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
 $session = isset($_GET['session']) ? $_GET['session'] : '';
 $status = isset($_GET['status']) ? $_GET['status'] : '';
 
-// Base query
+// Base query - Fixed to use attendance session instead of QR code session
 $query = "SELECT a.*, e.title as event_title, e.start_date, e.end_date, 
-          qr.session as session_type 
+          a.session as session_type 
           FROM attendance a 
           JOIN events e ON a.event_id = e.id 
-          JOIN qr_codes qr ON a.qr_code_id = qr.id
           WHERE a.user_id = ?";
 $params = [$user_id];
 $types = "i";
@@ -50,7 +49,7 @@ if (!empty($event_id)) {
 }
 
 if (!empty($session)) {
-    $query .= " AND qr.session = ?";
+    $query .= " AND a.session = ?";
     $params[] = $session;
     $types .= "s";
 }

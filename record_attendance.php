@@ -4,6 +4,7 @@
  * This file processes attendance recording after scanning a QR code and logging in
  */
 require_once 'config/config.php';
+require_once 'utils/GeofenceHelper.php';
 
 error_log("Record Attendance - Script started");
 
@@ -140,6 +141,70 @@ if (!$qr_code_id) {
 
 error_log("Record Attendance - Using QR code ID: $qr_code_id");
 
+// Handle geofencing check if event has location coordinates
+$geofence_result = null;
+$user_latitude = null;
+$user_longitude = null;
+
+if (!empty($event['location_latitude']) && !empty($event['location_longitude'])) {
+    // Check if location data was provided in POST request or session
+    if ((isset($_POST['latitude']) && isset($_POST['longitude'])) || 
+        (isset($_SESSION['location_data']))) {
+        
+        if (isset($_SESSION['location_data'])) {
+            $user_latitude = $_SESSION['location_data']['latitude'];
+            $user_longitude = $_SESSION['location_data']['longitude'];
+            unset($_SESSION['location_data']); // Clean up session
+        } else {
+            $user_latitude = floatval($_POST['latitude']);
+            $user_longitude = floatval($_POST['longitude']);
+        }
+        
+        error_log("Record Attendance - User location: $user_latitude, $user_longitude");
+        error_log("Record Attendance - Event location: {$event['location_latitude']}, {$event['location_longitude']}");
+        
+        // Validate user coordinates
+        if (GeofenceHelper::validateCoordinates($user_latitude, $user_longitude)) {
+            $geofence_result = GeofenceHelper::isWithinGeofence(
+                $user_latitude, 
+                $user_longitude, 
+                $event['location_latitude'], 
+                $event['location_longitude'], 
+                $event['geofence_radius']
+            );
+            
+            error_log("Record Attendance - Geofence check result: " . print_r($geofence_result, true));
+            
+            if (!$geofence_result['within_fence']) {
+                error_log("Record Attendance - User outside geofence");
+                $_SESSION['error_message'] = "You are not within the event location. " . $geofence_result['message'];
+                unset($_SESSION['qr_scan']);
+                redirect(BASE_URL . 'student/dashboard.php');
+                exit;
+            }
+        } else {
+            error_log("Record Attendance - Invalid user coordinates provided");
+            $_SESSION['error_message'] = "Invalid location data provided.";
+            unset($_SESSION['qr_scan']);
+            redirect(BASE_URL . 'student/dashboard.php');
+            exit;
+        }
+    } else {
+        // Location required but not provided - redirect to location check page
+        error_log("Record Attendance - Location required but not provided, redirecting to location check");
+        $_SESSION['attendance_pending'] = [
+            'event_id' => $event_id,
+            'event_title' => $event_title,
+            'qr_code_id' => $qr_code_id,
+            'session_type' => $session_type
+        ];
+        redirect(BASE_URL . 'check_location.php');
+        exit;
+    }
+} else {
+    error_log("Record Attendance - No geofencing required for this event");
+}
+
 // Check if attendance has already been recorded for this session
 $query = "SELECT id FROM attendance 
           WHERE user_id = ? AND event_id = ? AND DATE(time_recorded) = CURRENT_DATE() AND session = ?";
@@ -153,10 +218,16 @@ if (mysqli_num_rows($attendance_result) > 0) {
     $_SESSION['warning_message'] = "You have already recorded your attendance for this {$session_type} session.";
     // Rather than redirect, we'll continue to show the success page
 } else {
-    // Record the attendance
+    // Record the attendance (include location data if available)
+    if ($user_latitude !== null && $user_longitude !== null) {
+        $query = "INSERT INTO attendance (user_id, event_id, session, qr_code_id, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "iisidd", $user_id, $event_id, $session_type, $qr_code_id, $user_latitude, $user_longitude);
+    } else {
     $query = "INSERT INTO attendance (user_id, event_id, session, qr_code_id) VALUES (?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, "iisi", $user_id, $event_id, $session_type, $qr_code_id);
+    }
     
     error_log("Record Attendance - Attempting to insert attendance record: User $user_id, Event $event_id, Session $session_type, QR Code ID $qr_code_id");
     

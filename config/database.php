@@ -19,4 +19,7 @@ if ($conn === false) {
 }
 
 // Set charset to ensure proper handling of special characters
-mysqli_set_charset($conn, "utf8mb4"); 
+mysqli_set_charset($conn, "utf8mb4");
+
+// Set MySQL timezone to Asia/Manila
+mysqli_query($conn, "SET time_zone = '+08:00'"); 

@@ -15,6 +15,7 @@ $start_date = isset($_GET['start_date']) ? sanitize($_GET['start_date']) : date(
 $end_date = isset($_GET['end_date']) ? sanitize($_GET['end_date']) : date('Y-m-d');        // Current day
 $department = isset($_GET['department']) ? sanitize($_GET['department']) : '';
 $event = isset($_GET['event']) ? intval($_GET['event']) : 0;
+$attendance_status = isset($_GET['attendance_status']) ? sanitize($_GET['attendance_status']) : '';
 
 // Get all departments for filter dropdown
 $query = "SELECT DISTINCT department FROM users WHERE department IS NOT NULL AND department != '' ORDER BY department";
@@ -27,7 +28,7 @@ $events_result = mysqli_query($conn, $query);
 $events = mysqli_fetch_all($events_result, MYSQLI_ASSOC);
 
 // Build the attendance query with filters
-$query = "SELECT a.id, a.time_recorded, a.session, a.status,
+$query = "SELECT a.id, a.time_recorded, a.session, a.attendance_status,
                  u.id as user_id, u.full_name as student_name, u.student_id as student_id, u.department, 
                  e.id as event_id, e.title as event_title
           FROM attendance a
@@ -49,6 +50,12 @@ if ($event > 0) {
     $types .= "i";
 }
 
+if (!empty($attendance_status)) {
+    $query .= " AND a.attendance_status = ?";
+    $params[] = $attendance_status;
+    $types .= "s";
+}
+
 $query .= " ORDER BY a.time_recorded DESC LIMIT 1000";
 
 // Prepare and execute the query
@@ -65,12 +72,16 @@ $late_count = 0;
 $absent_count = 0;
 
 foreach ($attendance_records as $record) {
-    if (stripos($record['status'], 'present') !== false) {
-        $present_count++;
-    } elseif (stripos($record['status'], 'late') !== false) {
-        $late_count++;
-    } elseif (stripos($record['status'], 'absent') !== false) {
-        $absent_count++;
+    switch ($record['attendance_status']) {
+        case 'present':
+            $present_count++;
+            break;
+        case 'late':
+            $late_count++;
+            break;
+        case 'absent':
+            $absent_count++;
+            break;
     }
 }
 
@@ -98,41 +109,36 @@ $page_actions = '
 // Add extra JavaScript for export and print functionality
 $extra_js = '
 <script>
+    const DEFAULT_START_DATE = ' . date("Y-m-01") . ';
+    const DEFAULT_END_DATE = ' . date("Y-m-d") . ';
+    
     function exportToCSV() {
-        // Get the table
         const table = document.getElementById("attendance-table");
         if (!table) return;
         
-        // CSV Header
         let csv = "Student ID,Student Name,Department,Event,Date,Time,Session,Status\n";
         
-        // Loop through all rows except the header
         for (let i = 1; i < table.rows.length; i++) {
-            let row = table.rows[i];
-            let rowData = [];
+            const row = table.rows[i];
+            const rowData = [];
             
-            // Student ID (from data attribute)
             rowData.push(row.getAttribute("data-student-id") || "");
             
-            // Get cell values
-            for (let j = 0; j < row.cells.length - 1; j++) { // Skip the last column (Actions)
-                let cellText = row.cells[j].innerText.replace(/,/g, " ").replace(/\\n/g, " ");
+            for (let j = 0; j < row.cells.length - 1; j++) {
+                const cellText = row.cells[j].innerText.replace(/,/g, " ").replace(/\n/g, " ");
                 rowData.push(cellText);
             }
             
-            // Add row to CSV
-            csv += rowData.join(",") + "\\n";
+            csv += rowData.join(",") + "\n";
         }
         
-        // Create a download link
         const filename = "attendance_report_" + new Date().toISOString().slice(0,10) + ".csv";
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         
-        // Create download link
-        const link = document.createElement("a");
-        if (navigator.msSaveBlob) { // For IE
+        if (navigator.msSaveBlob) {
             navigator.msSaveBlob(blob, filename);
         } else {
+            const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
             link.setAttribute("download", filename);
@@ -147,8 +153,16 @@ $extra_js = '
         window.print();
     }
     
-    // Add datepicker functionality if needed
     document.addEventListener("DOMContentLoaded", function() {
+        const startDateInput = document.getElementById("start_date");
+        const endDateInput = document.getElementById("end_date");
+        
+        if (!startDateInput.value) {
+            startDateInput.value = DEFAULT_START_DATE;
+        }
+        if (!endDateInput.value) {
+            endDateInput.value = DEFAULT_END_DATE;
+        }
         // Filter form submission handling
         const filterForm = document.getElementById("filter-form");
         if (filterForm) {
@@ -163,32 +177,50 @@ $extra_js = '
         if (resetButton) {
             resetButton.addEventListener("click", function(e) {
                 e.preventDefault();
-                document.getElementById("start_date").value = "' . date('Y-m-01') . '";
-                document.getElementById("end_date").value = "' . date('Y-m-d') . '";
-                document.getElementById("department").value = "";
-                document.getElementById("event").value = "";
-                applyFilters();
+                resetFilters();
             });
         }
     });
+    
+    function resetFilters() {
+        document.getElementById("start_date").value = DEFAULT_START_DATE;
+        document.getElementById("end_date").value = DEFAULT_END_DATE;
+        document.getElementById("department").value = "";
+        document.getElementById("event").value = "";
+        document.getElementById("attendance_status").value = "";
+        applyFilters();
+    }
     
     function applyFilters() {
         const start_date = document.getElementById("start_date").value;
         const end_date = document.getElementById("end_date").value;
         const department = document.getElementById("department").value;
         const event = document.getElementById("event").value;
+        const attendance_status = document.getElementById("attendance_status").value;
         
-        let url = window.location.pathname + "?start_date=" + start_date + "&end_date=" + end_date;
+        // Validate dates
+        if (start_date && end_date && new Date(start_date) > new Date(end_date)) {
+            alert("End date cannot be earlier than start date");
+            return;
+        }
+        
+        // Build URL with filters
+        const params = new URLSearchParams();
+        params.append("start_date", start_date);
+        params.append("end_date", end_date);
         
         if (department) {
-            url += "&department=" + encodeURIComponent(department);
+            params.append("department", department);
         }
-        
         if (event) {
-            url += "&event=" + event;
+            params.append("event", event);
+        }
+        if (attendance_status) {
+            params.append("attendance_status", attendance_status);
         }
         
-        window.location.href = url;
+        // Redirect with filters
+        window.location.href = window.location.pathname + "?" + params.toString();
     }
 </script>
 ';
@@ -224,7 +256,7 @@ ob_start();
 <!-- Filters -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
     <h2 class="text-lg font-semibold mb-4">Filter Records</h2>
-    <form id="filter-form" action="" method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <form id="filter-form" action="" method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div>
             <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
             <input type="date" id="start_date" name="start_date" value="<?php echo $start_date; ?>" 
@@ -264,8 +296,19 @@ ob_start();
                 <?php endforeach; ?>
             </select>
         </div>
+
+        <div>
+            <label for="attendance_status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select id="attendance_status" name="attendance_status" 
+                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary">
+                <option value="">All Status</option>
+                <option value="present" <?php echo $attendance_status === 'present' ? 'selected' : ''; ?>>Present</option>
+                <option value="late" <?php echo $attendance_status === 'late' ? 'selected' : ''; ?>>Late</option>
+                <option value="absent" <?php echo $attendance_status === 'absent' ? 'selected' : ''; ?>>Absent</option>
+            </select>
+        </div>
         
-        <div class="md:col-span-2 lg:col-span-4 flex items-center justify-end space-x-3">
+        <div class="md:col-span-2 lg:col-span-5 flex items-center justify-end space-x-3">
             <button type="button" id="reset-filters" class="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-800">
                 Reset Filters
             </button>
@@ -315,19 +358,23 @@ ob_start();
                             </td>
                             <td class="py-3 px-4 text-sm">
                                 <?php 
-                                $status = $record['status'] ?? 'present';
+                                $status = $record['attendance_status'] ?? 'present';
                                 $statusColor = '';
                                 
-                                if (stripos($status, 'present') !== false) {
-                                    $statusColor = 'bg-green-100 text-green-800';
-                                } elseif (stripos($status, 'late') !== false) {
-                                    $statusColor = 'bg-yellow-100 text-yellow-800';
-                                } elseif (stripos($status, 'absent') !== false) {
-                                    $statusColor = 'bg-red-100 text-red-800';
+                                switch ($status) {
+                                    case 'present':
+                                        $statusColor = 'bg-green-100 text-green-800';
+                                        break;
+                                    case 'late':
+                                        $statusColor = 'bg-yellow-100 text-yellow-800';
+                                        break;
+                                    case 'absent':
+                                        $statusColor = 'bg-red-100 text-red-800';
+                                        break;
                                 }
                                 ?>
                                 <span class="px-2 py-1 text-xs font-medium rounded-full <?php echo $statusColor; ?>">
-                                    <?php echo ucfirst(str_replace('_', ' ', $status)); ?>
+                                    <?php echo ucfirst($status); ?>
                                 </span>
                             </td>
                             <td class="py-3 px-4 text-sm">

@@ -1,74 +1,35 @@
 <?php
 /**
- * Create Event Page for Admins
+ * Edit Event Page for Admins
  */
 require_once '../../config/config.php';
-
-// Function to generate QR code and save to database
-function generateQRCode($event_id, $event_uuid) {
-    global $conn;
-    
-    // Generate a unique code for the QR that includes the UUID
-    $code = $event_uuid;
-    
-    // Get the event title
-    $query = "SELECT title FROM events WHERE id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "i", $event_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $event = mysqli_fetch_assoc($result);
-    $event_title = $event['title'];
-    
-    // Insert into database - using 'combined' instead of morning/afternoon to indicate single QR code
-    $query = "INSERT INTO qr_codes (event_id, code, session) VALUES (?, ?, 'combined')";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "is", $event_id, $code);
-    mysqli_stmt_execute($stmt);
-    
-    // Get the QR code ID
-    $qr_code_id = mysqli_insert_id($conn);
-    
-    // Generate and save the QR code image
-    require_once '../../utils/QrCodeGenerator.php';
-    
-    // The data to encode in the QR code - URL to the scan.php page with the code
-    $scan_url = BASE_URL . 'scan.php?code=' . urlencode($code);
-    
-    // Log the generated URL for debugging
-    error_log("QR Code URL generated: " . $scan_url);
-    
-    // Generate filename from event ID and QR code ID
-    $filename = "event_{$event_id}_qr_{$qr_code_id}.png";
-    
-    try {
-        // Generate the QR code and save it
-        $qr_image_path = QrCodeGenerator::generate(
-            $scan_url,
-            $filename,
-            '../../uploads/qrcodes',
-            300,
-            htmlspecialchars($event_title) // Use the event title as the QR code label
-        );
-        
-        // Update the QR code record with the image path
-        $update_query = "UPDATE qr_codes SET image_path = ? WHERE id = ?";
-        $stmt = mysqli_prepare($conn, $update_query);
-        $relative_path = 'uploads/qrcodes/' . basename($qr_image_path);
-        mysqli_stmt_bind_param($stmt, "si", $relative_path, $qr_code_id);
-        mysqli_stmt_execute($stmt);
-    } catch (Exception $e) {
-        // Log error but continue
-        error_log("Failed to generate QR code image: " . $e->getMessage());
-    }
-    
-    return $code;
-}
 
 // Check if user is logged in and is an admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect(BASE_URL . 'admin/login.php');
 }
+
+// Check if event ID is provided
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    $_SESSION['error_message'] = "No event specified.";
+    redirect(BASE_URL . 'admin/events/index.php');
+}
+
+$event_id = intval($_GET['id']);
+
+// Get event details
+$query = "SELECT * FROM events WHERE id = ?";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "i", $event_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+if (mysqli_num_rows($result) === 0) {
+    $_SESSION['error_message'] = "Event not found.";
+    redirect(BASE_URL . 'admin/events/index.php');
+}
+
+$event = mysqli_fetch_assoc($result);
 
 // Get departments for dropdown
 $query = "SELECT * FROM departments ORDER BY name ASC";
@@ -112,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // If no errors, proceed with event creation
+    // If no errors, proceed with event update
     if (empty($errors)) {
         $title = mysqli_real_escape_string($conn, $_POST['title']);
         $description = mysqli_real_escape_string($conn, $_POST['description']);
@@ -127,38 +88,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $location_longitude = !empty($_POST['location_longitude']) ? mysqli_real_escape_string($conn, $_POST['location_longitude']) : null;
         $geofence_radius = !empty($_POST['geofence_radius']) ? intval($_POST['geofence_radius']) : null;
         
-        // Generate UUID for the event
-        $event_uuid = generate_uuid();
-        
-        // Insert event into database
-        $query = "INSERT INTO events (title, description, department, start_date, end_date, 
-                                    morning_time_in, morning_time_out, afternoon_time_in, afternoon_time_out,
-                                    location_latitude, location_longitude, geofence_radius, uuid, created_by) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Update event in database
+        $query = "UPDATE events SET 
+                  title = ?, 
+                  description = ?, 
+                  department = ?, 
+                  start_date = ?, 
+                  end_date = ?, 
+                  morning_time_in = ?, 
+                  morning_time_out = ?, 
+                  afternoon_time_in = ?, 
+                  afternoon_time_out = ?, 
+                  location_latitude = ?, 
+                  location_longitude = ?, 
+                  geofence_radius = ? 
+                  WHERE id = ?";
         
         $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "sssssssssddiss", 
+        mysqli_stmt_bind_param($stmt, "sssssssssddii", 
             $title, $description, $department, $start_date, $end_date,
             $morning_time_in, $morning_time_out, $afternoon_time_in, $afternoon_time_out,
-            $location_latitude, $location_longitude, $geofence_radius, $event_uuid, $_SESSION['user_id']
+            $location_latitude, $location_longitude, $geofence_radius, $event_id
         );
         
         if (mysqli_stmt_execute($stmt)) {
-            $event_id = mysqli_insert_id($conn);
-            
-            // Generate QR codes for the event
-            generateQRCode($event_id, $event_uuid);
-            
-            $_SESSION['success_message'] = "Event created successfully!";
+            $_SESSION['success_message'] = "Event updated successfully!";
             redirect(BASE_URL . 'admin/events/view.php?id=' . $event_id);
         } else {
-            $errors[] = "Error creating event: " . mysqli_error($conn);
+            $errors[] = "Error updating event: " . mysqli_error($conn);
         }
     }
 }
 
 // Set page title and actions for admin layout
-$page_title = "Create New Event";
+$page_title = "Edit Event";
 $page_actions = '<a href="index.php" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
@@ -207,12 +170,12 @@ ob_start();
                 <div>
                     <div class="mb-6">
                         <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Event Title <span class="text-primary">*</span></label>
-                        <input type="text" id="title" name="title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" required>
+                        <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($event['title']); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" required>
                     </div>
                     
                     <div class="mb-6">
                         <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <textarea id="description" name="description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"></textarea>
+                        <textarea id="description" name="description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"><?php echo htmlspecialchars($event['description']); ?></textarea>
                     </div>
                     
                     <!-- Interactive Map Location Section -->
@@ -250,11 +213,11 @@ ob_start();
                                         <div class="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label for="location_latitude" class="block text-xs font-medium text-gray-600 mb-1">Latitude</label>
-                                                <input type="number" id="location_latitude" name="location_latitude" step="0.000001" readonly class="w-full px-3 py-2 text-xs bg-gray-100 border border-gray-300 rounded-md" placeholder="Click map to set">
+                                                <input type="number" id="location_latitude" name="location_latitude" step="0.000001" value="<?php echo $event['location_latitude']; ?>" class="w-full px-3 py-2 text-xs bg-gray-100 border border-gray-300 rounded-md" placeholder="Click map to set">
                                             </div>
                                             <div>
                                                 <label for="location_longitude" class="block text-xs font-medium text-gray-600 mb-1">Longitude</label>
-                                                <input type="number" id="location_longitude" name="location_longitude" step="0.000001" readonly class="w-full px-3 py-2 text-xs bg-gray-100 border border-gray-300 rounded-md" placeholder="Click map to set">
+                                                <input type="number" id="location_longitude" name="location_longitude" step="0.000001" value="<?php echo $event['location_longitude']; ?>" class="w-full px-3 py-2 text-xs bg-gray-100 border border-gray-300 rounded-md" placeholder="Click map to set">
                                             </div>
                                         </div>
                                     </div>
@@ -263,11 +226,11 @@ ob_start();
                                     <div>
                                         <label for="geofence_radius" class="block text-xs font-medium text-gray-600 mb-1">Geofence Radius</label>
                                         <select id="geofence_radius" name="geofence_radius" class="w-full px-3 py-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary">
-                                            <option value="50">50m - Very strict</option>
-                                            <option value="100" selected>100m - Recommended</option>
-                                            <option value="200">200m - Flexible</option>
-                                            <option value="500">500m - Very flexible</option>
-                                            <option value="1000">1km - Very flexible</option>
+                                            <option value="50" <?php echo $event['geofence_radius'] == 50 ? 'selected' : ''; ?>>50m - Very strict</option>
+                                            <option value="100" <?php echo $event['geofence_radius'] == 100 ? 'selected' : ''; ?>>100m - Recommended</option>
+                                            <option value="200" <?php echo $event['geofence_radius'] == 200 ? 'selected' : ''; ?>>200m - Flexible</option>
+                                            <option value="500" <?php echo $event['geofence_radius'] == 500 ? 'selected' : ''; ?>>500m - Very flexible</option>
+                                            <option value="1000" <?php echo $event['geofence_radius'] == 1000 ? 'selected' : ''; ?>>1km - Very flexible</option>
                                         </select>
                                     </div>
                                 </div>
@@ -284,7 +247,7 @@ ob_start();
                         <select id="department" name="department" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
                             <option value="">All Departments</option>
                             <?php foreach ($departments as $dept): ?>
-                                <option value="<?php echo htmlspecialchars($dept['name']); ?>">
+                                <option value="<?php echo htmlspecialchars($dept['name']); ?>" <?php echo $event['department'] == $dept['name'] ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($dept['name']); ?>
                                 </option>
                             <?php endforeach; ?>
@@ -299,12 +262,12 @@ ob_start();
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="start_date" class="block text-sm font-medium text-gray-700 mb-2">Start Date <span class="text-primary">*</span></label>
-                                <input type="date" id="start_date" name="start_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" required>
+                                <input type="date" id="start_date" name="start_date" value="<?php echo $event['start_date']; ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" required>
                             </div>
                             
                             <div>
                                 <label for="end_date" class="block text-sm font-medium text-gray-700 mb-2">End Date <span class="text-primary">*</span></label>
-                                <input type="date" id="end_date" name="end_date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" required>
+                                <input type="date" id="end_date" name="end_date" value="<?php echo $event['end_date']; ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" required>
                             </div>
                         </div>
                     </div>
@@ -314,12 +277,12 @@ ob_start();
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="morning_time_in" class="block text-sm font-medium text-gray-700 mb-2">Time In <span class="text-primary">*</span></label>
-                                <input type="time" id="morning_time_in" name="morning_time_in" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary" required>
+                                <input type="time" id="morning_time_in" name="morning_time_in" value="<?php echo $event['morning_time_in']; ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary" required>
                             </div>
                             
                             <div>
                                 <label for="morning_time_out" class="block text-sm font-medium text-gray-700 mb-2">Time Out <span class="text-primary">*</span></label>
-                                <input type="time" id="morning_time_out" name="morning_time_out" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary" required>
+                                <input type="time" id="morning_time_out" name="morning_time_out" value="<?php echo $event['morning_time_out']; ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary" required>
                             </div>
                         </div>
                     </div>
@@ -329,12 +292,12 @@ ob_start();
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="afternoon_time_in" class="block text-sm font-medium text-gray-700 mb-2">Time In <span class="text-primary">*</span></label>
-                                <input type="time" id="afternoon_time_in" name="afternoon_time_in" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" required>
+                                <input type="time" id="afternoon_time_in" name="afternoon_time_in" value="<?php echo $event['afternoon_time_in']; ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" required>
                             </div>
                             
                             <div>
                                 <label for="afternoon_time_out" class="block text-sm font-medium text-gray-700 mb-2">Time Out <span class="text-primary">*</span></label>
-                                <input type="time" id="afternoon_time_out" name="afternoon_time_out" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" required>
+                                <input type="time" id="afternoon_time_out" name="afternoon_time_out" value="<?php echo $event['afternoon_time_out']; ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" required>
                             </div>
                         </div>
                     </div>
@@ -349,7 +312,7 @@ ob_start();
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg>
-                    Create Event
+                    Update Event
                 </button>
             </div>
         </div>
@@ -362,7 +325,10 @@ ob_start();
 
 <script>
     // Initialize map
-    const map = L.map('locationMap').setView([10.5387, 122.8307], 15);
+    const map = L.map('locationMap').setView([
+        <?php echo $event['location_latitude'] ?: '10.5387'; ?>, 
+        <?php echo $event['location_longitude'] ?: '122.8307'; ?>
+    ], 15);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
@@ -370,6 +336,27 @@ ob_start();
     
     let marker = null;
     let circle = null;
+    
+    // Add marker and circle if coordinates exist
+    if (<?php echo $event['location_latitude'] ? 'true' : 'false'; ?>) {
+        marker = L.marker([
+            <?php echo $event['location_latitude']; ?>, 
+            <?php echo $event['location_longitude']; ?>
+        ]).addTo(map);
+        
+        circle = L.circle([
+            <?php echo $event['location_latitude']; ?>, 
+            <?php echo $event['location_longitude']; ?>
+        ], {
+            radius: <?php echo $event['geofence_radius'] ?: '100'; ?>,
+            color: '#EF6161',
+            fillColor: '#EF6161',
+            fillOpacity: 0.2
+        }).addTo(map);
+        
+        // Update status
+        document.getElementById('mapStatus').textContent = `Location set: ${<?php echo $event['location_latitude']; ?>}, ${<?php echo $event['location_longitude']; ?>}`;
+    }
     
     // Handle map clicks
     map.on('click', function(e) {

@@ -96,17 +96,19 @@
     <!-- Main Content Area -->
     <div class="admin-main">
         <!-- Top Header Bar -->
-        <header class="admin-header">
-            <div class="flex items-center">
-                <button id="sidebar-toggle" class="md:hidden mr-4 text-gray-600 focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-                <h1 class="text-xl font-medium text-gray-800"><?php echo isset($page_title) ? $page_title : 'Dashboard'; ?></h1>
-            </div>
-            <div>
-                <?php if (isset($page_actions)): echo $page_actions; endif; ?>
+        <header class="admin-header bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6">
+            <div class="flex items-center justify-between w-full">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="md:hidden mr-4 text-white focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <h1 class="text-2xl font-bold"><?php echo isset($page_title) ? $page_title : 'Dashboard'; ?></h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <?php if (isset($page_actions)): echo $page_actions; endif; ?>
+                </div>
             </div>
         </header>
         

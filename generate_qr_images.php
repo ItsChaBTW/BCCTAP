@@ -41,7 +41,7 @@ $errors = 0;
 while ($qr_code = mysqli_fetch_assoc($result)) {
     echo "<h3>Processing QR Code ID: " . $qr_code['id'] . " for Event: " . htmlspecialchars($qr_code['event_title']) . "</h3>";
     
-    // Create the scan URL
+    // Create the scan URL using the configured BASE_URL
     $scan_url = BASE_URL . 'scan.php?code=' . urlencode($qr_code['code']);
     
     // Generate filename from event ID and QR code ID

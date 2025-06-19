@@ -169,6 +169,134 @@ function generateQRCode($event_id, $event_uuid) {
     
     return $code;
 }
+<<<<<<< Updated upstream
+=======
+function generate_uuid() {
+    // Generate 16 bytes (128 bits) of random data
+    if (function_exists('random_bytes')) {
+        $data = random_bytes(16);
+    } elseif (function_exists('openssl_random_pseudo_bytes')) {
+        $data = openssl_random_pseudo_bytes(16);
+    } else {
+        // Fallback to less secure method
+        $data = '';
+        for ($i = 0; $i < 16; $i++) {
+            $data .= chr(mt_rand(0, 255));
+        }
+    }
+    
+    // Set version to 0100
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+    // Set bits 6-7 to 10
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
+    // Output the 36 character UUID
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+// Check if user is logged in and is an admin
+if (!isLoggedIn() || !isAdmin()) {
+    redirect(BASE_URL . 'admin/login.php');
+}
+
+// Get departments for dropdown
+$query = "SELECT * FROM departments ORDER BY name ASC";
+$result = mysqli_query($conn, $query);
+$departments = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $errors = [];
+    
+    // Validate required fields
+    if (empty($_POST['title'])) {
+        $errors[] = "Event title is required";
+    }
+    if (empty($_POST['start_date'])) {
+        $errors[] = "Start date is required";
+    }
+    if (empty($_POST['end_date'])) {
+        $errors[] = "End date is required";
+    }
+    if (empty($_POST['morning_time_in'])) {
+        $errors[] = "Morning time in is required";
+    }
+    if (empty($_POST['morning_time_out'])) {
+        $errors[] = "Morning time out is required";
+    }
+    if (empty($_POST['afternoon_time_in'])) {
+        $errors[] = "Afternoon time in is required";
+    }
+    if (empty($_POST['afternoon_time_out'])) {
+        $errors[] = "Afternoon time out is required";
+    }
+    
+    // Validate dates
+    if (!empty($_POST['start_date']) && !empty($_POST['end_date'])) {
+        $start_date = strtotime($_POST['start_date']);
+        $end_date = strtotime($_POST['end_date']);
+        
+        if ($end_date < $start_date) {
+            $errors[] = "End date cannot be earlier than start date";
+        }
+    }
+    
+    // If no errors, proceed with event creation
+    if (empty($errors)) {
+        $title = mysqli_real_escape_string($conn, $_POST['title']);
+        $description = mysqli_real_escape_string($conn, $_POST['description']);
+        $department = mysqli_real_escape_string($conn, $_POST['department']);
+        $start_date = mysqli_real_escape_string($conn, $_POST['start_date']);
+        $end_date = mysqli_real_escape_string($conn, $_POST['end_date']);
+        $morning_time_in = mysqli_real_escape_string($conn, $_POST['morning_time_in']);
+        $morning_time_out = mysqli_real_escape_string($conn, $_POST['morning_time_out']);
+        $afternoon_time_in = mysqli_real_escape_string($conn, $_POST['afternoon_time_in']);
+        $afternoon_time_out = mysqli_real_escape_string($conn, $_POST['afternoon_time_out']);
+        $location_latitude = !empty($_POST['location_latitude']) ? mysqli_real_escape_string($conn, $_POST['location_latitude']) : null;
+        $location_longitude = !empty($_POST['location_longitude']) ? mysqli_real_escape_string($conn, $_POST['location_longitude']) : null;
+        $geofence_radius = !empty($_POST['geofence_radius']) ? intval($_POST['geofence_radius']) : null;
+        
+        // Generate UUID for the event
+        $event_uuid = generate_uuid();
+        
+        // Insert event into database
+        $query = "INSERT INTO events (title, description, department, start_date, end_date, 
+                                    morning_time_in, morning_time_out, afternoon_time_in, afternoon_time_out,
+                                    location_latitude, location_longitude, geofence_radius, uuid, created_by) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "sssssssssddiss", 
+            $title, $description, $department, $start_date, $end_date,
+            $morning_time_in, $morning_time_out, $afternoon_time_in, $afternoon_time_out,
+            $location_latitude, $location_longitude, $geofence_radius, $event_uuid, $_SESSION['user_id']
+        );
+        
+        if (mysqli_stmt_execute($stmt)) {
+            $event_id = mysqli_insert_id($conn);
+            
+            // Generate QR codes for the event
+            generateQRCode($event_id, $event_uuid);
+            
+            $_SESSION['success_message'] = "Event created successfully!";
+            redirect(BASE_URL . 'admin/events/view.php?id=' . $event_id);
+        } else {
+            $errors[] = "Error creating event: " . mysqli_error($conn);
+        }
+    }
+}
+
+// Set page title and actions for admin layout
+$page_title = "Create New Event";
+$page_actions = '<a href="index.php" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+    </svg>
+    Back to Events
+</a>';
+
+// Start output buffering
+ob_start();
+>>>>>>> Stashed changes
 ?>
 
 <!DOCTYPE html>

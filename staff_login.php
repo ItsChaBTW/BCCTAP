@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         .login-header {
-            background: linear-gradient(135deg, #EF6161 0%, #f3af3d 100%);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             padding: 2.5rem 2rem;
             text-align: center;
             color: white;
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         .login-btn {
-            background: linear-gradient(135deg, #EF6161 0%, #f3af3d 100%);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-<body>
+<body class=" min-h-screen flex flex-col">
     <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
@@ -179,58 +179,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <?php include 'includes/header.php'; ?>
     
-    <div class="flex login-container items-center justify-center px-4 py-10">
-        <div class="w-full max-w-lg">
-            <div class="login-card">
-                <div class="login-header">
-                    <div class="mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 005 10a1 1 0 111.998 0C7.001 12.762 9.016 15 11.5 15s4.498-2.238 4.5-5A1 1 0 0117 10c0 .34-.035.675-.102 1a5 5 0 00-5-1z" clip-rule="evenodd" />
-                        </svg>
+    <div class="flex login-container items-center justify-center px-4 py-10 flex-1">
+        <div class="w-full max-w-3xl">
+            <div class="backdrop-blur-lg bg-white/70 border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+                <!-- Left: Header -->
+                <div class="md:w-1/2 flex flex-col justify-center items-center bg-gradient-to-r from-slate-800 to-slate-900 p-8 text-center text-white">
+                    <div class="mb-2 flex justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-200 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                     </div>
-                    <h1 class="text-2xl font-bold mb-1">Staff Login</h1>
-                    <p class="text-white text-opacity-90">Access portal for teachers and administrators</p>
+                    <h1 class="text-xl font-bold mb-1">Staff Login</h1>
+                    <p class="text-slate-200 text-opacity-90">Access portal for teachers and administrators</p>
                 </div>
-                
-                <div class="login-form">
+                <!-- Right: Form -->
+                <div class="md:w-1/2 p-8 flex flex-col justify-center">
                     <?php if (isset($error)): ?>
-                        <div class="alert-danger">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 alert-icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                            <?php echo $error; ?>
+                        <div class="bg-blue-100 text-blue-800 border-l-4 border-blue-400 rounded p-3 mb-6 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" /></svg>
+                            <span><?php echo $error; ?></span>
                         </div>
                     <?php endif; ?>
-                    
-                    <form method="POST" action="staff_login.php">
-                        <div class="input-group">
-                            <input type="text" id="username" name="username" placeholder=" " value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>" required>
-                            <label for="username">Username</label>
+                    <form method="POST" action="staff_login.php" class="space-y-6">
+                        <div class="relative">
+                            <input type="text" id="username" name="username" placeholder="Username" value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>" required class="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition placeholder-slate-400 text-base">
                         </div>
-                        
-                        <div class="input-group">
-                            <input type="password" id="password" name="password" placeholder=" " required>
-                            <label for="password">Password</label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" placeholder="Password" required class="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition placeholder-slate-400 text-base">
                         </div>
-                        
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="flex items-center">
-                                <input type="checkbox" id="remember" class="h-4 w-4 text-primary-color focus:ring-primary-color border-gray-300 rounded">
-                                <label for="remember" class="ml-2 block text-sm text-gray-600">Remember me</label>
-                            </div>
-                            
-                            <div>
-                                <a href="#" class="text-sm text-primary-color hover:text-accent-color">Forgot password?</a>
-                            </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="flex items-center text-sm text-slate-600">
+                                <input type="checkbox" id="remember" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded mr-2">
+                                Remember me
+                            </label>
+                            <a href="#" class="text-sm text-blue-600 hover:text-blue-800 transition">Forgot password?</a>
                         </div>
-                        
-                        <button type="submit" class="login-btn">
-                            Sign In
-                        </button>
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 text-lg tracking-wide">Sign In</button>
                     </form>
-                    
                     <div class="mt-6 text-center">
-                        <a href="index.php" class="text-gray-600 hover:text-primary-color text-sm flex items-center justify-center">
+                        <a href="index.php" class="text-slate-500 hover:text-blue-700 text-sm flex items-center justify-center transition">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                             </svg>
@@ -241,8 +226,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <div class="mt-4 text-center">
-                <p class="text-sm text-gray-600">
-                    Are you a student? <a href="student/login.php" class="text-primary-color hover:text-accent-color font-medium">Student Login</a>
+                <p class="text-sm text-slate-400">
+                    Are you a student? <a href="student/login.php" class="text-blue-600 hover:text-blue-800 font-medium transition">Student Login</a>
                 </p>
             </div>
         </div>

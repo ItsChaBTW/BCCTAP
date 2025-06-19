@@ -83,10 +83,14 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
         
         <main class="flex-grow lg:ml-64 px-4 pt-6 pb-20">
             <!-- Welcome Banner -->
-            <div class="bg-indigo-600 rounded-xl shadow-lg p-6 mb-6 text-white" style="background-image: linear-gradient(135deg, var(--primary-color, #EF6161) 0%, var(--accent-color, #f3af3d) 100%);">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div class="relative overflow-hidden bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-2xl shadow-2xl ring-2 ring-green-300 hover:scale-[1.01] transition-transform duration-300 p-8 mb-8 text-white">
+                <svg class="absolute right-0 top-0 w-40 h-40 opacity-20 pointer-events-none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#bbf7d0" d="M44.8,-67.6C56.7,-60.2,63.7,-44.2,69.2,-28.7C74.7,-13.2,78.7,1.8,75.2,15.2C71.7,28.6,60.7,40.3,48.1,48.7C35.5,57.1,21.3,62.2,6.2,65.1C-8.9,68,-24,68.7,-36.2,62.1C-48.4,55.5,-57.7,41.6,-65.2,26.7C-72.7,11.8,-78.4,-4.1,-74.7,-17.2C-71,-30.3,-57.9,-40.6,-44.7,-48.2C-31.5,-55.8,-15.7,-60.7,0.7,-61.6C17.1,-62.5,34.2,-59.1,44.8,-67.6Z" transform="translate(100 100)" /></svg>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center relative z-10">
                     <div>
-                        <h1 class="text-2xl font-bold mb-2">Welcome, <?php echo htmlspecialchars($_SESSION['full_name']); ?>!</h1>
+                        <h1 class="text-3xl md:text-4xl font-extrabold mb-2 flex items-center gap-2">
+                            <svg class="inline w-8 h-8 text-white drop-shadow-lg animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3 0 1.657 1.343 3 3 3s3-1.343 3-3c0-1.657-1.343-3-3-3zm0 0V4m0 7v9m-7-7h14"/></svg>
+                            Welcome, <?php echo htmlspecialchars($_SESSION['full_name']); ?>!
+                        </h1>
                         <p class="text-white text-opacity-80">Student ID: <?php echo htmlspecialchars($_SESSION['student_id']); ?></p>
                         <?php if (isset($_SESSION['program'])): ?>
                             <p class="text-white text-opacity-80"><?php echo htmlspecialchars($_SESSION['program']); ?></p>
@@ -118,27 +122,32 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
             
             <!-- Attendance Stats Section -->
             <div class="mb-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Attendance Overview</h2>
-                
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m4 0h-1v4h-1m-4 0h-1v-4h-1"/></svg>
+                    Attendance Overview
+                </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Total Check-ins Card -->
-                    <div class="bg-green-50 p-6 rounded-xl shadow-md hover-card stat-card">
-                        <div class="text-center">
-                            <span class="block text-5xl font-bold text-red-500"><?php echo $attendance_stats['total_attendance']; ?></span>
+                    <div class="bg-gradient-to-br from-green-100 via-green-50 to-white p-6 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 stat-card border-l-4 border-green-400 flex items-center gap-4">
+                        <div class="flex-shrink-0 bg-green-200 rounded-full p-3">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div class="text-center flex-1">
+                            <span class="block text-5xl font-bold text-green-700"><?php echo $attendance_stats['total_attendance']; ?></span>
                             <span class="text-sm text-gray-600 mt-2 block">Total Check-ins</span>
                         </div>
                     </div>
-                    
                     <!-- Events Attended Card -->
-                    <div class="bg-blue-50 p-6 rounded-xl shadow-md hover-card stat-card">
-                        <div class="text-center">
+                    <div class="bg-gradient-to-br from-green-50 via-green-100 to-white p-6 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 stat-card border-l-4 border-green-400 flex items-center gap-4">
+                        <div class="flex-shrink-0 bg-green-100 rounded-full p-3">
+                            <svg class="w-8 h-8 text-green-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3 0 1.657 1.343 3 3 3s3-1.343 3-3c0-1.657-1.343-3-3-3zm0 0V4m0 7v9m-7-7h14"/></svg>
+                        </div>
+                        <div class="text-center flex-1">
                             <span class="block text-5xl font-bold text-green-600"><?php echo $attendance_stats['events_attended']; ?></span>
                             <span class="text-sm text-gray-600 mt-2 block">Events Attended</span>
                         </div>
                     </div>
                 </div>
-                
-                <!-- View Attendance History Button -->
                 <div class="mt-4 flex justify-center">
                     <a href="attendance.php" class="student-btn student-btn-primary inline-block mt-2 px-6 py-2">
                         View Attendance History
@@ -155,7 +164,7 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
                     <?php if (count($ongoing_events) > 0): ?>
                         <div class="space-y-4">
                             <?php foreach ($ongoing_events as $event): ?>
-                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition bg-green-50 border-green-200">
+                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition bg-green-100 border-green-200">
                                     <div class="flex flex-col sm:flex-row justify-between">
                                         <div class="mb-2 sm:mb-0">
                                             <h3 class="font-semibold text-gray-800"><?php echo htmlspecialchars($event['title']); ?></h3>

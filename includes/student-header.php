@@ -10,7 +10,7 @@
             <!-- Logo -->
             <a href="<?php echo BASE_URL; ?>student/dashboard.php" class="flex items-center">
                 <div class="bg-white rounded-full p-2 mr-3 shadow-md">
-                    <span class="text-indigo-800 font-bold text-xl">BCC</span>
+                    <span class="text-green-500 font-bold text-xl">BCC</span>
                 </div>
                 <div class="hidden sm:block">
                     <h1 class="text-xl font-bold">BCCTAP</h1>
@@ -142,7 +142,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         const menuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
+        const body = document.body;
         
+        if (menuBtn) {
+            menuBtn.addEventListener('click', function() {
+                body.classList.toggle('mobile-sidebar-open');
+            });
+        }
         if (menuBtn && mobileMenu) {
             menuBtn.addEventListener('click', function() {
                 mobileMenu.classList.toggle('hidden');

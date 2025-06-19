@@ -125,27 +125,39 @@ $stats = mysqli_fetch_assoc($result);
             
             <!-- Stats Cards -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white p-5 rounded-xl shadow-md hover-card stat-card border-l-4 border-red-500">
-                    <div class="text-center">
-                        <span class="block text-3xl font-bold text-red-500"><?php echo $stats['total_records']; ?></span>
+                <div class="bg-gradient-to-br from-green-100 via-green-50 to-white p-5 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 stat-card border-l-4 border-green-400 flex items-center gap-4">
+                    <div class="flex-shrink-0 bg-green-200 rounded-full p-3">
+                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="text-center flex-1">
+                        <span class="block text-3xl font-bold text-green-700"><?php echo $stats['total_records']; ?></span>
                         <span class="text-sm text-gray-600 mt-2 block">Total Records</span>
                     </div>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow-md hover-card stat-card border-l-4 border-green-500">
-                    <div class="text-center">
+                <div class="bg-gradient-to-br from-green-50 via-green-100 to-white p-5 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 stat-card border-l-4 border-green-400 flex items-center gap-4">
+                    <div class="flex-shrink-0 bg-green-100 rounded-full p-3">
+                        <svg class="w-7 h-7 text-green-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3 0 1.657 1.343 3 3 3s3-1.343 3-3c0-1.657-1.343-3-3-3zm0 0V4m0 7v9m-7-7h14"/></svg>
+                    </div>
+                    <div class="text-center flex-1">
                         <span class="block text-3xl font-bold text-green-600"><?php echo $stats['present_count']; ?></span>
                         <span class="text-sm text-gray-600 mt-2 block">Present</span>
                     </div>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow-md hover-card stat-card border-l-4 border-yellow-500">
-                    <div class="text-center">
+                <div class="bg-gradient-to-br from-yellow-100 via-yellow-50 to-white p-5 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 stat-card border-l-4 border-yellow-400 flex items-center gap-4">
+                    <div class="flex-shrink-0 bg-yellow-200 rounded-full p-3">
+                        <svg class="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg>
+                    </div>
+                    <div class="text-center flex-1">
                         <span class="block text-3xl font-bold text-yellow-600"><?php echo $stats['late_count']; ?></span>
                         <span class="text-sm text-gray-600 mt-2 block">Late</span>
                     </div>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow-md hover-card stat-card border-l-4 border-blue-500">
-                    <div class="text-center">
-                        <span class="block text-3xl font-bold text-blue-600"><?php echo $stats['total_events']; ?></span>
+                <div class="bg-gradient-to-br from-blue-100 via-blue-50 to-white p-5 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 stat-card border-l-4 border-blue-400 flex items-center gap-4">
+                    <div class="flex-shrink-0 bg-blue-100 rounded-full p-3">
+                        <svg class="w-7 h-7 text-blue-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 014-4h2"/></svg>
+                    </div>
+                    <div class="text-center flex-1">
+                        <span class="block text-3xl font-bold text-blue-900"><?php echo $stats['total_events']; ?></span>
                         <span class="text-sm text-gray-600 mt-2 block">Events Attended</span>
                     </div>
                 </div>

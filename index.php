@@ -329,21 +329,23 @@ if (isLoggedIn() && isStudent()) {
         </section>
         
         <!-- CTA Section -->
-        <section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white relative overflow-hidden">
+        <section class="py-20 bg-gradient-to-r from-slate-800 to-slate-900 text-white relative overflow-hidden">
             <!-- Decorative circles -->
-            <div class="absolute -top-20 -left-20 w-64 h-64 bg-white rounded-full opacity-10"></div>
-            <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-white rounded-full opacity-10"></div>
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-blue-200 rounded-full opacity-10"></div>
+            <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-900 rounded-full opacity-20"></div>
             
             <div class="container mx-auto px-4 relative z-10">
                 <div class="max-w-3xl mx-auto text-center">
                     <h2 class="text-3xl md:text-5xl font-bold mb-6">Ready to Transform Your Attendance Tracking?</h2>
-                    <p class="text-xl text-indigo-100 mb-10">Join Bago City College's modern attendance platform and make tracking attendance simple, accurate, and efficient.</p>
+                    <p class="text-xl text-blue-100 mb-10">Join Bago City College's modern attendance platform and make tracking attendance simple, accurate, and efficient.</p>
                     <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-                        <a href="student/login.php" class="px-8 py-4 bg-white text-indigo-700 hover:bg-gray-100 font-medium rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                            Student Portal
+                        <a href="student/login.php" class="flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 hover:bg-slate-100 font-medium rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+                            <svg class="w-6 h-6 text-slate-800 group-hover:text-slate-900 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            <span class="font-semibold">Student Portal</span>
                         </a>
-                        <a href="staff_login.php" class="px-8 py-4 bg-indigo-800 bg-opacity-40 hover:bg-opacity-60 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition duration-300">
-                            Staff Access
+                        <a href="staff_login.php" class="flex items-center justify-center gap-2 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+                            <svg class="w-6 h-6 text-slate-200 group-hover:text-white transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 7V6a2 2 0 012-2h8a2 2 0 012 2v1" /><rect width="16" height="10" x="4" y="7" rx="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M8 17v1a2 2 0 002 2h4a2 2 0 002-2v-1" /></svg>
+                            <span class="font-semibold">Staff Access</span>
                         </a>
                     </div>
                 </div>

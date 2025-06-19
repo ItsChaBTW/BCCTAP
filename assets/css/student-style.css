@@ -6,8 +6,8 @@
 /* Sidebar styles */
 .student-sidebar {
     transition: all 0.3s ease-in-out;
-    background-color: var(--primary-color, #EF6161);
-    background-image: linear-gradient(135deg, var(--primary-color, #EF6161) 0%, var(--accent-color, #f3af3d) 100%);
+    background-color: #22c55e;
+    background-image: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
 }
 
 /* Main content adjustments for sidebar */
@@ -77,12 +77,14 @@
 
 /* Theme colors for student interface */
 :root {
-    --student-primary: var(--primary-color, #EF6161);
-    --student-accent: var(--accent-color, #f3af3d);
-    --student-bg-dark: #1E293B;
-    --student-bg-light: #F8FAFC;
-    --student-text-dark: #1E293B;
-    --student-text-light: #F8FAFC;
+    --primary-color: #22c55e;
+    --accent-color: #bbf7d0;
+    --student-primary: #22c55e;
+    --student-accent: #bbf7d0;
+    --student-bg-dark: #14532d;
+    --student-bg-light: #f0fdf4;
+    --student-text-dark: #14532d;
+    --student-text-light: #f0fdf4;
 }
 
 /* Button styles */
@@ -141,7 +143,7 @@
 
 /* Fix for mobile header */
 header.lg\:hidden {
-    background-image: linear-gradient(135deg, var(--primary-color, #EF6161) 0%, var(--accent-color, #f3af3d) 100%);
+    background-image: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
 }
 
 /* Attendance stats cards */
@@ -183,4 +185,9 @@ header.lg\:hidden {
         display: block;
         width: 100%;
     }
+}
+
+.student-banner {
+    background-color: var(--primary-color, #22c55e);
+    background-image: linear-gradient(135deg, var(--primary-color, #22c55e) 0%, #16a34a 100%);
 } 

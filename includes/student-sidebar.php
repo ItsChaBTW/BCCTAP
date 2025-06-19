@@ -8,10 +8,10 @@
     <!-- Logo section -->
     <div class="p-4 border-b border-white border-opacity-20 flex items-center space-x-3">
         <div class="bg-white rounded-full p-2 shadow-md">
-            <span class="text-indigo-800 font-bold text-xl">BCC</span>
+            <span class="text-green-500 font-bold text-xl">BCC</span>
         </div>
         <div>
-            <h1 class="text-xl font-bold">BCCTAP</h1>
+            <h1 class="text-xl font-bold text-white">BCCTAP</h1>
             <p class="text-xs text-white text-opacity-70">Bago City College</p>
         </div>
     </div>
@@ -20,20 +20,20 @@
     <div class="p-4 border-b border-white border-opacity-20">
         <div class="flex items-center space-x-3 mb-3">
             <div class="bg-white bg-opacity-20 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
             </div>
             <div>
-                <p class="font-medium"><?php echo htmlspecialchars($_SESSION['full_name']); ?></p>
+                <p class="font-medium text-white"><?php echo htmlspecialchars($_SESSION['full_name']); ?></p>
                 <p class="text-xs text-white text-opacity-70">Student ID: <?php echo htmlspecialchars($_SESSION['student_id']); ?></p>
             </div>
         </div>
         
         <?php if (isset($_SESSION['program'])): ?>
-            <div class="bg-black bg-opacity-20 rounded p-2 text-xs">
+            <div class="bg-slate-700 rounded p-2 text-xs">
                 <p class="text-white text-opacity-70">Program</p>
-                <p class="font-medium"><?php echo htmlspecialchars($_SESSION['program']); ?></p>
+                <p class="font-medium text-white"><?php echo htmlspecialchars($_SESSION['program']); ?></p>
             </div>
         <?php endif; ?>
     </div>
@@ -44,8 +44,8 @@
         <nav>
             <ul class="space-y-1">
                 <li>
-                    <a href="<?php echo BASE_URL; ?>student/dashboard.php" class="flex items-center py-2 px-3 rounded-md hover:bg-black hover:bg-opacity-10 transition-colors <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'bg-black bg-opacity-20' : ''; ?>">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                    <a href="<?php echo BASE_URL; ?>student/dashboard.php" class="flex items-center py-2 px-3 rounded-md transition-colors <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'bg-green-500 text-white' : 'hover:bg-green-600 hover:text-white'; ?>">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                         </svg>
                         <span>Dashboard</span>

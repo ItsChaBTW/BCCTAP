@@ -75,10 +75,8 @@ if ($qrCount['total'] == 0) {
         require_once '../../utils/QrCodeGenerator.php';
         
         try {
-            // Create the scan URL
-            $server_ip = "192.168.55.107";
-            $base_path = str_replace($_SERVER['HTTP_HOST'], $server_ip, BASE_URL);
-            $scan_url = $base_path . 'scan.php?code=' . urlencode($event_uuid);
+            // Create the scan URL using the configured BASE_URL
+            $scan_url = BASE_URL . 'scan.php?code=' . urlencode($event_uuid);
             
             // Generate filename from event ID and QR code ID
             $filename = "event_{$event_id}_qr_{$qr_code_id}.png";
@@ -176,12 +174,12 @@ function generate_uuid() {
         <main class="flex-grow main-content px-4 py-8">
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-primary">QR Code for: <?php echo htmlspecialchars($event['title']); ?></h1>
-                <a href="index.php" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
+                <button onclick="history.back()" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                     </svg>
-                    Back to QR Codes
-                </a>
+                    Back
+                </button>
             </div>
             
             <?php if (isset($_SESSION['success_message'])): ?>
@@ -267,10 +265,8 @@ function generate_uuid() {
                                     require_once '../../utils/QrCodeGenerator.php';
                                     
                                     try {
-                                        // Create the scan URL
-                                        $server_ip = "192.168.186.107";
-                                        $base_path = str_replace($_SERVER['HTTP_HOST'], $server_ip, BASE_URL);
-                                        $scan_url = $base_path . 'scan.php?code=' . urlencode($qrCode['code']);
+                                        // Create the scan URL using the configured BASE_URL
+                                        $scan_url = BASE_URL . 'scan.php?code=' . urlencode($qrCode['code']);
                                         
                                         // Generate filename
                                         $filename = "event_{$event_id}_qr_{$qrCode['id']}.png";

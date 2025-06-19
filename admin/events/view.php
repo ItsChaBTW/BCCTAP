@@ -69,20 +69,18 @@ mysqli_stmt_bind_param($stmt, "i", $event_id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $recent_attendance = mysqli_fetch_all($result, MYSQLI_ASSOC);
-?>
+// Set page title and actions for admin layout
+$page_title = "Create New Event";
+$page_actions = '<a href="index.php" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:opacity-90 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+    </svg>
+    Back to Events
+</a>';
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($event['title']); ?> - BCCTAP</title>
-    <link href="../../assets/css/styles.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <div class="min-h-screen flex flex-col">
-        <?php include '../../includes/header.php'; ?>
+// Start output buffering
+ob_start();
+?>
         
         <main class="flex-grow container mx-auto px-4 py-8">
             <div class="flex justify-between items-center mb-8">
@@ -365,10 +363,9 @@ $recent_attendance = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 </div>
             </div>
         </main>
-        
-        <?php include '../../includes/footer.php'; ?>
-    </div>
-    
-    <script src="../../assets/js/main.js"></script>
-</body>
-</html> 
+        <?php
+$page_content = ob_get_clean();
+
+// Include admin layout
+require_once '../../includes/admin_layout.php';
+?> 

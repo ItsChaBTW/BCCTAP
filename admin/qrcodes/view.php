@@ -135,52 +135,20 @@ function generate_uuid() {
     // Output the 36 character UUID
     return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View QR Code - BCCTAP</title>
-    <link href="../../assets/css/styles.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#EF6161',
-                        secondary: '#f3af3d',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #EF6161 0%, #f3af3d 100%);
-        }
-        .main-content {
-            margin-left: 16rem; /* 256px - width of the sidebar */
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <div class="min-h-screen flex flex-col">
-        <?php include '../../includes/admin_sidebar.php'; ?>
-        
-        <main class="flex-grow main-content px-4 py-8">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-primary">QR Code for: <?php echo htmlspecialchars($event['title']); ?></h1>
-                <button onclick="history.back()" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
+// Set page title and actions for admin layout
+$page_title = "Create New Event";
+$page_actions = '<button onclick="history.back()" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:opacity-90 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                     </svg>
                     Back
-                </button>
-            </div>
+                </button>';
+
+// Start output buffering
+ob_start();
+?>
+        <main class="flex-grow main-content px-4 py-8">
+            
             
             <?php if (isset($_SESSION['success_message'])): ?>
                 <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md">
@@ -379,9 +347,12 @@ function generate_uuid() {
                 </div>
             </div>
         </main>
-        
-        <?php include '../../includes/footer.php'; ?>
-    </div>
+        <?php
+$page_content = ob_get_clean();
+
+// Include admin layout
+require_once '../../includes/admin_layout.php';
+?> 
     
     <script src="../../assets/js/main.js"></script>
     <script>
@@ -510,5 +481,3 @@ function generate_uuid() {
             link.click();
         }
     </script>
-</body>
-</html> 

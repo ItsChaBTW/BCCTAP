@@ -28,6 +28,7 @@ $settings = [
         'max_late_minutes' => '15',
         'auto_mark_absent' => '1',
         'require_device_registration' => '0',
+        'late_interval' => '15',
     ],
     'notifications' => [
         'email_notifications' => '0',
@@ -45,12 +46,11 @@ if (mysqli_num_rows($table_exists) == 0) {
     // Create settings table
     $create_table_query = "CREATE TABLE settings (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        category VARCHAR(50) NOT NULL,
         setting_key VARCHAR(100) NOT NULL,
         value TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        UNIQUE KEY category_key (category, setting_key)
+        UNIQUE KEY setting_key_unique (setting_key)
     )";
     
     if (!mysqli_query($conn, $create_table_query)) {
@@ -59,9 +59,10 @@ if (mysqli_num_rows($table_exists) == 0) {
         // Insert default settings
         foreach ($settings as $category => $category_settings) {
             foreach ($category_settings as $key => $value) {
-                $insert_query = "INSERT INTO settings (category, setting_key, value) VALUES (?, ?, ?)";
+                $full_key = $category . '.' . $key;
+                $insert_query = "INSERT INTO settings (setting_key, value) VALUES (?, ?)";
                 $stmt = mysqli_prepare($conn, $insert_query);
-                mysqli_stmt_bind_param($stmt, "sss", $category, $key, $value);
+                mysqli_stmt_bind_param($stmt, "ss", $full_key, $value);
                 mysqli_stmt_execute($stmt);
             }
         }
@@ -74,12 +75,17 @@ $query = "SELECT * FROM settings";
 if ($result = mysqli_query($conn, $query)) {
     while ($row = mysqli_fetch_assoc($result)) {
         // Add checks to make sure the keys exist
-        if (!isset($row['category']) || !isset($row['setting_key']) || !isset($row['value'])) {
+        if (!isset($row['setting_key']) || !isset($row['value'])) {
             continue; // Skip this row if required keys aren't present
         }
         
-        $category = $row['category'];
-        $setting_key = $row['setting_key'];
+        $key_parts = explode('.', $row['setting_key']);
+        if (count($key_parts) !== 2) {
+            continue; // Skip if key format is invalid
+        }
+        
+        $category = $key_parts[0];
+        $setting_key = $key_parts[1];
         $value = $row['value'];
         
         if (isset($settings[$category][$setting_key])) {
@@ -100,24 +106,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
             foreach ($_POST['settings'] as $key => $value) {
                 $key = sanitize($key);
                 $value = sanitize($value);
+                $full_key = $category . '.' . $key;
                 
                 // Check if setting exists
-                $query = "SELECT id FROM settings WHERE category = ? AND setting_key = ?";
+                $query = "SELECT id FROM settings WHERE setting_key = ?";
                 $stmt = mysqli_prepare($conn, $query);
-                mysqli_stmt_bind_param($stmt, "ss", $category, $key);
+                mysqli_stmt_bind_param($stmt, "s", $full_key);
                 mysqli_stmt_execute($stmt);
                 $result = mysqli_stmt_get_result($stmt);
                 
                 if (mysqli_num_rows($result) > 0) {
                     // Update existing setting
-                    $query = "UPDATE settings SET value = ? WHERE category = ? AND setting_key = ?";
+                    $query = "UPDATE settings SET value = ? WHERE setting_key = ?";
                     $stmt = mysqli_prepare($conn, $query);
-                    mysqli_stmt_bind_param($stmt, "sss", $value, $category, $key);
+                    mysqli_stmt_bind_param($stmt, "ss", $value, $full_key);
                 } else {
                     // Insert new setting
-                    $query = "INSERT INTO settings (category, setting_key, value) VALUES (?, ?, ?)";
+                    $query = "INSERT INTO settings (setting_key, value) VALUES (?, ?)";
                     $stmt = mysqli_prepare($conn, $query);
-                    mysqli_stmt_bind_param($stmt, "sss", $category, $key, $value);
+                    mysqli_stmt_bind_param($stmt, "ss", $full_key, $value);
                 }
                 
                 mysqli_stmt_execute($stmt);
@@ -216,19 +223,19 @@ ob_start();
 
 <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <div class="flex border-b border-gray-200">
-        <a href="?tab=general" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'general' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-50'; ?>">
+        <a href="?tab=general" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'general' ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-gray-100'; ?>">
             General Settings
         </a>
-        <a href="?tab=attendance" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'attendance' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-50'; ?>">
+        <a href="?tab=attendance" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'attendance' ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-gray-100'; ?>">
             Attendance Settings
         </a>
-        <a href="?tab=notifications" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'notifications' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-50'; ?>">
+        <a href="?tab=notifications" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'notifications' ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-gray-100'; ?>">
             Notification Settings
         </a>
-        <a href="?tab=departments" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'departments' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-50'; ?>">
+        <a href="?tab=departments" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'departments' ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-gray-100'; ?>">
             Department Management
         </a>
-        <a href="?tab=database" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'database' ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-50'; ?>">
+        <a href="?tab=database" class="px-6 py-4 font-medium text-sm <?php echo $active_tab == 'database' ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-gray-100'; ?>">
             Database Tools
         </a>
     </div>
@@ -320,7 +327,7 @@ ob_start();
                     </div>
                     
                     <div class="mt-8 border-t border-gray-200 pt-6">
-                        <button type="submit" name="save_settings" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
+                        <button type="submit" name="save_settings" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
                             Save Settings
                         </button>
                     </div>
@@ -338,7 +345,8 @@ ob_start();
                             <input type="hidden" name="settings[allow_late_scans]" value="0">
                             <input type="checkbox" id="allow_late_scans" name="settings[allow_late_scans]" value="1"
                                    <?php echo $settings['attendance']['allow_late_scans'] == '1' ? 'checked' : ''; ?>
-                                   class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                   onchange="toggleLateInterval(this.checked)"
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                             <label for="allow_late_scans" class="ml-2 block text-sm text-gray-700">
                                 Allow Late Attendance Scans
                             </label>
@@ -346,11 +354,16 @@ ob_start();
                         </div>
                         
                         <div>
-                            <label for="max_late_minutes" class="block text-sm font-medium text-gray-700 mb-1">Maximum Late Minutes</label>
-                            <input type="number" id="max_late_minutes" name="settings[max_late_minutes]" value="<?php echo htmlspecialchars($settings['attendance']['max_late_minutes']); ?>" 
-                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary" min="0">
-                            <p class="mt-1 text-xs text-gray-500">Maximum number of minutes after the scheduled time to allow scanning (0 = no limit)</p>
+                            <label for="late_interval" class="block text-sm font-medium text-gray-700 mb-1">Late Interval (minutes)</label>
+                            <input type="number" id="late_interval" name="settings[late_interval]" 
+                                   value="<?php echo htmlspecialchars($settings['attendance']['late_interval']); ?>" 
+                                   <?php echo $settings['attendance']['allow_late_scans'] != '1' ? 'disabled' : ''; ?>
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed" 
+                                   min="1"
+                                   required>
+                            <p class="mt-1 text-xs text-gray-500">Number of minutes after scheduled time to consider attendance as late</p>
                         </div>
+
                         
                         <div class="flex items-center">
                             <input type="hidden" name="settings[auto_mark_absent]" value="0">
@@ -376,7 +389,7 @@ ob_start();
                     </div>
                     
                     <div class="mt-8 border-t border-gray-200 pt-6">
-                        <button type="submit" name="save_settings" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
+                        <button type="submit" name="save_settings" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
                             Save Settings
                         </button>
                     </div>
@@ -432,7 +445,7 @@ ob_start();
                     </div>
                     
                     <div class="mt-8 border-t border-gray-200 pt-6">
-                        <button type="submit" name="save_settings" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
+                        <button type="submit" name="save_settings" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
                             Save Settings
                         </button>
                     </div>
@@ -494,7 +507,7 @@ ob_start();
                             </div>
                             
                             <div>
-                                <button type="submit" name="add_department" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded">
+                                <button type="submit" name="add_department" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-300">
                                     Add Department
                                 </button>
                             </div>
@@ -513,7 +526,7 @@ ob_start();
                         <h3 class="text-lg font-medium text-green-800 mb-3">Database Backup</h3>
                         <p class="text-sm text-green-700 mb-4">Create a backup of your database that you can download and store safely.</p>
                         <form method="post" action="">
-                            <button type="submit" name="backup_database" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded flex items-center">
+                            <button type="submit" name="backup_database" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded flex items-center transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
@@ -527,7 +540,7 @@ ob_start();
                         <h3 class="text-lg font-medium text-blue-800 mb-3">Optimize Database</h3>
                         <p class="text-sm text-blue-700 mb-4">Optimize database tables to improve performance.</p>
                         <form method="post" action="">
-                            <button type="submit" name="optimize_database" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded flex items-center">
+                            <button type="submit" name="optimize_database" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded flex items-center transition duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
                                 </svg>
@@ -587,6 +600,56 @@ ob_start();
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const allowLateScans = document.getElementById('allow_late_scans');
+    if (allowLateScans) {
+        toggleLateInterval(allowLateScans.checked);
+    }
+});
+
+function toggleLateInterval(isChecked) {
+    const lateIntervalInput = document.getElementById('late_interval');
+    if (!lateIntervalInput) return;
+
+    lateIntervalInput.disabled = !isChecked;
+    
+    if (!isChecked) {
+        // Store the current value before disabling
+        lateIntervalInput.dataset.previousValue = lateIntervalInput.value;
+        lateIntervalInput.value = '15'; // Default value when disabled
+    } else {
+        // Restore the previous value if it exists
+        if (lateIntervalInput.dataset.previousValue) {
+            lateIntervalInput.value = lateIntervalInput.dataset.previousValue;
+        }
+    }
+
+    // Update input styling
+    if (!isChecked) {
+        lateIntervalInput.classList.add('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+    } else {
+        lateIntervalInput.classList.remove('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+    }
+}
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const allowLateScans = document.getElementById('allow_late_scans');
+    const lateIntervalInput = document.getElementById('late_interval');
+    
+    if (allowLateScans && allowLateScans.checked) {
+        const value = parseInt(lateIntervalInput.value);
+        if (isNaN(value) || value < 1) {
+            e.preventDefault();
+            alert('Please enter a valid late interval (minimum 1 minute)');
+            lateIntervalInput.focus();
+        }
+    }
+});
+</script>
 
 <?php
 // Get the page content from buffer

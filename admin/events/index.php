@@ -13,15 +13,47 @@ if (!isLoggedIn() || !isAdmin()) {
 if (isset($_GET['delete']) && !empty($_GET['id'])) {
     $event_id = intval($_GET['id']);
     
-    // Delete event
-    $query = "DELETE FROM events WHERE id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "i", $event_id);
+    // Get QR code image paths before deleting
+    $qr_query = "SELECT image_path FROM qr_codes WHERE event_id = ?";
+    $qr_stmt = mysqli_prepare($conn, $qr_query);
+    mysqli_stmt_bind_param($qr_stmt, "i", $event_id);
+    mysqli_stmt_execute($qr_stmt);
+    $qr_result = mysqli_stmt_get_result($qr_stmt);
     
-    if (mysqli_stmt_execute($stmt)) {
-        $_SESSION['success_message'] = "Event deleted successfully!";
-    } else {
-        $_SESSION['error_message'] = "Failed to delete event: " . mysqli_error($conn);
+    // Delete QR code images from filesystem
+    while ($qr = mysqli_fetch_assoc($qr_result)) {
+        if (!empty($qr['image_path']) && file_exists('../../' . $qr['image_path'])) {
+            unlink('../../' . $qr['image_path']);
+        }
+    }
+
+    // Delete event and related records
+    mysqli_begin_transaction($conn);
+    
+    try {
+        // Delete QR codes
+        $delete_qr = "DELETE FROM qr_codes WHERE event_id = ?";
+        $stmt_qr = mysqli_prepare($conn, $delete_qr);
+        mysqli_stmt_bind_param($stmt_qr, "i", $event_id);
+        mysqli_stmt_execute($stmt_qr);
+        
+        // Delete attendance records
+        $delete_attendance = "DELETE FROM attendance WHERE event_id = ?";
+        $stmt_attendance = mysqli_prepare($conn, $delete_attendance);
+        mysqli_stmt_bind_param($stmt_attendance, "i", $event_id);
+        mysqli_stmt_execute($stmt_attendance);
+        
+        // Delete event
+        $delete_event = "DELETE FROM events WHERE id = ?";
+        $stmt_event = mysqli_prepare($conn, $delete_event);
+        mysqli_stmt_bind_param($stmt_event, "i", $event_id);
+        mysqli_stmt_execute($stmt_event);
+        
+        mysqli_commit($conn);
+        $_SESSION['success_message'] = "Event and all related data deleted successfully!";
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        $_SESSION['error_message'] = "Failed to delete event: " . $e->getMessage();
     }
     
     redirect(BASE_URL . 'admin/events/index.php');

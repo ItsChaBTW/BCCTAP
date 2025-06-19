@@ -70,7 +70,7 @@
         </nav>
         
         <!-- User Account Section -->
-        <div class="user-profile">
+        <div class="user-profile fixed bottom-0 left-0">
             <?php if (isset($_SESSION['full_name']) && isset($_SESSION['role'])): ?>
                 <div class="flex items-center">
                     <div class="profile-avatar">
@@ -118,7 +118,7 @@
         </main>
         
         <!-- Footer -->
-        <footer class="admin-footer">
+        <footer class="admin-footer mt-auto">
             &copy; <?php echo date('Y'); ?> BCCTAP - Bago City College Time Attendance Platform
         </footer>
     </div>

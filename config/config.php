@@ -32,6 +32,7 @@ if ($script_path != '/' && $script_path != '\\') {
 // Set the appropriate base URL based on the environment
 if ($host == 'localhost' || $host == '127.0.0.1') {
     // For local development
+    $base_path = '/BCCTAP/';  // Add the project folder name
     define('BASE_URL', $protocol . '://' . $host . $base_path);
     define('SCAN_URL', $protocol . '://' . $host . $base_path);
 } else if ($host == 'bcctap.bccbsis.com') {
@@ -114,6 +115,11 @@ function generateRandomString($length = 10) {
         $randomString .= $characters[rand(0, strlen($characters) - 1)];
     }
     return $randomString;
+}
+
+// Function to set flash messages
+function setFlashMessage($type, $message) {
+    $_SESSION[$type . '_message'] = $message;
 }
 
 error_log("Config - BASE_URL defined as: " . BASE_URL);

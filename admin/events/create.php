@@ -3,111 +3,6 @@
  * Create Event Page for Admins
  */
 require_once '../../config/config.php';
-require_once '../../utils/GeofenceHelper.php';
-
-// Check if user is logged in and is an admin
-if (!isLoggedIn() || !isAdmin()) {
-    redirect(BASE_URL . 'admin/login.php');
-}
-
-// Get departments for dropdown
-$query = "SELECT * FROM departments ORDER BY name ASC";
-$result = mysqli_query($conn, $query);
-$departments = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate and sanitize input
-    $title = sanitize($_POST['title']);
-    $description = sanitize($_POST['description']);
-    $start_date = sanitize($_POST['start_date']);
-    $end_date = sanitize($_POST['end_date']);
-    $morning_time_in = sanitize($_POST['morning_time_in']);
-    $morning_time_out = sanitize($_POST['morning_time_out']);
-    $afternoon_time_in = sanitize($_POST['afternoon_time_in']);
-    $afternoon_time_out = sanitize($_POST['afternoon_time_out']);
-    $department = isset($_POST['department']) ? sanitize($_POST['department']) : null;
-    
-    // Handle location data
-    $location_latitude = !empty($_POST['location_latitude']) ? floatval($_POST['location_latitude']) : null;
-    $location_longitude = !empty($_POST['location_longitude']) ? floatval($_POST['location_longitude']) : null;
-    $geofence_radius = isset($_POST['geofence_radius']) ? intval($_POST['geofence_radius']) : 100;
-    
-    // Generate a globally unique ID for the event
-    $event_uuid = generate_uuid();
-    
-    // Validate input
-    $errors = [];
-    
-    if (empty($title)) {
-        $errors[] = "Event title is required";
-    }
-    
-    if (empty($start_date) || empty($end_date)) {
-        $errors[] = "Start and end dates are required";
-    } elseif ($start_date > $end_date) {
-        $errors[] = "End date must be after start date";
-    }
-    
-    if (empty($morning_time_in) || empty($morning_time_out) || empty($afternoon_time_in) || empty($afternoon_time_out)) {
-        $errors[] = "All time fields are required";
-    }
-    
-    // Validate coordinates if provided
-    if (($location_latitude !== null || $location_longitude !== null) && 
-        (!GeofenceHelper::validateCoordinates($location_latitude, $location_longitude))) {
-        $errors[] = "Invalid coordinates provided";
-    }
-
-    // If no errors, create the event
-    if (empty($errors)) {
-        $query = "INSERT INTO events (uuid, title, description, start_date, end_date, morning_time_in, morning_time_out, 
-                                       afternoon_time_in, afternoon_time_out, department, location_latitude, location_longitude, 
-                                       geofence_radius, created_by) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "ssssssssssddii", $event_uuid, $title, $description, $start_date, $end_date, $morning_time_in, 
-                               $morning_time_out, $afternoon_time_in, $afternoon_time_out, $department, $location_latitude, 
-                               $location_longitude, $geofence_radius, $_SESSION['user_id']);
-        
-        if (mysqli_stmt_execute($stmt)) {
-            $event_id = mysqli_insert_id($conn);
-            
-            // Generate a single QR code for the event that includes both morning and afternoon sessions
-            $qr_code = generateQRCode($event_id, $event_uuid);
-            
-            $_SESSION['success_message'] = "Event created successfully! QR code has been generated.";
-            redirect(BASE_URL . 'admin/events/index.php');
-        } else {
-            $errors[] = "Failed to create event: " . mysqli_error($conn);
-        }
-    }
-}
-
-// Function to generate a UUID v4
-function generate_uuid() {
-    // Generate 16 bytes (128 bits) of random data
-    if (function_exists('random_bytes')) {
-        $data = random_bytes(16);
-    } elseif (function_exists('openssl_random_pseudo_bytes')) {
-        $data = openssl_random_pseudo_bytes(16);
-    } else {
-        // Fallback to less secure method
-        $data = '';
-        for ($i = 0; $i < 16; $i++) {
-            $data .= chr(mt_rand(0, 255));
-        }
-    }
-    
-    // Set version to 0100
-    $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-    // Set bits 6-7 to 10
-    $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
-
-    // Output the 36 character UUID
-    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-}
 
 // Function to generate QR code and save to database
 function generateQRCode($event_id, $event_uuid) {
@@ -138,7 +33,7 @@ function generateQRCode($event_id, $event_uuid) {
     require_once '../../utils/QrCodeGenerator.php';
     
     // The data to encode in the QR code - URL to the scan.php page with the code
-    $scan_url = getAbsoluteUrl('scan.php?code=' . urlencode($code));
+    $scan_url = BASE_URL . 'scan.php?code=' . urlencode($code);
     
     // Log the generated URL for debugging
     error_log("QR Code URL generated: " . $scan_url);
@@ -747,199 +642,83 @@ ob_start();
             // Create gradient circle with animation
             geofenceCircle = L.circle([lat, lng], {
                 radius: radius,
-                fillColor: '#3b82f6',
-                fillOpacity: 0.2,
-                color: '#1d4ed8',
-                weight: 2,
-                opacity: 0.8,
-                dashArray: '5, 5',
-                className: 'geofence-circle'
-            }).addTo(eventLocationMap);
-
-            // Add radius label
-            const radiusPopup = L.popup({
-                closeButton: false,
-                autoClose: false,
-                closeOnClick: false,
-                className: 'radius-popup'
-            })
-            .setLatLng([lat, lng])
-            .setContent(`
-                <div style="text-align: center; font-size: 12px;">
-                    <strong>Geofence Radius</strong><br>
-                    ${radius}m (${(radius/1000).toFixed(2)}km)
-                </div>
-            `);
-
-            // Show radius popup temporarily
-            setTimeout(() => {
-                radiusPopup.openOn(eventLocationMap);
-                setTimeout(() => {
-                    eventLocationMap.closePopup(radiusPopup);
-                }, 3000);
-            }, 500);
+                color: '#EF6161',
+                fillColor: '#EF6161',
+                fillOpacity: 0.2
+            }).addTo(map);
         }
-
-        function setupMapEventListeners() {
-            // Get current location button
-            document.getElementById('getCurrentLocationMap').addEventListener('click', function() {
-                const button = this;
-                const originalContent = button.innerHTML;
+        
+        // Update status
+        document.getElementById('mapStatus').textContent = `Location set: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    });
+    
+    // Handle geofence radius changes
+    document.getElementById('geofence_radius').addEventListener('change', function() {
+        if (marker && circle) {
+            circle.setRadius(parseInt(this.value));
+        }
+    });
+    
+    // Get current location
+    document.getElementById('getCurrentLocationMap').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
                 
-                button.innerHTML = `
-                    <svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Getting...
-                `;
-                button.disabled = true;
-
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            
-                            setEventLocation(lat, lng);
-                            eventLocationMap.setView([lat, lng], 16);
-                            
-                            // Add user location marker
-                            if (currentUserMarker) {
-                                eventLocationMap.removeLayer(currentUserMarker);
-                            }
-                            
-                            currentUserMarker = L.marker([lat, lng], {
-                                icon: L.divIcon({
-                                    className: 'user-location-marker',
-                                    html: `
-                                        <div style="
-                                            background: #10b981;
-                                            width: 20px;
-                                            height: 20px;
-                                            border-radius: 50%;
-                                            border: 2px solid white;
-                                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                        "></div>
-                                    `,
-                                    iconSize: [20, 20],
-                                    iconAnchor: [10, 10]
-                                })
-                            }).addTo(eventLocationMap);
-                            
-                            currentUserMarker.bindPopup('📱 Your Current Location').openPopup();
-                            
-                            button.innerHTML = originalContent;
-                            button.disabled = false;
-                            updateMapStatus('Current location set successfully!', 'success');
-                        },
-                        function(error) {
-                            button.innerHTML = originalContent;
-                            button.disabled = false;
-                            updateMapStatus('Failed to get location: ' + error.message, 'error');
-                        },
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 10000,
-                            maximumAge: 0
-                        }
-                    );
+                map.setView([lat, lng], 15);
+                
+                // Update input fields
+                document.getElementById('location_latitude').value = lat.toFixed(6);
+                document.getElementById('location_longitude').value = lng.toFixed(6);
+                
+                // Update marker
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
                 } else {
-                    button.innerHTML = originalContent;
-                    button.disabled = false;
-                    updateMapStatus('Geolocation not supported by browser', 'error');
+                    marker = L.marker([lat, lng]).addTo(map);
                 }
-            });
-
-            // Clear location button
-            document.getElementById('clearLocationMap').addEventListener('click', function() {
-                clearEventLocation();
-                updateMapStatus('Location cleared', 'info');
-            });
-
-            // Radius change handler
-            document.getElementById('geofence_radius').addEventListener('change', function() {
-                const lat = document.getElementById('location_latitude').value;
-                const lng = document.getElementById('location_longitude').value;
                 
-                if (lat && lng) {
-                    updateGeofenceCircle(parseFloat(lat), parseFloat(lng));
-                    updateMapStatus(`Geofence updated to ${this.value}m radius`, 'info');
+                // Update circle
+                const radius = parseInt(document.getElementById('geofence_radius').value);
+                if (circle) {
+                    circle.setLatLng([lat, lng]);
+                    circle.setRadius(radius);
+                } else {
+                    circle = L.circle([lat, lng], {
+                        radius: radius,
+                        color: '#EF6161',
+                        fillColor: '#EF6161',
+                        fillOpacity: 0.2
+                    }).addTo(map);
                 }
+                
+                // Update status
+                document.getElementById('mapStatus').textContent = `Location set: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
             });
         }
-
-        function clearEventLocation() {
-            // Clear form inputs
-            document.getElementById('location_latitude').value = '';
-            document.getElementById('location_longitude').value = '';
-
-            // Remove markers and circles
-            if (eventMarker) {
-                eventLocationMap.removeLayer(eventMarker);
-                eventMarker = null;
-            }
-            if (geofenceCircle) {
-                eventLocationMap.removeLayer(geofenceCircle);
-                geofenceCircle = null;
-            }
-            if (currentUserMarker) {
-                eventLocationMap.removeLayer(currentUserMarker);
-                currentUserMarker = null;
-            }
+    });
+    
+    // Clear location
+    document.getElementById('clearLocationMap').addEventListener('click', function() {
+        if (marker) {
+            map.removeLayer(marker);
+            marker = null;
         }
-
-        function updateMapStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('mapStatus');
-            const colors = {
-                success: 'bg-green-600',
-                error: 'bg-red-600',
-                info: 'bg-blue-600'
-            };
-            
-            statusDiv.className = `absolute bottom-4 left-4 z-[1000] ${colors[type]} text-white px-3 py-2 rounded-md text-xs max-w-xs`;
-            statusDiv.textContent = message;
-            statusDiv.style.display = 'block';
-            
-            // Auto-hide after 3 seconds
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
+        if (circle) {
+            map.removeLayer(circle);
+            circle = null;
         }
+        
+        document.getElementById('location_latitude').value = '';
+        document.getElementById('location_longitude').value = '';
+        document.getElementById('mapStatus').textContent = 'Click on the map to set event location';
+    });
+</script>
 
-        // Add CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0% { box-shadow: 0 0 0 0 rgba(239, 97, 97, 0.7); }
-                70% { box-shadow: 0 0 0 10px rgba(239, 97, 97, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(239, 97, 97, 0); }
-            }
-            
-            .geofence-circle {
-                animation: fadeIn 0.5s ease-in-out;
-            }
-            
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            
-            .leaflet-popup-content-wrapper {
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            }
-            
-            .radius-popup .leaflet-popup-content-wrapper {
-                background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-                color: white;
-            }
-            
-            .radius-popup .leaflet-popup-tip {
-                background: #1d4ed8;
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
-</body>
-</html> 
+<?php
+$page_content = ob_get_clean();
+
+// Include admin layout
+require_once '../../includes/admin_layout.php';
+?> 

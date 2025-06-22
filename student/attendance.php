@@ -297,9 +297,10 @@ $stats = mysqli_fetch_assoc($result);
             </div>
         </main>
         
-        <?php include '../includes/footer.php'; ?>
+       
     </div>
-    
+
+
     <script src="../assets/js/main.js"></script>
 </body>
 </html> 

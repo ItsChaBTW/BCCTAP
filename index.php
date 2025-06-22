@@ -27,14 +27,14 @@ if (isLoggedIn() && isStudent()) {
         }
         
         .gradient-text {
-            background: linear-gradient(to right, #6366f1, #8b5cf6);
+            background: linear-gradient(to right, #22c55e, #16a34a);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
         
         .hero-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.05'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2322c55e' fill-opacity='0.05'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         
         .feature-card {
@@ -84,13 +84,13 @@ if (isLoggedIn() && isStudent()) {
         <!-- Hero Section -->
         <section class="relative py-20 md:py-28 hero-pattern overflow-hidden">
             <!-- Blob decorations -->
-            <div class="blob bg-indigo-300 w-72 h-72 top-20 left-0"></div>
-            <div class="blob bg-purple-300 w-96 h-96 bottom-10 right-10"></div>
+            <div class="blob bg-green-300 w-72 h-72 top-20 left-0"></div>
+            <div class="blob bg-green-200 w-96 h-96 bottom-10 right-10"></div>
             
             <div class="container mx-auto px-4 relative z-10">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-12">
                     <div class="md:w-1/2 animate__animated animate__fadeInLeft">
-                        <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-4">BAGO CITY COLLEGE</span>
+                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-4">BAGO CITY COLLEGE</span>
                         <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                             Modern <span class="gradient-text">Attendance</span> Management
                         </h1>
@@ -98,21 +98,21 @@ if (isLoggedIn() && isStudent()) {
                             Simplifying attendance tracking with QR technology for a seamless campus experience.
                         </p>
                         <div class="flex flex-wrap gap-4">
-                            <a href="student/login.php" class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex items-center group">
+                            <a href="student/login.php" class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex items-center group">
                                 <span>Student Portal</span>
                                 <i class="fas fa-arrow-right ml-2 group-hover:ml-4 transition-all"></i>
                             </a>
-                            <a href="staff_login.php" class="px-8 py-4 bg-white border border-gray-200 hover:border-indigo-300 text-gray-700 font-medium rounded-xl shadow hover:shadow-md transition duration-300 flex items-center">
-                                <i class="fas fa-user-tie mr-2 text-indigo-600"></i>
+                            <a href="staff_login.php" class="px-8 py-4 bg-white border border-gray-200 hover:border-green-300 text-gray-700 font-medium rounded-xl shadow hover:shadow-md transition duration-300 flex items-center">
+                                <i class="fas fa-user-tie mr-2 text-green-600"></i>
                                 <span>Staff Access</span>
                             </a>
                         </div>
                         
                         <div class="mt-10 flex items-center">
                             <div class="flex -space-x-2">
-                                <div class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-indigo-600 font-semibold">S</div>
-                                <div class="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center text-purple-600 font-semibold">T</div>
-                                <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center text-blue-600 font-semibold">A</div>
+                                <div class="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center text-green-600 font-semibold">S</div>
+                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold">T</div>
+                                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-800 font-semibold">A</div>
                             </div>
                             <div class="ml-4">
                                 <p class="text-gray-600 text-sm">Trusted by <span class="font-semibold">500+</span> students and staff</p>
@@ -125,7 +125,7 @@ if (isLoggedIn() && isStudent()) {
                             <!-- Phone mockup -->
                             <div class="relative mx-auto w-full max-w-md floating">
                                 <div class="relative bg-black rounded-[2.5rem] p-2 shadow-xl">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[2.5rem] opacity-20"></div>
+                                    <div class="absolute inset-0 bg-gradient-to-br from-green-400 to-green-600 rounded-[2.5rem] opacity-20"></div>
                                     <!-- Notch -->
                                     <div class="absolute top-0 inset-x-0 h-6 bg-black rounded-t-[2.5rem] flex justify-center">
                                         <div class="w-16 h-1 rounded-full bg-gray-600 mt-1.5"></div>
@@ -134,7 +134,7 @@ if (isLoggedIn() && isStudent()) {
                                         <!-- App Screen Content -->
                                         <div class="h-full flex flex-col">
                                             <!-- App header -->
-                                            <div class="bg-indigo-700 text-white p-4">
+                                            <div class="bg-green-700 text-white p-4">
                                                 <div class="flex items-center justify-between mb-3">
                                                     <h3 class="font-semibold">BCCTAP Scanner</h3>
                                                     <div class="flex items-center space-x-2">
@@ -142,24 +142,24 @@ if (isLoggedIn() && isStudent()) {
                                                         <i class="fas fa-battery-three-quarters"></i>
                                                     </div>
                                                 </div>
-                                                <p class="text-sm text-indigo-200">Scan QR code to record attendance</p>
+                                                <p class="text-sm text-green-200">Scan QR code to record attendance</p>
                                             </div>
                                             
                                             <!-- Scanner area -->
                                             <div class="flex-1 bg-gray-100 p-4 flex flex-col justify-center items-center">
                                                 <div class="w-64 h-64 bg-gray-900 rounded-lg relative flex items-center justify-center">
-                                                    <div class="absolute inset-4 border-2 border-dashed border-indigo-300 rounded-md flex items-center justify-center">
-                                                        <div class="pulse w-16 h-16 rounded-md border-2 border-indigo-400 flex items-center justify-center">
-                                                            <i class="fas fa-qrcode text-3xl text-indigo-400"></i>
+                                                    <div class="absolute inset-4 border-2 border-dashed border-green-300 rounded-md flex items-center justify-center">
+                                                        <div class="pulse w-16 h-16 rounded-md border-2 border-green-400 flex items-center justify-center">
+                                                            <i class="fas fa-qrcode text-3xl text-green-400"></i>
                                                         </div>
                                                     </div>
                                                     <!-- Scan line animation -->
-                                                    <div class="absolute h-0.5 w-full bg-indigo-500 top-1/2 animate-ping opacity-70"></div>
+                                                    <div class="absolute h-0.5 w-full bg-green-500 top-1/2 animate-ping opacity-70"></div>
                                                 </div>
                                                 <div class="text-center mt-6">
-                                                    <div class="text-indigo-700 font-semibold mb-1">Position your camera</div>
+                                                    <div class="text-green-700 font-semibold mb-1">Position your camera</div>
                                                     <p class="text-xs text-gray-500">to scan the QR code and mark your attendance</p>
-                                                    <button class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow">
+                                                    <button class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
                                                         <i class="fas fa-camera mr-2"></i> Open Camera
                                                     </button>
                                                 </div>
@@ -170,8 +170,8 @@ if (isLoggedIn() && isStudent()) {
                             </div>
                             
                             <!-- Decorative elements -->
-                            <div class="absolute -bottom-6 -left-6 w-20 h-20 bg-indigo-600 rounded-full opacity-20 animate-pulse"></div>
-                            <div class="absolute top-10 -right-10 w-32 h-32 bg-purple-600 rounded-full opacity-10"></div>
+                            <div class="absolute -bottom-6 -left-6 w-20 h-20 bg-green-600 rounded-full opacity-20 animate-pulse"></div>
+                            <div class="absolute top-10 -right-10 w-32 h-32 bg-green-600 rounded-full opacity-10"></div>
                         </div>
                     </div>
                 </div>
@@ -189,43 +189,43 @@ if (isLoggedIn() && isStudent()) {
         <section class="py-20 bg-white relative">
             <div class="container mx-auto px-4">
                 <div class="text-center mb-16">
-                    <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium mb-4">FEATURES</span>
+                    <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium mb-4">FEATURES</span>
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Smart Attendance Solutions</h2>
                     <p class="text-xl text-gray-600 max-w-2xl mx-auto">Designed specifically for Bago City College's unique needs</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="feature-card bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-                        <div class="bg-indigo-50 w-16 h-16 flex items-center justify-center rounded-xl mb-6 text-indigo-600">
+                        <div class="bg-green-50 w-16 h-16 flex items-center justify-center rounded-xl mb-6 text-green-600">
                             <i class="fas fa-mobile-alt text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold text-gray-800 mb-3">Mobile QR Scanning</h3>
                         <p class="text-gray-600 mb-6">Students can quickly record their attendance by scanning event-specific QR codes with their smartphones.</p>
-                        <a href="#" class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-700">
+                        <a href="#" class="inline-flex items-center text-green-600 font-medium hover:text-green-700">
                             <span>Learn more</span>
                             <i class="fas fa-chevron-right ml-2 text-xs"></i>
                         </a>
                     </div>
                     
                     <div class="feature-card bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-                        <div class="bg-indigo-50 w-16 h-16 flex items-center justify-center rounded-xl mb-6 text-indigo-600">
+                        <div class="bg-green-50 w-16 h-16 flex items-center justify-center rounded-xl mb-6 text-green-600">
                             <i class="fas fa-chart-line text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold text-gray-800 mb-3">Real-time Analytics</h3>
                         <p class="text-gray-600 mb-6">Comprehensive dashboards with real-time statistics on attendance rates, trends and student participation.</p>
-                        <a href="#" class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-700">
+                        <a href="#" class="inline-flex items-center text-green-600 font-medium hover:text-green-700">
                             <span>Learn more</span>
                             <i class="fas fa-chevron-right ml-2 text-xs"></i>
                         </a>
                     </div>
                     
                     <div class="feature-card bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-                        <div class="bg-indigo-50 w-16 h-16 flex items-center justify-center rounded-xl mb-6 text-indigo-600">
+                        <div class="bg-green-50 w-16 h-16 flex items-center justify-center rounded-xl mb-6 text-green-600">
                             <i class="fas fa-shield-alt text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold text-gray-800 mb-3">Secure & Reliable</h3>
                         <p class="text-gray-600 mb-6">Built with security in mind, ensuring attendance data is protected and accurately recorded.</p>
-                        <a href="#" class="inline-flex items-center text-indigo-600 font-medium hover:text-indigo-700">
+                        <a href="#" class="inline-flex items-center text-green-600 font-medium hover:text-green-700">
                             <span>Learn more</span>
                             <i class="fas fa-chevron-right ml-2 text-xs"></i>
                         </a>
@@ -235,19 +235,19 @@ if (isLoggedIn() && isStudent()) {
                 <!-- Stats Section -->
                 <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                     <div class="p-6">
-                        <div class="text-4xl font-bold text-indigo-600 mb-2">500+</div>
+                        <div class="text-4xl font-bold text-green-600 mb-2">500+</div>
                         <p class="text-gray-600">Students</p>
                     </div>
                     <div class="p-6">
-                        <div class="text-4xl font-bold text-indigo-600 mb-2">50+</div>
+                        <div class="text-4xl font-bold text-green-600 mb-2">50+</div>
                         <p class="text-gray-600">Faculty</p>
                     </div>
                     <div class="p-6">
-                        <div class="text-4xl font-bold text-indigo-600 mb-2">98%</div>
+                        <div class="text-4xl font-bold text-green-600 mb-2">98%</div>
                         <p class="text-gray-600">Accuracy</p>
                     </div>
                     <div class="p-6">
-                        <div class="text-4xl font-bold text-indigo-600 mb-2">24/7</div>
+                        <div class="text-4xl font-bold text-green-600 mb-2">24/7</div>
                         <p class="text-gray-600">Access</p>
                     </div>
                 </div>
@@ -259,12 +259,12 @@ if (isLoggedIn() && isStudent()) {
             <div class="container mx-auto px-4">
                 <div class="flex flex-col md:flex-row items-center">
                     <div class="md:w-1/2 pr-0 md:pr-12 mb-10 md:mb-0">
-                        <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium mb-4">HOW IT WORKS</span>
+                        <span class="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium mb-4">HOW IT WORKS</span>
                         <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Simple and Effective Attendance Process</h2>
                         
                         <div class="space-y-8">
                             <div class="flex items-start">
-                                <div class="flex-shrink-0 bg-indigo-600 rounded-full w-10 h-10 flex items-center justify-center text-white font-semibold mr-4">1</div>
+                                <div class="flex-shrink-0 bg-green-500 rounded-full w-10 h-10 flex items-center justify-center text-white font-semibold mr-4">1</div>
                                 <div>
                                     <h3 class="text-xl font-bold text-gray-800 mb-2">Create QR Codes</h3>
                                     <p class="text-gray-600">Teachers generate unique QR codes for each class or event through their portal.</p>
@@ -272,7 +272,7 @@ if (isLoggedIn() && isStudent()) {
                             </div>
                             
                             <div class="flex items-start">
-                                <div class="flex-shrink-0 bg-indigo-600 rounded-full w-10 h-10 flex items-center justify-center text-white font-semibold mr-4">2</div>
+                                <div class="flex-shrink-0 bg-green-500 rounded-full w-10 h-10 flex items-center justify-center text-white font-semibold mr-4">2</div>
                                 <div>
                                     <h3 class="text-xl font-bold text-gray-800 mb-2">Display for Students</h3>
                                     <p class="text-gray-600">QR codes are displayed on screens or printed for students to scan.</p>
@@ -280,7 +280,7 @@ if (isLoggedIn() && isStudent()) {
                             </div>
                             
                             <div class="flex items-start">
-                                <div class="flex-shrink-0 bg-indigo-600 rounded-full w-10 h-10 flex items-center justify-center text-white font-semibold mr-4">3</div>
+                                <div class="flex-shrink-0 bg-green-500 rounded-full w-10 h-10 flex items-center justify-center text-white font-semibold mr-4">3</div>
                                 <div>
                                     <h3 class="text-xl font-bold text-gray-800 mb-2">Scan with Mobile App</h3>
                                     <p class="text-gray-600">Students use their phone camera to scan the QR code and mark attendance.</p>
@@ -288,7 +288,7 @@ if (isLoggedIn() && isStudent()) {
                             </div>
                             
                             <div class="flex items-start">
-                                <div class="flex-shrink-0 bg-indigo-600 rounded-full w-10 h-10 flex items-center justify-center text-white font-semibold mr-4">4</div>
+                                <div class="flex-shrink-0 bg-green-500 rounded-full w-10 h-10 flex items-center justify-center text-white font-semibold mr-4">4</div>
                                 <div>
                                     <h3 class="text-xl font-bold text-gray-800 mb-2">View Reports</h3>
                                     <p class="text-gray-600">Faculty can view attendance data and generate reports from the dashboard.</p>
@@ -309,15 +309,15 @@ if (isLoggedIn() && isStudent()) {
                             <div class="p-6 bg-white">
                                 <div class="flex items-center space-x-6">
                                     <div class="text-center">
-                                        <div class="text-3xl font-bold text-indigo-600">60%</div>
+                                        <div class="text-3xl font-bold text-green-600">60%</div>
                                         <p class="text-sm text-gray-500">Time Saved</p>
                                     </div>
                                     <div class="text-center">
-                                        <div class="text-3xl font-bold text-indigo-600">95%</div>
+                                        <div class="text-3xl font-bold text-green-600">95%</div>
                                         <p class="text-sm text-gray-500">Student Approval</p>
                                     </div>
                                     <div class="text-center">
-                                        <div class="text-3xl font-bold text-indigo-600">99%</div>
+                                        <div class="text-3xl font-bold text-green-600">99%</div>
                                         <p class="text-sm text-gray-500">Accuracy Rate</p>
                                     </div>
                                 </div>
@@ -329,22 +329,22 @@ if (isLoggedIn() && isStudent()) {
         </section>
         
         <!-- CTA Section -->
-        <section class="py-20 bg-gradient-to-r from-slate-800 to-slate-900 text-white relative overflow-hidden">
+        <section class="py-20 bg-gradient-to-r from-green-500 to-green-700 text-white relative overflow-hidden">
             <!-- Decorative circles -->
-            <div class="absolute -top-20 -left-20 w-64 h-64 bg-blue-200 rounded-full opacity-10"></div>
-            <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-900 rounded-full opacity-20"></div>
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-green-200 rounded-full opacity-10"></div>
+            <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-green-900 rounded-full opacity-20"></div>
             
             <div class="container mx-auto px-4 relative z-10">
                 <div class="max-w-3xl mx-auto text-center">
                     <h2 class="text-3xl md:text-5xl font-bold mb-6">Ready to Transform Your Attendance Tracking?</h2>
-                    <p class="text-xl text-blue-100 mb-10">Join Bago City College's modern attendance platform and make tracking attendance simple, accurate, and efficient.</p>
+                    <p class="text-xl text-green-100 mb-10">Join Bago City College's modern attendance platform and make tracking attendance simple, accurate, and efficient.</p>
                     <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-                        <a href="student/login.php" class="flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 hover:bg-slate-100 font-medium rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
-                            <svg class="w-6 h-6 text-slate-800 group-hover:text-slate-900 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        <a href="student/login.php" class="flex items-center justify-center gap-2 px-8 py-4 bg-white text-green-800 hover:bg-green-50 font-medium rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+                            <svg class="w-6 h-6 text-green-800 group-hover:text-green-900 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                             <span class="font-semibold">Student Portal</span>
                         </a>
-                        <a href="staff_login.php" class="flex items-center justify-center gap-2 px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
-                            <svg class="w-6 h-6 text-slate-200 group-hover:text-white transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 7V6a2 2 0 012-2h8a2 2 0 012 2v1" /><rect width="16" height="10" x="4" y="7" rx="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M8 17v1a2 2 0 002 2h4a2 2 0 002-2v-1" /></svg>
+                        <a href="staff_login.php" class="flex items-center justify-center gap-2 px-8 py-4 bg-green-800 hover:bg-green-700 text-white font-medium rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+                            <svg class="w-6 h-6 text-green-200 group-hover:text-white transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 7V6a2 2 0 012-2h8a2 2 0 012 2v1" /><rect width="16" height="10" x="4" y="7" rx="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M8 17v1a2 2 0 002 2h4a2 2 0 002-2v-1" /></svg>
                             <span class="font-semibold">Staff Access</span>
                         </a>
                     </div>

@@ -271,7 +271,7 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
             </div>
         </main>
         
-        <?php include '../includes/footer.php'; ?>
+  
     </div>
     
     <script src="../assets/js/main.js"></script>

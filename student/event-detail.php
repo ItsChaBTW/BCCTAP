@@ -12,6 +12,15 @@ if (!isLoggedIn() || !isStudent()) {
 // Get student data
 $user_id = $_SESSION['user_id'];
 
+// Get the current user's department
+$user_query = "SELECT department FROM users WHERE id = ?";
+$user_stmt = mysqli_prepare($conn, $user_query);
+mysqli_stmt_bind_param($user_stmt, "i", $user_id);
+mysqli_stmt_execute($user_stmt);
+$user_result = mysqli_stmt_get_result($user_stmt);
+$user_data = mysqli_fetch_assoc($user_result);
+$user_department = $user_data['department'];
+
 // Check if event ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     $_SESSION['error_message'] = "Event ID is required";
@@ -37,6 +46,14 @@ if (mysqli_num_rows($result) === 0) {
 }
 
 $event = mysqli_fetch_assoc($result);
+
+// Check if the event is restricted to a specific department and if the user belongs to it
+$is_department_compatible = true;
+$department_message = '';
+if (!empty($event['department']) && $event['department'] != $user_department) {
+    $is_department_compatible = false;
+    $department_message = "This event is only for the {$event['department']} department. Your department: " . ($user_department ? $user_department : 'Not Set');
+}
 
 // Get student attendance for this event - Fixed query to use attendance session field
 $query = "SELECT a.*, a.session as session_type 
@@ -64,6 +81,40 @@ foreach ($attendance_records as $record) {
 // Check if this is an ongoing event
 $today = date('Y-m-d');
 $is_ongoing = ($today >= $event['start_date'] && $today <= $event['end_date']);
+
+// Check if current time is within valid session hours
+$current_time = date('H:i:s');
+$current_time_stamp = strtotime($current_time);
+$morning_in = strtotime($event['morning_time_in']);
+$morning_out = strtotime($event['morning_time_out']);
+$afternoon_in = strtotime($event['afternoon_time_in']);
+$afternoon_out = strtotime($event['afternoon_time_out']);
+
+$is_morning_session = ($current_time_stamp >= $morning_in && $current_time_stamp <= $morning_out);
+$is_afternoon_session = ($current_time_stamp >= $afternoon_in && $current_time_stamp <= $afternoon_out);
+$is_within_session_time = ($is_morning_session || $is_afternoon_session);
+
+// Determine current session status for display
+$session_status = '';
+$next_session_info = '';
+if ($is_ongoing) {
+    if ($is_morning_session) {
+        $session_status = 'Morning session is active';
+        $next_session_info = '';
+    } elseif ($is_afternoon_session) {
+        $session_status = 'Afternoon session is active';
+        $next_session_info = '';
+    } elseif ($current_time_stamp < $morning_in) {
+        $session_status = 'Event hasn\'t started yet';
+        $next_session_info = 'Morning session starts at ' . date('h:i A', strtotime($event['morning_time_in']));
+    } elseif ($current_time_stamp > $morning_out && $current_time_stamp < $afternoon_in) {
+        $session_status = 'Break time';
+        $next_session_info = 'Afternoon session starts at ' . date('h:i A', strtotime($event['afternoon_time_in']));
+    } else {
+        $session_status = 'Event has ended for today';
+        $next_session_info = 'Check back tomorrow if the event continues';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -76,6 +127,7 @@ $is_ongoing = ($today >= $event['start_date'] && $today <= $event['end_date']);
     <link href="../assets/css/colors.css" rel="stylesheet">
     <link href="../assets/css/student-style.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen flex flex-col">
@@ -116,9 +168,18 @@ $is_ongoing = ($today >= $event['start_date'] && $today <= $event['end_date']);
                     <?php endif; ?>
                     
                     <?php if (!empty($event['department'])): ?>
-                        <span class="student-badge student-badge-info">
-                            <?php echo htmlspecialchars($event['department']); ?>
-                        </span>
+                        <?php if ($is_department_compatible): ?>
+                            <span class="student-badge student-badge-info">
+                                <?php echo htmlspecialchars($event['department']); ?>
+                            </span>
+                        <?php else: ?>
+                            <span class="student-badge bg-red-100 text-red-800">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                <?php echo htmlspecialchars($event['department']); ?> Only
+                            </span>
+                        <?php endif; ?>
                     <?php else: ?>
                         <span class="student-badge student-badge-info">
                             All Departments
@@ -347,30 +408,100 @@ $is_ongoing = ($today >= $event['start_date'] && $today <= $event['end_date']);
                             </div>
                             
                     <!-- Action Button -->
-                            <?php if ($is_ongoing): ?>
-                        <div class="mt-6 text-center">
-                            <a href="../student/scan/index.php" class="student-btn student-btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1z" clip-rule="evenodd" />
-                                </svg>
-                                Scan QR Code to Record Attendance
-                            </a>
-                        </div>
-                        
-                        <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                    <?php if ($is_ongoing): ?>
+                        <!-- Department Restriction Check -->
+                        <?php if (!$is_department_compatible): ?>
+                            <div class="mt-6 mb-4">
+                                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded">
                                     <div class="flex">
                                         <div class="flex-shrink-0">
-                                            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                                             </svg>
                                         </div>
                                         <div class="ml-3">
-                                            <p class="text-sm text-blue-700">
-                                        This event is currently ongoing. Scan the QR code to record your attendance for each session.
-                                            </p>
+                                            <p class="text-sm text-red-700 font-medium">Department Restriction</p>
+                                            <p class="text-xs text-red-600 mt-1"><?php echo htmlspecialchars($department_message); ?></p>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <!-- Session Status Display -->
+                        <div class="mt-6 mb-4">
+                            <?php if ($is_within_session_time): ?>
+                                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-green-700 font-medium"><?php echo $session_status; ?></p>
+                                            <p class="text-xs text-green-600 mt-1">Current time: <?php echo date('h:i A'); ?></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-yellow-700 font-medium"><?php echo $session_status; ?></p>
+                                            <p class="text-xs text-yellow-600 mt-1">Current time: <?php echo date('h:i A'); ?></p>
+                                            <?php if ($next_session_info): ?>
+                                                <p class="text-xs text-yellow-600 mt-1"><?php echo $next_session_info; ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <?php if (!$is_department_compatible): ?>
+                                <button onclick="showDepartmentAlert()" class="student-btn bg-red-400 text-white cursor-not-allowed opacity-75">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                    </svg>
+                                    Department Restricted
+                                </button>
+                            <?php elseif ($is_within_session_time): ?>
+                               
+                            <?php else: ?>
+                                <button onclick="showTimeAlert()" class="student-btn bg-gray-400 text-white cursor-not-allowed opacity-75">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                    </svg>
+                                    Outside Session Hours
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-blue-700">
+                                        <?php if (!$is_department_compatible): ?>
+                                            This event is restricted to students from the <?php echo htmlspecialchars($event['department']); ?> department only.
+                                        <?php else: ?>
+                                            This event is currently ongoing. Attendance can only be recorded during the scheduled session times<?php echo !empty($event['department']) ? ' by ' . htmlspecialchars($event['department']) . ' department students' : ''; ?>.
+                                        <?php endif; ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     <?php else: ?>
                         <div class="mt-6 text-center">
                             <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg">
@@ -404,5 +535,58 @@ $is_ongoing = ($today >= $event['start_date'] && $today <= $event['end_date']);
     </div>
     
     <script src="../assets/js/main.js"></script>
+    <script>
+        function showTimeAlert() {
+            const currentTime = '<?php echo date('h:i A'); ?>';
+            const morningStart = '<?php echo date('h:i A', strtotime($event['morning_time_in'])); ?>';
+            const morningEnd = '<?php echo date('h:i A', strtotime($event['morning_time_out'])); ?>';
+            const afternoonStart = '<?php echo date('h:i A', strtotime($event['afternoon_time_in'])); ?>';
+            const afternoonEnd = '<?php echo date('h:i A', strtotime($event['afternoon_time_out'])); ?>';
+            const sessionStatus = '<?php echo addslashes($session_status); ?>';
+            const nextSessionInfo = '<?php echo addslashes($next_session_info); ?>';
+            
+            Swal.fire({
+                title: 'Outside Attendance Hours',
+                html: '<div class="text-center">' +
+                      '<h3 class="text-lg font-semibold text-gray-800 mb-2"><?php echo addslashes($event['title']); ?></h3>' +
+                      '<p class="text-gray-600 mb-3">' + sessionStatus + '</p>' +
+                      '<div class="text-sm text-gray-500 space-y-1">' +
+                      '<p><strong>Current time:</strong> ' + currentTime + '</p>' +
+                      '<p><strong>Morning session:</strong> ' + morningStart + ' - ' + morningEnd + '</p>' +
+                      '<p><strong>Afternoon session:</strong> ' + afternoonStart + ' - ' + afternoonEnd + '</p>' +
+                      (nextSessionInfo ? '<p class="text-blue-600 mt-2">' + nextSessionInfo + '</p>' : '') +
+                      '</div>' +
+                      '</div>',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#EF6161',
+                allowOutsideClick: true,
+                allowEscapeKey: true
+            });
+        }
+        
+        function showDepartmentAlert() {
+            const userDepartment = '<?php echo addslashes($user_department ? $user_department : 'Not Set'); ?>';
+            const eventDepartment = '<?php echo addslashes($event['department']); ?>';
+            
+            Swal.fire({
+                title: 'Department Restriction',
+                html: '<div class="text-center">' +
+                      '<h3 class="text-lg font-semibold text-gray-800 mb-2"><?php echo addslashes($event['title']); ?></h3>' +
+                      '<p class="text-gray-600 mb-3">This event is only for the ' + eventDepartment + ' department.</p>' +
+                      '<div class="text-sm text-gray-500 space-y-1">' +
+                      '<p><strong>Your department:</strong> ' + userDepartment + '</p>' +
+                      '<p><strong>Event department:</strong> ' + eventDepartment + '</p>' +
+                      '<p class="text-blue-600 mt-3">Please contact your administrator if you believe this is an error.</p>' +
+                      '</div>' +
+                      '</div>',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#EF6161',
+                allowOutsideClick: true,
+                allowEscapeKey: true
+            });
+        }
+    </script>
 </body>
 </html> 

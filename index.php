@@ -16,6 +16,7 @@ if (isLoggedIn() && isStudent()) {
     <link href="assets/css/styles.css" rel="stylesheet">
     <link href="assets/css/colors.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <style>
@@ -358,6 +359,24 @@ if (isLoggedIn() && isStudent()) {
     <script src="assets/js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Event Error Handling
+            <?php if (isset($_SESSION['event_error'])): ?>
+                Swal.fire({
+                    title: '<?php echo addslashes($_SESSION['event_error']['title']); ?>',
+                    html: '<div class="text-center">' +
+                          '<h3 class="text-lg font-semibold text-gray-800 mb-2"><?php echo addslashes($_SESSION['event_error']['event_title']); ?></h3>' +
+                          '<p class="text-gray-600 mb-2"><?php echo addslashes($_SESSION['event_error']['message']); ?></p>' +
+                          '<p class="text-sm text-gray-500"><?php echo addslashes($_SESSION['event_error']['subtitle']); ?></p>' +
+                          '</div>',
+                    icon: '<?php echo $_SESSION['event_error']['icon']; ?>',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#6366f1',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                });
+            <?php unset($_SESSION['event_error']); ?>
+            <?php endif; ?>
+            
             // Mobile menu toggle
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');

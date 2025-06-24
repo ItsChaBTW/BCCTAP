@@ -1,7 +1,7 @@
 <?php
 /**
  * Create User - Admin Module
- * This page allows admins to create teacher accounts
+ * This page allows admins to create department head accounts
  */
 require_once '../../config/config.php';
 
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_bind_param($stmt, "ssssss", $full_name, $username, $email, $hashed_password, $role, $department);
         
         if (mysqli_stmt_execute($stmt)) {
-            $_SESSION['success_message'] = "Teacher account created successfully";
+            $_SESSION['success_message'] = "Department Head account created successfully";
             redirect(BASE_URL . 'admin/users/index.php');
         } else {
             $errors[] = "Failed to create user: " . mysqli_error($conn);
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Define page title and content
-$page_title = "Create Teacher Account";
+$page_title = "Create Department Head Account";
 $page_actions = '
 <a href="' . BASE_URL . 'admin/users/index.php" class="bg-gradient-to-r from-blue-600 to-blue-800 hover:opacity-90 text-white py-2 px-4 rounded flex items-center">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -120,7 +120,7 @@ ob_start();
 ?>
 
 <div class="bg-white rounded-lg shadow-md p-6">
-    <h2 class="text-xl font-semibold mb-6">Create Teacher Account</h2>
+    <h2 class="text-xl font-semibold mb-6">Create Department Head Account</h2>
     
     <?php if (!empty($errors)): ?>
         <div class="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4">
@@ -196,7 +196,7 @@ ob_start();
         
         <div class="mt-8 flex justify-end space-x-3">
             <a href="<?php echo BASE_URL; ?>admin/users/index.php" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded">Cancel</a>
-            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded">Create Teacher Account</button>
+            <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded">Create Department Head Account</button>
         </div>
     </form>
 </div>

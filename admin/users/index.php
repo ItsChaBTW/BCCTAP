@@ -183,7 +183,7 @@ ob_start();
             <select id="role" name="role" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary">
                 <option value="">All Roles</option>
                 <option value="student" <?php echo $role_filter === 'student' ? 'selected' : ''; ?>>Students</option>
-                <option value="teacher" <?php echo $role_filter === 'teacher' ? 'selected' : ''; ?>>Teachers</option>
+                <option value="teacher" <?php echo $role_filter === 'teacher' ? 'selected' : ''; ?>>Department Heads</option>
                 <option value="admin" <?php echo $role_filter === 'admin' ? 'selected' : ''; ?>>Admins</option>
             </select>
         </div>

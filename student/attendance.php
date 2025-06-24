@@ -22,6 +22,7 @@ $status = isset($_GET['status']) ? $_GET['status'] : '';
 
 // Base query - Fixed to use attendance session instead of QR code session
 $query = "SELECT a.*, e.title as event_title, e.start_date, e.end_date, 
+          e.morning_time_in, e.morning_time_out, e.afternoon_time_in, e.afternoon_time_out,
           a.session as session_type 
           FROM attendance a 
           JOIN events e ON a.event_id = e.id 
@@ -55,7 +56,7 @@ if (!empty($session)) {
 }
 
 if (!empty($status)) {
-    $query .= " AND a.status = ?";
+    $query .= " AND a.attendance_status = ?";
     $params[] = $status;
     $types .= "s";
 }
@@ -85,9 +86,9 @@ $events = mysqli_fetch_all($result, MYSQLI_ASSOC);
 // Get attendance statistics
 $query = "SELECT 
             COUNT(*) as total_records,
-            COUNT(CASE WHEN a.status = 'present' THEN 1 END) as present_count,
-            COUNT(CASE WHEN a.status = 'late' THEN 1 END) as late_count,
-            COUNT(CASE WHEN a.status = 'excused' THEN 1 END) as excused_count,
+            COUNT(CASE WHEN a.attendance_status = 'present' THEN 1 END) as present_count,
+            COUNT(CASE WHEN a.attendance_status = 'late' THEN 1 END) as late_count,
+            COUNT(CASE WHEN a.attendance_status = 'absent' THEN 1 END) as absent_count,
             COUNT(DISTINCT a.event_id) as total_events
           FROM attendance a
           WHERE a.user_id = ?";
@@ -205,7 +206,7 @@ $stats = mysqli_fetch_assoc($result);
                             <option value="">All Status</option>
                             <option value="present" <?php echo $status === 'present' ? 'selected' : ''; ?>>Present</option>
                             <option value="late" <?php echo $status === 'late' ? 'selected' : ''; ?>>Late</option>
-                            <option value="excused" <?php echo $status === 'excused' ? 'selected' : ''; ?>>Excused</option>
+                            <option value="absent" <?php echo $status === 'absent' ? 'selected' : ''; ?>>Absent</option>
                         </select>
                     </div>
                     
@@ -236,6 +237,7 @@ $stats = mysqli_fetch_assoc($result);
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Session</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 </tr>
                             </thead>
@@ -270,15 +272,78 @@ $stats = mysqli_fetch_assoc($result);
                                             <?php endif; ?>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <?php if ($record['status'] === 'present'): ?>
-                                                <span class="student-badge student-badge-success">Present</span>
-                                            <?php elseif ($record['status'] === 'late'): ?>
-                                                <span class="student-badge student-badge-warning">Late</span>
-                                            <?php elseif ($record['status'] === 'excused'): ?>
-                                                <span class="student-badge student-badge-info">Excused</span>
+                                            <?php if ($record['status'] === 'time_in'): ?>
+                                                <span class="student-badge student-badge-info">
+                                                    Time In
+                                                </span>
                                             <?php else: ?>
-                                                <span class="student-badge"><?php echo ucfirst($record['status']); ?></span>
+                                                <span class="student-badge student-badge-secondary">
+                                                    Time Out
+                                                </span>
                                             <?php endif; ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <?php 
+                                            // Calculate attendance status based on timing like admin side
+                                            $attendance_status = $record['attendance_status'] ?? 'present';
+                                            $status_display = '';
+                                            $status_class = '';
+                                            
+                                            // Enhanced status calculation based on timing
+                                            if ($record['session_type'] === 'morning' && $record['status'] === 'time_in') {
+                                                $scheduled_time = strtotime($record['morning_time_in']);
+                                                $actual_time = strtotime($record['time_recorded']);
+                                                $diff_minutes = ($actual_time - $scheduled_time) / 60;
+                                                
+                                                if ($diff_minutes <= 0) {
+                                                    $status_display = 'On Time';
+                                                    $status_class = 'student-badge-success';
+                                                } elseif ($diff_minutes <= 15) {
+                                                    $status_display = 'Late';
+                                                    $status_class = 'student-badge-warning';
+                                                } else {
+                                                    $status_display = 'Very Late';
+                                                    $status_class = 'student-badge-error';
+                                                }
+                                            } elseif ($record['session_type'] === 'afternoon' && $record['status'] === 'time_in') {
+                                                $scheduled_time = strtotime($record['afternoon_time_in']);
+                                                $actual_time = strtotime($record['time_recorded']);
+                                                $diff_minutes = ($actual_time - $scheduled_time) / 60;
+                                                
+                                                if ($diff_minutes <= 0) {
+                                                    $status_display = 'On Time';
+                                                    $status_class = 'student-badge-success';
+                                                } elseif ($diff_minutes <= 15) {
+                                                    $status_display = 'Late';
+                                                    $status_class = 'student-badge-warning';
+                                                } else {
+                                                    $status_display = 'Very Late';
+                                                    $status_class = 'student-badge-error';
+                                                }
+                                            } else {
+                                                // For time_out or fallback to database status
+                                                switch($attendance_status) {
+                                                    case 'present':
+                                                        $status_display = 'Present';
+                                                        $status_class = 'student-badge-success';
+                                                        break;
+                                                    case 'late':
+                                                        $status_display = 'Late';
+                                                        $status_class = 'student-badge-warning';
+                                                        break;
+                                                    case 'absent':
+                                                        $status_display = 'Absent';
+                                                        $status_class = 'student-badge-error';
+                                                        break;
+                                                    default:
+                                                        $status_display = ucfirst($attendance_status);
+                                                        $status_class = 'student-badge';
+                                                }
+                                            }
+                                            ?>
+                                            <span class="student-badge <?php echo $status_class; ?>">
+                                                <?php echo $status_display; ?>
+                                            </span>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

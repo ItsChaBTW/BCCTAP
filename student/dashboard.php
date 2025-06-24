@@ -72,6 +72,7 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
     <link href="../assets/css/colors.css" rel="stylesheet">
     <link href="../assets/css/student-style.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen flex flex-col">
@@ -98,6 +99,30 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
                     </div>
                 </div>
             </div>
+            
+            <!-- Event Error Handling -->
+            <?php if (isset($_SESSION['event_error'])): ?>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: '<?php echo addslashes($_SESSION['event_error']['title']); ?>',
+                            html: '<div class="text-center">' +
+                                  '<h3 class="text-lg font-semibold text-gray-800 mb-2"><?php echo addslashes($_SESSION['event_error']['event_title']); ?></h3>' +
+                                  '<p class="text-gray-600 mb-2"><?php echo addslashes($_SESSION['event_error']['message']); ?></p>' +
+                                  '<p class="text-sm text-gray-500"><?php echo addslashes($_SESSION['event_error']['subtitle']); ?></p>' +
+                                  '</div>',
+                            icon: '<?php echo $_SESSION['event_error']['icon']; ?>',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#EF6161',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false
+                        });
+                    });
+                </script>
+                <?php 
+                    unset($_SESSION['event_error']); 
+                ?>
+            <?php endif; ?>
             
             <?php if (isset($_SESSION['device_warning']) && $_SESSION['device_warning'] === true): ?>
             <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mb-6" role="alert">
@@ -275,5 +300,24 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
     </div>
     
     <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/chrome-detector.js"></script>
+    
+    <script>
+        // Execute when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show Chrome recommendation every dashboard visit for non-Chrome users
+            setTimeout(() => {
+                ChromeDetector.showLoginRecommendation({
+                    title: 'Optimize Your BCCTAP Experience',
+                    message: 'For the best QR code scanning and attendance experience, we recommend using Google Chrome.',
+                    showDetails: false // Less detailed on dashboard
+                }).then((result) => {
+                    if (result && result.isConfirmed) {
+                        console.log('User chose to download Chrome from dashboard');
+                    }
+                });
+            }, 4000); // Show after 4 seconds to let dashboard load
+        });
+    </script>
 </body>
 </html> 

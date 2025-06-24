@@ -73,20 +73,58 @@ $event = mysqli_fetch_assoc($event_result);
 
 // Check if the event is restricted to a specific department and if the user belongs to it
 if (!empty($event['department']) && $event['department'] != $user_department) {
-    $_SESSION['error_message'] = "This event is only for the {$event['department']} department.";
+    // Clean up QR scan data
     unset($_SESSION['qr_scan']);
-    redirect(BASE_URL);
+    
+    // Set department error message for SweetAlert
+    $_SESSION['event_error'] = [
+        'title' => 'Department Restriction',
+        'message' => "This event is only for the {$event['department']} department.",
+        'subtitle' => "Your department: " . ($user_department ? $user_department : 'Not Set') . "<br/>" .
+                     "Event department: {$event['department']}<br/>" .
+                     "Please contact your administrator if you believe this is an error.",
+        'event_title' => $event_title,
+        'icon' => 'error'
+    ];
+    
+    error_log("Record Attendance - Department mismatch: User Department = " . ($user_department ?? 'not set') . ", Event Department = " . $event['department']);
+    redirect(BASE_URL . 'student/dashboard.php');
     exit;
 }
-
+ 
 // Check if the current date is within the event dates
 $current_date = date('Y-m-d');
 if ($current_date < $event['start_date'] || $current_date > $event['end_date']) {
-    $_SESSION['error_message'] = "This event is not active today. Event runs from " . 
-                                 date('M d, Y', strtotime($event['start_date'])) . 
-                                 " to " . date('M d, Y', strtotime($event['end_date'])) . ".";
+    // Calculate days difference for better user feedback
+    $today = new DateTime($current_date);
+    $event_end = new DateTime($event['end_date']);
+    $event_start = new DateTime($event['start_date']);
+    
+    if ($current_date > $event['end_date']) {
+        // Event has finished
+        $days_passed = $today->diff($event_end)->days;
+        $message = "This event has finished " . $days_passed . " day" . ($days_passed == 1 ? "" : "s") . " ago.";
+        $subtitle = "Event ended on " . date('F d, Y', strtotime($event['end_date']));
+    } else {
+        // Event hasn't started yet
+        $days_until = $event_start->diff($today)->days;
+        $message = "This event will start in " . $days_until . " day" . ($days_until == 1 ? "" : "s") . ".";
+        $subtitle = "Event starts on " . date('F d, Y', strtotime($event['start_date']));
+    }
+    
+    // Clean up QR scan data
     unset($_SESSION['qr_scan']);
-    redirect(BASE_URL);
+    
+    // Redirect to a page that will show the SweetAlert
+    $_SESSION['event_error'] = [
+        'title' => 'Event Not Active',
+        'message' => $message,
+        'subtitle' => $subtitle,
+        'event_title' => $event_title,
+        'icon' => 'warning'
+    ];
+    
+    redirect(BASE_URL . 'student/dashboard.php');
     exit;
 }
 
@@ -103,28 +141,56 @@ error_log("Record Attendance - Current time: $current_time ($current_time_stamp)
 error_log("Record Attendance - Morning time: {$event['morning_time_in']} to {$event['morning_time_out']} ($morning_in to $morning_out)");
 error_log("Record Attendance - Afternoon time: {$event['afternoon_time_in']} to {$event['afternoon_time_out']} ($afternoon_in to $afternoon_out)");
 
-// Fixed time comparison using timestamps
-if ($current_time_stamp >= $morning_in && $current_time_stamp <= $morning_out) {
+// Check if current time is within any valid session
+$is_morning_session = ($current_time_stamp >= $morning_in && $current_time_stamp <= $morning_out);
+$is_afternoon_session = ($current_time_stamp >= $afternoon_in && $current_time_stamp <= $afternoon_out);
+
+if ($is_morning_session) {
     $session_type = 'morning';
     error_log("Record Attendance - Session determined as morning");
-} elseif ($current_time_stamp >= $afternoon_in && $current_time_stamp <= $afternoon_out) {
+} elseif ($is_afternoon_session) {
     $session_type = 'afternoon';
     error_log("Record Attendance - Session determined as afternoon");
 } else {
+    // Current time is outside all valid session times
     error_log("Record Attendance - Current time outside of event session hours");
     
-    // For testing purposes, force a session type to allow the attendance to be recorded
-    $session_type = 'morning'; // Force to morning for debugging
-    error_log("Record Attendance - FORCE setting session to 'morning' for testing");
+    $morning_in_formatted = date('h:i A', strtotime($event['morning_time_in']));
+    $morning_out_formatted = date('h:i A', strtotime($event['morning_time_out']));
+    $afternoon_in_formatted = date('h:i A', strtotime($event['afternoon_time_in']));
+    $afternoon_out_formatted = date('h:i A', strtotime($event['afternoon_time_out']));
     
-    /* Commented out to allow testing
-    $_SESSION['error_message'] = "You can only record attendance during scheduled times.
-                                Morning: " . date('h:i A', strtotime($event['morning_time_in'])) . " - " . date('h:i A', strtotime($event['morning_time_out'])) . "
-                                Afternoon: " . date('h:i A', strtotime($event['afternoon_time_in'])) . " - " . date('h:i A', strtotime($event['afternoon_time_out']));
+    $current_time_formatted = date('h:i A', strtotime($current_time));
+    
+    // Determine if we're before morning session, between sessions, or after afternoon session
+    if ($current_time_stamp < $morning_in) {
+        $status = "Event hasn't started yet";
+        $next_session = "Morning session starts at $morning_in_formatted";
+    } elseif ($current_time_stamp > $morning_out && $current_time_stamp < $afternoon_in) {
+        $status = "Break time";
+        $next_session = "Afternoon session starts at $afternoon_in_formatted";
+    } else {
+        $status = "Event has ended for today";
+        $next_session = "Check back tomorrow if the event continues";
+    }
+    
+    // Clean up QR scan data
     unset($_SESSION['qr_scan']);
-    redirect(BASE_URL);
+    
+    // Set error message for SweetAlert
+    $_SESSION['event_error'] = [
+        'title' => 'Outside Attendance Hours',
+        'message' => $status,
+        'subtitle' => "Current time: $current_time_formatted<br/>" .
+                     "Morning: $morning_in_formatted - $morning_out_formatted<br/>" .
+                     "Afternoon: $afternoon_in_formatted - $afternoon_out_formatted<br/>" .
+                     $next_session,
+        'event_title' => $event_title,
+        'icon' => 'warning'
+    ];
+    
+    redirect(BASE_URL . 'student/dashboard.php');
     exit;
-    */
 }
 
 // Get the QR code ID from the session data
@@ -255,6 +321,7 @@ unset($_SESSION['qr_scan']);
     <title>Attendance Recorded - BCCTAP</title>
     <link href="assets/css/styles.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -354,5 +421,169 @@ unset($_SESSION['qr_scan']);
     </div>
     
     <script src="assets/js/main.js"></script>
+    
+    <script>
+        // Browser Detection Function
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            const isChrome = /Chrome/.test(userAgent) && /Google Inc/.test(navigator.vendor);
+            const isFirefox = /Firefox/.test(userAgent);
+            const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+            const isEdge = /Edg/.test(userAgent);
+            const isOpera = /Opera|OPR/.test(userAgent);
+            
+            return {
+                isChrome,
+                isFirefox,
+                isSafari,
+                isEdge,
+                isOpera,
+                name: isChrome ? 'Chrome' : 
+                      isFirefox ? 'Firefox' : 
+                      isSafari ? 'Safari' : 
+                      isEdge ? 'Edge' : 
+                      isOpera ? 'Opera' : 'Unknown'
+            };
+        }
+        
+        // Chrome Recommendation Function with Auto-redirect
+        function showChromeRecommendationWithRedirect() {
+            const browser = detectBrowser();
+            
+            if (!browser.isChrome) {
+                Swal.fire({
+                    title: 'Redirecting to Chrome',
+                    html: `
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <svg class="mx-auto h-12 w-12 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H11V21H5V3H13V9H21Z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Attempting Chrome Redirect</h3>
+                            <p class="text-gray-600 mb-3">You're currently using <strong>${browser.name}</strong>.</p>
+                            <p class="text-gray-600 mb-4">For the best QR scanning experience, we're attempting to open this page in Chrome.</p>
+                            <div class="bg-blue-50 p-3 rounded-lg mb-4">
+                                <p class="text-sm text-blue-700">
+                                    <strong>What happens next?</strong><br>
+                                    • If Chrome is installed, it will open automatically<br>
+                                    • If not, you'll be redirected to download Chrome<br>
+                                    • You can continue with ${browser.name} if needed
+                                </p>
+                            </div>
+                            <div class="bg-yellow-50 p-3 rounded-lg">
+                                <p class="text-xs text-yellow-700">
+                                    <strong>Note:</strong> Some browsers may block automatic redirects. If Chrome doesn't open, you can manually copy this URL to Chrome.
+                                </p>
+                            </div>
+                        </div>
+                    `,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Try Opening in Chrome',
+                    cancelButtonText: 'Continue with ' + browser.name,
+                    confirmButtonColor: '#10B981',
+                    cancelButtonColor: '#3B82F6',
+                    allowOutsideClick: false,
+                    allowEscapeKey: true,
+                    timer: 8000,
+                    timerProgressBar: true
+                }).then((result) => {
+                    if (result.isConfirmed || result.isDismissed && result.dismiss === Swal.DismissReason.timer) {
+                        // Attempt to open in Chrome
+                        attemptChromeRedirect();
+                    }
+                });
+            }
+        }
+        
+        // Function to attempt Chrome redirect
+        function attemptChromeRedirect() {
+            const currentUrl = window.location.href;
+            
+            // Try different methods to open in Chrome
+            const chromeUrls = [
+                `googlechrome://${currentUrl}`,
+                `chrome://${currentUrl}`,
+                currentUrl
+            ];
+            
+            let success = false;
+            
+            // Method 1: Try Chrome protocol handlers
+            chromeUrls.forEach((url, index) => {
+                if (index < 2) { // Only try protocol handlers
+                    setTimeout(() => {
+                        try {
+                            window.location.href = url;
+                            success = true;
+                        } catch (e) {
+                            console.log(`Chrome redirect method ${index + 1} failed:`, e);
+                        }
+                    }, index * 1000);
+                }
+            });
+            
+            // Method 2: Fallback - show instructions if protocol handlers fail
+            setTimeout(() => {
+                if (!success) {
+                    Swal.fire({
+                        title: 'Manual Chrome Instructions',
+                        html: `
+                            <div class="text-left">
+                                <p class="mb-3">Automatic redirect didn't work. Here's how to open in Chrome:</p>
+                                <ol class="list-decimal list-inside space-y-2 text-sm">
+                                    <li>Copy this URL: <code class="bg-gray-100 p-1 rounded text-xs break-all">${currentUrl}</code></li>
+                                    <li>Open Google Chrome browser</li>
+                                    <li>Paste the URL in Chrome's address bar</li>
+                                    <li>Press Enter</li>
+                                </ol>
+                                <div class="mt-4 p-3 bg-blue-50 rounded">
+                                    <p class="text-sm text-blue-700">
+                                        <strong>Don't have Chrome?</strong><br>
+                                        <a href="https://www.google.com/chrome/" target="_blank" class="underline">Download Chrome here</a>
+                                    </p>
+                                </div>
+                            </div>
+                        `,
+                        icon: 'info',
+                        confirmButtonText: 'Copy URL & Open Chrome',
+                        showCancelButton: true,
+                        cancelButtonText: 'Continue Here',
+                        confirmButtonColor: '#10B981'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Copy URL to clipboard and open Chrome download
+                            navigator.clipboard.writeText(currentUrl).then(() => {
+                                window.open('https://www.google.com/chrome/', '_blank');
+                            }).catch(() => {
+                                // Fallback if clipboard doesn't work
+                                window.open('https://www.google.com/chrome/', '_blank');
+                            });
+                        }
+                    });
+                }
+            }, 3000);
+        }
+        
+        // Execute when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we should show browser recommendation
+            <?php if (isset($_SESSION['show_browser_recommendation']) && $_SESSION['show_browser_recommendation']): ?>
+                // Show browser recommendation with redirect attempt after attendance is recorded
+                setTimeout(() => {
+                    ChromeDetector.showRedirectRecommendation({
+                        title: 'Attendance Recorded - Switch to Chrome?',
+                        message: 'Great! Your attendance is recorded. For future QR scans, Chrome provides the best experience.'
+                    }).then((result) => {
+                        if (result && result.isConfirmed) {
+                            console.log('User chose Chrome redirect after attendance recording');
+                        }
+                    });
+                }, 2000);
+                <?php unset($_SESSION['show_browser_recommendation']); ?>
+            <?php endif; ?>
+        });
+    </script>
 </body>
 </html> 

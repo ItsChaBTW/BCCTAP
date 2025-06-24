@@ -238,69 +238,22 @@ function getDeviceIdentifier() {
 }
 
 /**
- * Verify if the current device matches one of the stored verified devices
+ * Verify if the current device matches any of the user's verified devices
+ * 
+ * FIXED: Duplicate entry error prevention
+ * - Uses INSERT ... ON DUPLICATE KEY UPDATE instead of INSERT + error handling
+ * - Eliminates race conditions between check and insert operations
+ * - Always checks for existing device fingerprint first before any INSERT attempts
+ * - Shows browser recommendations without attempting to save duplicates
  * 
  * @param int $user_id User ID
  * @param string $current_device_id Current device fingerprint
- * @return array Result with status and message
+ * @return array Status and message
  */
 function verifyDeviceMatch($user_id, $current_device_id) {
     global $conn;
     
-    // Check if we need to enforce device restriction
-    // First check if the settings table exists
-    $table_exists = false;
-    $tables_query = "SHOW TABLES LIKE 'settings'";
-    $tables_result = mysqli_query($conn, $tables_query);
-    if ($tables_result && mysqli_num_rows($tables_result) > 0) {
-        $table_exists = true;
-    }
-    
-    // If settings table doesn't exist, create it and enable device restriction by default
-    if (!$table_exists) {
-        // Create settings table
-        $create_table_query = "CREATE TABLE IF NOT EXISTS `settings` (
-            `id` int(11) NOT NULL AUTO_INCREMENT,
-            `name` varchar(255) NOT NULL,
-            `value` text NOT NULL,
-            `description` text DEFAULT NULL,
-            `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-            PRIMARY KEY (`id`),
-            UNIQUE KEY `name` (`name`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-        
-        if (mysqli_query($conn, $create_table_query)) {
-            // Insert default setting to enforce device restriction
-            $insert_query = "INSERT INTO `settings` (`name`, `value`, `description`) VALUES 
-                ('enforce_device_restriction', '1', 'Whether to enforce device restriction for student logins (1 = yes, 0 = no)');";
-            mysqli_query($conn, $insert_query);
-            
-            // Set table_exists to true since we just created it
-            $table_exists = true;
-        } else {
-            error_log("Error creating 'settings' table: " . mysqli_error($conn));
-        }
-    }
-    
-    // Check if device restriction is enabled in settings
-    $enforce_restriction = true; // Default to true for security
-    
-    if ($table_exists) {
-        $query = "SELECT value FROM settings WHERE name = 'enforce_device_restriction'";
-        $result = mysqli_query($conn, $query);
-        
-        if ($result && mysqli_num_rows($result) > 0) {
-            $setting = mysqli_fetch_assoc($result);
-            $enforce_restriction = ($setting['value'] === '1');
-        }
-    }
-    
-    // If device restriction is disabled, allow access
-    if (!$enforce_restriction) {
-        return ['status' => true, 'message' => 'Device restriction not enforced'];
-    }
-    
-    // Check if user has any verified devices
+    // Count verified devices for this user
     $query = "SELECT COUNT(*) as count FROM user_devices WHERE user_id = ? AND is_verified = 1";
     $stmt = mysqli_prepare($conn, $query);
     
@@ -340,40 +293,50 @@ function verifyDeviceMatch($user_id, $current_device_id) {
     $result = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result);
     
-    // If user has no verified devices, create and verify the first one
-    if ($row['count'] == 0) {
-        // Create a new device record
-        $device_name = getDeviceNameFromUserAgent();
-        $query = "INSERT INTO user_devices (user_id, fingerprint, device_name, is_verified, verification_date, last_seen, user_agent) 
-                 VALUES (?, ?, ?, 1, NOW(), NOW(), ?)";
-        $stmt = mysqli_prepare($conn, $query);
-        $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        mysqli_stmt_bind_param($stmt, "isss", $user_id, $current_device_id, $device_name, $user_agent);
-        
-        if (mysqli_stmt_execute($stmt)) {
-            return ['status' => true, 'message' => 'First device registered and verified'];
-        } else {
-            // Error creating device record
-            return ['status' => false, 'message' => 'Error registering device: ' . mysqli_error($conn)];
-        }
-    }
-    
-    // Check for exact match
-    $query = "SELECT * FROM user_devices WHERE user_id = ? AND fingerprint = ? AND is_verified = 1";
+    // FIRST: Always check if this exact fingerprint already exists for this user
+    $query = "SELECT * FROM user_devices WHERE user_id = ? AND fingerprint = ?";
     $stmt = mysqli_prepare($conn, $query);
     mysqli_stmt_bind_param($stmt, "is", $user_id, $current_device_id);
     mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    $existing_device = mysqli_stmt_get_result($stmt);
     
-    if (mysqli_num_rows($result) > 0) {
-        // Found an exact match, update last_seen timestamp
-        $device = mysqli_fetch_assoc($result);
+    if (mysqli_num_rows($existing_device) > 0) {
+        // Fingerprint already exists - handle based on verification status
+        $device = mysqli_fetch_assoc($existing_device);
+        
+        // Update last_seen timestamp
         $query = "UPDATE user_devices SET last_seen = NOW() WHERE id = ?";
         $stmt = mysqli_prepare($conn, $query);
         mysqli_stmt_bind_param($stmt, "i", $device['id']);
         mysqli_stmt_execute($stmt);
         
-        return ['status' => true, 'message' => 'Device verified'];
+        if ($device['is_verified'] == 1) {
+            // Device exists and is verified - allow access
+            return ['status' => true, 'message' => 'Device verified'];
+        } else {
+            // Device exists but is not verified - deny access but show browser recommendation
+            $_SESSION['show_browser_recommendation'] = true;
+            return ['status' => false, 'message' => 'Access denied: Please use a verified device or contact the administrator to verify this device.'];
+        }
+    }
+    
+    // If user has no verified devices, create and verify the first one
+    if ($row['count'] == 0) {
+        // This is the first device - create and verify it using INSERT ... ON DUPLICATE KEY UPDATE
+        $device_name = getDeviceNameFromUserAgent();
+        $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        
+        $query = "INSERT INTO user_devices (user_id, fingerprint, device_name, is_verified, verification_date, last_seen, user_agent) 
+                  VALUES (?, ?, ?, 1, NOW(), NOW(), ?)
+                  ON DUPLICATE KEY UPDATE is_verified = 1, verification_date = NOW(), last_seen = NOW(), user_agent = VALUES(user_agent)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "isss", $user_id, $current_device_id, $device_name, $user_agent);
+        
+        if (mysqli_stmt_execute($stmt)) {
+            return ['status' => true, 'message' => 'First device registered and verified'];
+        } else {
+            return ['status' => false, 'message' => 'Error registering device: ' . mysqli_error($conn)];
+        }
     }
     
     // Check for similar devices (fuzzy matching for cross-browser)
@@ -381,30 +344,45 @@ function verifyDeviceMatch($user_id, $current_device_id) {
     
     if (!empty($similar_devices)) {
         // Found a similar device, consider it verified
-        // Also store this new fingerprint for future verification
+        // Use INSERT ... ON DUPLICATE KEY UPDATE to handle race conditions gracefully
         $device_name = getDeviceNameFromUserAgent();
-        $query = "INSERT INTO user_devices (user_id, fingerprint, device_name, is_verified, verification_date, last_seen, user_agent) 
-                 VALUES (?, ?, ?, 1, NOW(), NOW(), ?)";
-        $stmt = mysqli_prepare($conn, $query);
         $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        mysqli_stmt_bind_param($stmt, "isss", $user_id, $current_device_id, $device_name, $user_agent);
-        mysqli_stmt_execute($stmt);
         
-        return ['status' => true, 'message' => 'Similar device found and verified'];
+        $query = "INSERT INTO user_devices (user_id, fingerprint, device_name, is_verified, verification_date, last_seen, user_agent) 
+                  VALUES (?, ?, ?, 1, NOW(), NOW(), ?)
+                  ON DUPLICATE KEY UPDATE is_verified = 1, verification_date = NOW(), last_seen = NOW(), user_agent = VALUES(user_agent)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "isss", $user_id, $current_device_id, $device_name, $user_agent);
+        
+        if (mysqli_stmt_execute($stmt)) {
+            return ['status' => true, 'message' => 'Similar device found and verified'];
+        } else {
+            return ['status' => false, 'message' => 'Error verifying similar device: ' . mysqli_error($conn)];
+        }
     }
     
     // If no match found, this is a new unverified device
-    // Store the unverified device for later approval by admin
+    // Instead of trying to INSERT and handling duplicates, use INSERT IGNORE or ON DUPLICATE KEY UPDATE
     $device_name = getDeviceNameFromUserAgent();
-    $query = "INSERT INTO user_devices (user_id, fingerprint, device_name, is_verified, last_seen, user_agent) 
-             VALUES (?, ?, ?, 0, NOW(), ?)";
-    $stmt = mysqli_prepare($conn, $query);
     $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-    mysqli_stmt_bind_param($stmt, "isss", $user_id, $current_device_id, $device_name, $user_agent);
-    mysqli_stmt_execute($stmt);
     
-    // Access denied - this is a new, unverified device
-    return ['status' => false, 'message' => 'Access denied: Please use a verified device or contact the administrator to verify this new device.'];
+    // Use INSERT ... ON DUPLICATE KEY UPDATE to handle race conditions gracefully
+    $query = "INSERT INTO user_devices (user_id, fingerprint, device_name, is_verified, last_seen, user_agent) 
+              VALUES (?, ?, ?, 0, NOW(), ?)
+              ON DUPLICATE KEY UPDATE last_seen = NOW(), user_agent = VALUES(user_agent)";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "isss", $user_id, $current_device_id, $device_name, $user_agent);
+    
+    if (mysqli_stmt_execute($stmt)) {
+        // Successfully handled device record (created or updated)
+        // Set flag to show browser recommendation
+        $_SESSION['show_browser_recommendation'] = true;
+        
+        return ['status' => false, 'message' => 'Access denied: Please use a verified device or contact the administrator to verify this device.'];
+    } else {
+        // Even with ON DUPLICATE KEY UPDATE, something went wrong
+        return ['status' => false, 'message' => 'Error handling device information: ' . mysqli_error($conn)];
+    }
 }
 
 /**

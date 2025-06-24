@@ -126,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="../assets/css/colors.css" rel="stylesheet">
     <link href="../assets/css/loading-animation.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../assets/js/device-fingerprint.js"></script>
     <style>
         body {
@@ -281,6 +282,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
+        // Check if we should show browser recommendation
+        <?php if (isset($_SESSION['show_browser_recommendation']) && $_SESSION['show_browser_recommendation']): ?>
+            // Show browser recommendation every login using ChromeDetector
+            setTimeout(() => {
+                ChromeDetector.showLoginRecommendation({
+                    title: 'Welcome to BCCTAP!',
+                    message: 'For the best login and QR scanning experience, we recommend using Google Chrome.'
+                }).then((result) => {
+                    // Optional: Track user response for analytics
+                    if (result && result.isConfirmed) {
+                        console.log('User chose to download Chrome after login recommendation');
+                    }
+                });
+            }, 1500);
+            <?php unset($_SESSION['show_browser_recommendation']); ?>
+        <?php endif; ?>
+        
         // Execute when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             // Get and generate device fingerprint using the new library

@@ -1339,3 +1339,159 @@
 )
 
 2025-06-24 11:06:21 - Authentication successful
+2025-06-24 11:10:31 - Attempting to authenticate: 2021117070
+2025-06-24 11:10:32 - HTTP Status: 200
+2025-06-24 11:10:32 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"LUMANGOB SIAN, NAPOLES, BAGO CITY","is_active":true,"gender":"MALE","last_name":"FORTUNO","section":"A","middle_name":"ALVAREZ","login":true,"year_level":4,"email_address":"JONDANIEL0405@GMAIL.COM","user_code":"2021117070","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09673148660","rfid":"0444175346","first_name":"JON DANIEL"}
+2025-06-24 11:10:32 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => LUMANGOB SIAN, NAPOLES, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => FORTUNO
+    [section] => A
+    [middle_name] => ALVAREZ
+    [login] => 1
+    [year_level] => 4
+    [email_address] => JONDANIEL0405@GMAIL.COM
+    [user_code] => 2021117070
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09673148660
+    [rfid] => 0444175346
+    [first_name] => JON DANIEL
+)
+
+2025-06-24 11:10:32 - Authentication successful
+2025-06-24 11:10:42 - Attempting to authenticate: 2021117070
+2025-06-24 11:10:43 - HTTP Status: 200
+2025-06-24 11:10:43 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"LUMANGOB SIAN, NAPOLES, BAGO CITY","is_active":true,"gender":"MALE","last_name":"FORTUNO","section":"A","middle_name":"ALVAREZ","login":true,"year_level":4,"email_address":"JONDANIEL0405@GMAIL.COM","user_code":"2021117070","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09673148660","rfid":"0444175346","first_name":"JON DANIEL"}
+2025-06-24 11:10:43 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => LUMANGOB SIAN, NAPOLES, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => FORTUNO
+    [section] => A
+    [middle_name] => ALVAREZ
+    [login] => 1
+    [year_level] => 4
+    [email_address] => JONDANIEL0405@GMAIL.COM
+    [user_code] => 2021117070
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09673148660
+    [rfid] => 0444175346
+    [first_name] => JON DANIEL
+)
+
+2025-06-24 11:10:43 - Authentication successful
+2025-06-24 11:11:05 - Attempting to authenticate: 2021117070
+2025-06-24 11:11:07 - HTTP Status: 200
+2025-06-24 11:11:07 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"LUMANGOB SIAN, NAPOLES, BAGO CITY","is_active":true,"gender":"MALE","last_name":"FORTUNO","section":"A","middle_name":"ALVAREZ","login":true,"year_level":4,"email_address":"JONDANIEL0405@GMAIL.COM","user_code":"2021117070","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09673148660","rfid":"0444175346","first_name":"JON DANIEL"}
+2025-06-24 11:11:07 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => LUMANGOB SIAN, NAPOLES, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => FORTUNO
+    [section] => A
+    [middle_name] => ALVAREZ
+    [login] => 1
+    [year_level] => 4
+    [email_address] => JONDANIEL0405@GMAIL.COM
+    [user_code] => 2021117070
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09673148660
+    [rfid] => 0444175346
+    [first_name] => JON DANIEL
+)
+
+2025-06-24 11:11:07 - Authentication successful
+2025-06-24 11:11:37 - Attempting to authenticate: 2021117070
+2025-06-24 11:11:39 - HTTP Status: 200
+2025-06-24 11:11:39 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"LUMANGOB SIAN, NAPOLES, BAGO CITY","is_active":true,"gender":"MALE","last_name":"FORTUNO","section":"A","middle_name":"ALVAREZ","login":true,"year_level":4,"email_address":"JONDANIEL0405@GMAIL.COM","user_code":"2021117070","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09673148660","rfid":"0444175346","first_name":"JON DANIEL"}
+2025-06-24 11:11:39 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => LUMANGOB SIAN, NAPOLES, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => FORTUNO
+    [section] => A
+    [middle_name] => ALVAREZ
+    [login] => 1
+    [year_level] => 4
+    [email_address] => JONDANIEL0405@GMAIL.COM
+    [user_code] => 2021117070
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09673148660
+    [rfid] => 0444175346
+    [first_name] => JON DANIEL
+)
+
+2025-06-24 11:11:39 - Authentication successful
+2025-06-24 11:12:01 - Attempting to authenticate: 2021117070
+2025-06-24 11:12:02 - HTTP Status: 200
+2025-06-24 11:12:02 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"LUMANGOB SIAN, NAPOLES, BAGO CITY","is_active":true,"gender":"MALE","last_name":"FORTUNO","section":"A","middle_name":"ALVAREZ","login":true,"year_level":4,"email_address":"JONDANIEL0405@GMAIL.COM","user_code":"2021117070","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09673148660","rfid":"0444175346","first_name":"JON DANIEL"}
+2025-06-24 11:12:02 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => LUMANGOB SIAN, NAPOLES, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => FORTUNO
+    [section] => A
+    [middle_name] => ALVAREZ
+    [login] => 1
+    [year_level] => 4
+    [email_address] => JONDANIEL0405@GMAIL.COM
+    [user_code] => 2021117070
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09673148660
+    [rfid] => 0444175346
+    [first_name] => JON DANIEL
+)
+
+2025-06-24 11:12:02 - Authentication successful
+2025-06-24 11:12:29 - Attempting to authenticate: 2021117070
+2025-06-24 11:12:30 - HTTP Status: 200
+2025-06-24 11:12:30 - API Response: {"program_description":"BACHELOR OF SCIENCE IN INFORMATION SYSTEMS","user_group":"STUDENT","address":"LUMANGOB SIAN, NAPOLES, BAGO CITY","is_active":true,"gender":"MALE","last_name":"FORTUNO","section":"A","middle_name":"ALVAREZ","login":true,"year_level":4,"email_address":"JONDANIEL0405@GMAIL.COM","user_code":"2021117070","program_code":"IS","err_msg":"TYPE_SUCCESS","is_valid":true,"cp_number":"09673148660","rfid":"0444175346","first_name":"JON DANIEL"}
+2025-06-24 11:12:30 - Decoded: Array
+(
+    [program_description] => BACHELOR OF SCIENCE IN INFORMATION SYSTEMS
+    [user_group] => STUDENT
+    [address] => LUMANGOB SIAN, NAPOLES, BAGO CITY
+    [is_active] => 1
+    [gender] => MALE
+    [last_name] => FORTUNO
+    [section] => A
+    [middle_name] => ALVAREZ
+    [login] => 1
+    [year_level] => 4
+    [email_address] => JONDANIEL0405@GMAIL.COM
+    [user_code] => 2021117070
+    [program_code] => IS
+    [err_msg] => TYPE_SUCCESS
+    [is_valid] => 1
+    [cp_number] => 09673148660
+    [rfid] => 0444175346
+    [first_name] => JON DANIEL
+)
+
+2025-06-24 11:12:30 - Authentication successful

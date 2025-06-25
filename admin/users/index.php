@@ -144,6 +144,165 @@ $page_actions = '
 ob_start();
 ?>
 
+<style>
+/* Stat cards modern look */
+.stat-card {
+  background: #f8fdfa;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 16px 0 rgba(34,197,94,0.10);
+  padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border: 1.5px solid #bbf7d0;
+  gap: 1rem;
+  min-height: 90px;
+}
+.stat-card .icon {
+  background: #bbf7d0;
+  color: #16a34a;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+.stat-card h3 {
+  color: #15803d;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  font-size: 1.1rem;
+}
+.stat-card .value {
+  color: #166534;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0.1rem;
+}
+
+/* Modern green button styles */
+.btn-green, .bg-primary, .bg-primary-dark, .apply-btn {
+  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%) !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 0.7rem !important;
+  box-shadow: 0 2px 8px 0 rgba(34,197,94,0.10);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  border: none !important;
+}
+.btn-green:hover, .bg-primary:hover, .bg-primary-dark:hover, .apply-btn:hover {
+  background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%) !important;
+  box-shadow: 0 4px 16px 0 rgba(34,197,94,0.18);
+  transform: translateY(-2px) scale(1.03);
+}
+.clear-btn {
+  background: #e5f9ed !important;
+  color: #15803d !important;
+  border-radius: 0.7rem !important;
+  font-weight: 600;
+  border: none !important;
+  transition: background 0.2s, color 0.2s;
+}
+.clear-btn:hover {
+  background: #bbf7d0 !important;
+  color: #166534 !important;
+}
+
+/* Table modern look */
+.table-container {
+  border-radius: 1.2rem;
+  overflow: hidden;
+  box-shadow: 0 4px 16px 0 rgba(34,197,94,0.08);
+}
+table.min-w-full {
+  border-radius: 1.2rem;
+  overflow: hidden;
+  background: #f8fdfa;
+}
+thead.bg-gray-50 {
+  background: #e8fbe9 !important;
+}
+thead th {
+  color: #15803d !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  background: #e8fbe9 !important;
+  border-bottom: 2px solid #bbf7d0 !important;
+}
+tbody tr {
+  transition: background 0.18s;
+}
+tbody tr:hover {
+  background: #bbf7d0 !important;
+}
+td, th {
+  border: none !important;
+}
+
+/* Table action icons */
+.table-action {
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  transition: background 0.18s, color 0.18s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.table-action:hover {
+  background: #e8fbe9;
+  color: #15803d !important;
+}
+
+/* Filter section */
+.bg-white.rounded-lg.shadow-md.p-6.mb-6 {
+  background: #f8fdfa !important;
+  border: 1.5px solid #bbf7d0;
+  box-shadow: 0 2px 8px 0 rgba(34,197,94,0.06);
+}
+
+/* Quick actions */
+.border-l-4.border-green-500 {
+  border-left: 6px solid #22c55e !important;
+}
+.text-green-600 {
+  color: #16a34a !important;
+}
+.text-green-600:hover {
+  color: #15803d !important;
+}
+.bg-green-100 {
+  background: #bbf7d0 !important;
+  color: #166534 !important;
+}
+.text-green-800 {
+  color: #166534 !important;
+}
+
+/* Modernize pagination */
+.px-3.py-1.border.border-gray-300.rounded-md.text-sm.bg-white {
+  background: #f0fdf4 !important;
+  border: 1.5px solid #bbf7d0 !important;
+  color: #166534 !important;
+  border-radius: 0.7rem !important;
+  font-weight: 600;
+  transition: background 0.18s, color 0.18s;
+}
+.px-3.py-1.border.border-gray-300.rounded-md.text-sm.bg-white:hover {
+  background: #bbf7d0 !important;
+  color: #15803d !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+  .stat-card { flex-direction: column; align-items: flex-start; }
+  .table-container, table.min-w-full { border-radius: 0.7rem; }
+}
+</style>
+
 <!-- User Statistics -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
     <div class="stat-card blue">

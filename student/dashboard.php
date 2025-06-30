@@ -81,7 +81,7 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
         
         <!-- Header (on mobile/tablet) -->
         <?php include '../includes/student-header.php'; ?>
-        
+        <?php include '../includes/mobilenavigation.php'; ?>
         <main class="flex-grow lg:ml-64 px-4 pt-6 pb-20">
             <!-- Welcome Banner -->
             <div class="relative overflow-hidden bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-2xl shadow-2xl ring-2 ring-green-300 hover:scale-[1.01] transition-transform duration-300 p-8 mb-8 text-white">

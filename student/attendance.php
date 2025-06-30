@@ -117,7 +117,7 @@ $stats = mysqli_fetch_assoc($result);
         
         <!-- Header (on mobile/tablet) -->
         <?php include '../includes/student-header.php'; ?>
-        
+        <?php include '../includes/mobilenavigation.php'; ?>
         <main class="flex-grow lg:ml-64 px-4 pt-6 pb-20">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">Attendance History</h1>

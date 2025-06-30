@@ -93,60 +93,7 @@ if ($current_date < $event['start_date'] || $current_date > $event['end_date']) 
     exit;
 }
 
-// Check if the current time is within allowed session times
-$current_time = date('H:i:s');
-$current_time_stamp = strtotime($current_time);
-$morning_in = strtotime($event['morning_time_in']);
-$morning_out = strtotime($event['morning_time_out']);
-$afternoon_in = strtotime($event['afternoon_time_in']);
-$afternoon_out = strtotime($event['afternoon_time_out']);
-
-error_log("QR Scan - Current time: $current_time ($current_time_stamp)");
-error_log("QR Scan - Morning time: {$event['morning_time_in']} to {$event['morning_time_out']} ($morning_in to $morning_out)");
-error_log("QR Scan - Afternoon time: {$event['afternoon_time_in']} to {$event['afternoon_time_out']} ($afternoon_in to $afternoon_out)");
-
-// Check if current time is within any valid session
-$is_morning_session = ($current_time_stamp >= $morning_in && $current_time_stamp <= $morning_out);
-$is_afternoon_session = ($current_time_stamp >= $afternoon_in && $current_time_stamp <= $afternoon_out);
-
-if (!$is_morning_session && !$is_afternoon_session) {
-    // Current time is outside all valid session times
-    $morning_in_formatted = date('h:i A', strtotime($event['morning_time_in']));
-    $morning_out_formatted = date('h:i A', strtotime($event['morning_time_out']));
-    $afternoon_in_formatted = date('h:i A', strtotime($event['afternoon_time_in']));
-    $afternoon_out_formatted = date('h:i A', strtotime($event['afternoon_time_out']));
-    
-    $current_time_formatted = date('h:i A', strtotime($current_time));
-    
-    // Determine if we're before morning session, between sessions, or after afternoon session
-    if ($current_time_stamp < $morning_in) {
-        $status = "Event hasn't started yet";
-        $next_session = "Morning session starts at $morning_in_formatted";
-    } elseif ($current_time_stamp > $morning_out && $current_time_stamp < $afternoon_in) {
-        $status = "Break time";
-        $next_session = "Afternoon session starts at $afternoon_in_formatted";
-    } else {
-        $status = "Event has ended for today";
-        $next_session = "Check back tomorrow if the event continues";
-    }
-    
-    $_SESSION['event_error'] = [
-        'title' => 'Outside Attendance Hours',
-        'message' => $status,
-        'subtitle' => "Current time: $current_time_formatted<br/>" .
-                     "Morning: $morning_in_formatted - $morning_out_formatted<br/>" .
-                     "Afternoon: $afternoon_in_formatted - $afternoon_out_formatted<br/>" .
-                     $next_session,
-        'event_title' => $event_title,
-        'icon' => 'warning'
-    ];
-    
-    error_log("QR Scan - Outside valid session times: $status");
-    redirect(BASE_URL);
-    exit;
-}
-
-// Save QR code data in session for after login
+// Save QR code data in session for processing
 $_SESSION['qr_scan'] = [
     'code' => $code,
     'event_id' => $event_id,
@@ -209,5 +156,6 @@ $_SESSION['show_browser_recommendation'] = true;
 
 // User is logged in and department is valid, redirect to record attendance
 error_log("QR Scan - User logged in (ID: " . $_SESSION['user_id'] . "), redirecting to record_attendance.php");
+error_log("QR Scan - QR scan session data set: " . print_r($_SESSION['qr_scan'], true));
 redirect(BASE_URL . 'record_attendance.php');
 ?> 

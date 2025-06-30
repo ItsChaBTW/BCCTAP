@@ -84,6 +84,7 @@ $attendance_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $total_records = count($attendance_records);
 $present_count = 0;
 $late_count = 0;
+$late_time_in_count = 0;
 $absent_count = 0;
 $time_in_count = 0;
 $time_out_count = 0;
@@ -97,6 +98,10 @@ foreach ($attendance_records as $record) {
             $present_count++;
             break;
         case 'late':
+            // Check if this is a late time-in specifically
+            if ($record['status'] === 'time_in') {
+                $late_time_in_count++;
+            }
             $late_count++;
             break;
         case 'absent':
@@ -127,19 +132,19 @@ foreach ($attendance_records as $record) {
     }
 }
 
-// Get department statistics
-$dept_query = "SELECT u.department, 
-                      COUNT(*) as total,
-                      COUNT(CASE WHEN a.attendance_status = 'present' THEN 1 END) as present,
-                      COUNT(CASE WHEN a.attendance_status = 'late' THEN 1 END) as late,
-                      COUNT(CASE WHEN a.attendance_status = 'absent' THEN 1 END) as absent
-               FROM attendance a
-               INNER JOIN users u ON a.user_id = u.id
-               WHERE a.time_recorded BETWEEN ? AND DATE_ADD(?, INTERVAL 1 DAY)
-               GROUP BY u.department
-               ORDER BY total DESC";
+// Get department statistics including late time-in data
+$dept_stats_query = "SELECT u.department,
+    COUNT(*) as total,
+    COUNT(CASE WHEN a.attendance_status = 'present' THEN 1 END) as present,
+    COUNT(CASE WHEN a.attendance_status = 'late' THEN 1 END) as late,
+    COUNT(CASE WHEN a.attendance_status = 'late' AND a.status = 'time_in' THEN 1 END) as late_time_in,
+    COUNT(CASE WHEN a.attendance_status = 'absent' THEN 1 END) as absent
+    FROM attendance a
+    INNER JOIN users u ON a.user_id = u.id
+    INNER JOIN events e ON a.event_id = e.id
+    WHERE a.time_recorded BETWEEN ? AND DATE_ADD(?, INTERVAL 1 DAY)";
 
-$dept_stmt = mysqli_prepare($conn, $dept_query);
+$dept_stmt = mysqli_prepare($conn, $dept_stats_query);
 mysqli_stmt_bind_param($dept_stmt, "ss", $start_date, $end_date);
 mysqli_stmt_execute($dept_stmt);
 $dept_result = mysqli_stmt_get_result($dept_stmt);
@@ -288,6 +293,19 @@ ob_start();
         <div class="percentage"><?php echo $total_records > 0 ? round(($late_count / $total_records) * 100) . '%' : '0%'; ?></div>
     </div>
     
+    <div class="stat-card bg-orange-50 border-orange-200">
+        <div class="stat-icon bg-orange-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <div class="stat-content">
+            <div class="label">Late Time In</div>
+            <div class="value"><?php echo number_format($late_time_in_count); ?></div>
+            <div class="percentage"><?php echo $total_records > 0 ? round(($late_time_in_count / $total_records) * 100) . '%' : '0%'; ?></div>
+        </div>
+    </div>
+    
     <div class="stat-card danger">
         <h3>Absent</h3>
         <div class="value"><?php echo number_format($absent_count); ?></div>
@@ -319,6 +337,7 @@ ob_start();
                     <div>Total: <span class="font-semibold"><?php echo $dept['total']; ?></span></div>
                     <div>Present: <span class="text-green-600 font-semibold"><?php echo $dept['present']; ?></span></div>
                     <div>Late: <span class="text-yellow-600 font-semibold"><?php echo $dept['late']; ?></span></div>
+                    <div>Late Time In: <span class="text-orange-600 font-semibold"><?php echo $dept['late_time_in'] ?? 0; ?></span></div>
                     <div>Absent: <span class="text-red-600 font-semibold"><?php echo $dept['absent']; ?></span></div>
                 </div>
             </div>
@@ -460,24 +479,34 @@ ob_start();
                                 <?php endif; ?>
                             </td>
                             <td class="py-3 px-4 text-sm">
-                                <?php 
-                                $attendance_status = $record['attendance_status'] ?? 'present';
-                                $statusColor = '';
-                                
-                                switch ($attendance_status) {
+                                <?php
+                                $badge_class = '';
+                                $status_text = '';
+                                switch ($record['attendance_status']) {
                                     case 'present':
-                                        $statusColor = 'bg-green-100 text-green-800';
+                                        $badge_class = 'bg-green-100 text-green-800';
+                                        $status_text = 'Present';
                                         break;
                                     case 'late':
-                                        $statusColor = 'bg-yellow-100 text-yellow-800';
+                                        if ($record['status'] === 'time_in') {
+                                            $badge_class = 'bg-orange-100 text-orange-800';
+                                            $status_text = 'Late Time In';
+                                        } else {
+                                            $badge_class = 'bg-yellow-100 text-yellow-800';
+                                            $status_text = 'Late';
+                                        }
                                         break;
                                     case 'absent':
-                                        $statusColor = 'bg-red-100 text-red-800';
+                                        $badge_class = 'bg-red-100 text-red-800';
+                                        $status_text = 'Absent';
                                         break;
+                                    default:
+                                        $badge_class = 'bg-gray-100 text-gray-800';
+                                        $status_text = ucfirst($record['attendance_status']);
                                 }
                                 ?>
-                                <span class="px-2 py-1 text-xs font-medium rounded-full <?php echo $statusColor; ?>">
-                                    <?php echo ucfirst($attendance_status); ?>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full <?php echo $badge_class; ?>">
+                                    <?php echo $status_text; ?>
                                 </span>
                             </td>
                             <td class="py-3 px-4 text-sm">

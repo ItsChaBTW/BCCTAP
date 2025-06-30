@@ -1,5 +1,7 @@
 {
     "require": {
-        "endroid/qr-code": "5.0"
+        "endroid/qr-code": "5.0",
+        "react/http": "^1.9",
+        "react/socket": "^1.15"
     }
 }

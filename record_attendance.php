@@ -6,6 +6,10 @@
 require_once 'config/config.php';
 require_once 'utils/GeofenceHelper.php';
 
+// Debug: Log when this file is accessed
+error_log("Record Attendance - FILE ACCESSED at " . date('Y-m-d H:i:s'));
+error_log("Record Attendance - Session QR scan data: " . print_r($_SESSION['qr_scan'] ?? 'NOT SET', true));
+
 error_log("Record Attendance - Script started");
 
 // Check if user is logged in
@@ -135,63 +139,222 @@ $morning_in = strtotime($event['morning_time_in']);
 $morning_out = strtotime($event['morning_time_out']);
 $afternoon_in = strtotime($event['afternoon_time_in']);
 $afternoon_out = strtotime($event['afternoon_time_out']);
-$session_type = '';
 
 error_log("Record Attendance - Current time: $current_time ($current_time_stamp)");
 error_log("Record Attendance - Morning time: {$event['morning_time_in']} to {$event['morning_time_out']} ($morning_in to $morning_out)");
 error_log("Record Attendance - Afternoon time: {$event['afternoon_time_in']} to {$event['afternoon_time_out']} ($afternoon_in to $afternoon_out)");
 
-// Check if current time is within any valid session
-$is_morning_session = ($current_time_stamp >= $morning_in && $current_time_stamp <= $morning_out);
-$is_afternoon_session = ($current_time_stamp >= $afternoon_in && $current_time_stamp <= $afternoon_out);
+// Check existing attendance records for today
+$existing_query = "SELECT session, status FROM attendance 
+                   WHERE user_id = ? AND event_id = ? AND DATE(time_recorded) = CURRENT_DATE() 
+                   ORDER BY time_recorded DESC";
+$existing_stmt = mysqli_prepare($conn, $existing_query);
+mysqli_stmt_bind_param($existing_stmt, "ii", $user_id, $event_id);
+mysqli_stmt_execute($existing_stmt);
+$existing_result = mysqli_stmt_get_result($existing_stmt);
+$existing_records = mysqli_fetch_all($existing_result, MYSQLI_ASSOC);
 
-if ($is_morning_session) {
+error_log("Record Attendance - Existing records: " . print_r($existing_records, true));
+
+// Initialize attendance status variables
+$has_morning_in = false;
+$has_morning_out = false; 
+$has_afternoon_in = false;
+$has_afternoon_out = false;
+
+// Check existing attendance records
+foreach ($existing_records as $record) {
+    if ($record['session'] === 'morning') {
+        if ($record['status'] === 'time_in') $has_morning_in = true;
+        if ($record['status'] === 'time_out') $has_morning_out = true;
+    }
+    if ($record['session'] === 'afternoon') {
+        if ($record['status'] === 'time_in') $has_afternoon_in = true;
+        if ($record['status'] === 'time_out') $has_afternoon_out = true;    
+    }
+}
+
+// Enhanced logic for determining session and status
+// Define specific time-in and time-out windows
+$morning_timein_start = $morning_in;
+$morning_timein_end = $morning_in + (2 * 3600); // 2 hours for normal time-in window
+$morning_late_timein_end = $morning_out; // Allow late time-in until time-out starts
+$morning_timeout_start = $morning_out;
+$morning_timeout_end = $afternoon_in; // Until afternoon time-in starts
+
+$afternoon_timein_start = $afternoon_in;
+$afternoon_timein_end = $afternoon_in + (2 * 3600); // 2 hours for normal time-in window  
+$afternoon_late_timein_end = $afternoon_out; // Allow late time-in until time-out starts
+$afternoon_timeout_start = $afternoon_out;
+$afternoon_timeout_end = $afternoon_out + (2 * 3600); // 2 hours for time-out window
+
+// Initialize variables
+$session_type = '';
+$attendance_status = 'present';
+$is_valid_time = false;
+$is_late = false;
+
+error_log("Record Attendance - Morning time-in window: " . date('H:i:s', $morning_timein_start) . " to " . date('H:i:s', $morning_timein_end));
+error_log("Record Attendance - Morning late time-in until: " . date('H:i:s', $morning_late_timein_end));
+error_log("Record Attendance - Morning time-out window: " . date('H:i:s', $morning_timeout_start) . " to " . date('H:i:s', $morning_timeout_end));
+error_log("Record Attendance - Afternoon time-in window: " . date('H:i:s', $afternoon_timein_start) . " to " . date('H:i:s', $afternoon_timein_end));
+error_log("Record Attendance - Afternoon late time-in until: " . date('H:i:s', $afternoon_late_timein_end));
+error_log("Record Attendance - Afternoon time-out window: " . date('H:i:s', $afternoon_timeout_start) . " to " . date('H:i:s', $afternoon_timeout_end));
+
+// Debug: Log all calculated times
+error_log("Record Attendance - DEBUG: Current timestamp: $current_time_stamp (" . date('H:i:s', $current_time_stamp) . ")");
+error_log("Record Attendance - DEBUG: Morning timeout start: $morning_timeout_start (" . date('H:i:s', $morning_timeout_start) . ")");
+error_log("Record Attendance - DEBUG: Morning timeout end: $morning_timeout_end (" . date('H:i:s', $morning_timeout_end) . ")");
+
+// Check which window the current time falls into
+$is_morning_timein_window = ($current_time_stamp >= $morning_timein_start && $current_time_stamp <= $morning_timein_end);
+$is_morning_late_timein_window = ($current_time_stamp > $morning_timein_end && $current_time_stamp < $morning_late_timein_end);
+$is_morning_timeout_window = ($current_time_stamp >= $morning_timeout_start && $current_time_stamp <= $morning_timeout_end);
+$is_afternoon_timein_window = ($current_time_stamp >= $afternoon_timein_start && $current_time_stamp <= $afternoon_timein_end);
+$is_afternoon_late_timein_window = ($current_time_stamp > $afternoon_timein_end && $current_time_stamp < $afternoon_late_timein_end);
+$is_afternoon_timeout_window = ($current_time_stamp >= $afternoon_timeout_start && $current_time_stamp <= $afternoon_timeout_end);
+
+// Debug: Log window check results
+error_log("Record Attendance - DEBUG: Window checks - Morning IN: $is_morning_timein_window, Morning LATE: $is_morning_late_timein_window, Morning OUT: $is_morning_timeout_window");
+error_log("Record Attendance - DEBUG: Window checks - Afternoon IN: $is_afternoon_timein_window, Afternoon LATE: $is_afternoon_late_timein_window, Afternoon OUT: $is_afternoon_timeout_window");
+error_log("Record Attendance - DEBUG: Has records - Morning IN: $has_morning_in, Morning OUT: $has_morning_out, Afternoon IN: $has_afternoon_in, Afternoon OUT: $has_afternoon_out");
+
+// Initialize variables
+$session_type = '';
+$attendance_status = 'present';
+$is_valid_time = false;
+$is_late = false;
+
+error_log("Record Attendance - DEBUG: Starting condition checks...");
+
+// Priority logic: Check time-out conditions first if user has timed in
+if ($is_morning_timeout_window && $has_morning_in && !$has_morning_out) {
+    // Morning time-out window - user has timed in and hasn't timed out yet
     $session_type = 'morning';
-    error_log("Record Attendance - Session determined as morning");
-} elseif ($is_afternoon_session) {
+    $attendance_status = 'present';
+    $is_valid_time = true;
+    error_log("Record Attendance - Morning time-out window: Allowing time-out (priority over time-in)");
+    
+} elseif ($is_afternoon_timeout_window && $has_afternoon_in && !$has_afternoon_out) {
+    // Afternoon time-out window - user has timed in and hasn't timed out yet
     $session_type = 'afternoon';
-    error_log("Record Attendance - Session determined as afternoon");
-} else {
-    // Current time is outside all valid session times
-    error_log("Record Attendance - Current time outside of event session hours");
+    $attendance_status = 'present';
+    $is_valid_time = true;
+    error_log("Record Attendance - Afternoon time-out window: Allowing time-out (priority over time-in)");
     
-    $morning_in_formatted = date('h:i A', strtotime($event['morning_time_in']));
-    $morning_out_formatted = date('h:i A', strtotime($event['morning_time_out']));
-    $afternoon_in_formatted = date('h:i A', strtotime($event['afternoon_time_in']));
-    $afternoon_out_formatted = date('h:i A', strtotime($event['afternoon_time_out']));
-    
-    $current_time_formatted = date('h:i A', strtotime($current_time));
-    
-    // Determine if we're before morning session, between sessions, or after afternoon session
-    if ($current_time_stamp < $morning_in) {
-        $status = "Event hasn't started yet";
-        $next_session = "Morning session starts at $morning_in_formatted";
-    } elseif ($current_time_stamp > $morning_out && $current_time_stamp < $afternoon_in) {
-        $status = "Break time";
-        $next_session = "Afternoon session starts at $afternoon_in_formatted";
+} elseif ($is_morning_timein_window) {
+    // Morning time-in window
+    if ($has_morning_in) {
+        error_log("Record Attendance - Morning time-in window: User already has morning time-in");
+        $_SESSION['warning_message'] = "You have already timed in for the morning session.";
+        unset($_SESSION['qr_scan']);
+        redirect(BASE_URL . 'student/dashboard.php');
+        exit;
     } else {
-        $status = "Event has ended for today";
-        $next_session = "Check back tomorrow if the event continues";
+        $session_type = 'morning';
+        $attendance_status = 'present';
+        $is_valid_time = true;
+        error_log("Record Attendance - Morning time-in window: Allowing time-in");
     }
     
-    // Clean up QR scan data
+} elseif ($is_afternoon_timein_window) {
+    // Afternoon time-in window
+    if ($has_afternoon_in) {
+        error_log("Record Attendance - Afternoon time-in window: User already has afternoon time-in");
+        $_SESSION['warning_message'] = "You have already timed in for the afternoon session.";
+        unset($_SESSION['qr_scan']);
+        redirect(BASE_URL . 'student/dashboard.php');
+        exit;
+    } else {
+        $session_type = 'afternoon';
+        $attendance_status = 'present';
+        $is_valid_time = true;
+        error_log("Record Attendance - Afternoon time-in window: Allowing time-in");
+    }
+    
+} elseif ($is_morning_late_timein_window) {
+    // Morning late time-in window
+    if ($has_morning_in) {
+        error_log("Record Attendance - Morning late time-in window: User already has morning time-in");
+        $_SESSION['warning_message'] = "You have already timed in for the morning session.";
+        unset($_SESSION['qr_scan']);
+        redirect(BASE_URL . 'student/dashboard.php');
+        exit;
+    } else {
+        $session_type = 'morning';
+        $attendance_status = 'late';
+        $is_valid_time = true;
+        $is_late = true;
+        error_log("Record Attendance - Morning late time-in window: Allowing late time-in");
+    }
+    
+} elseif ($is_afternoon_late_timein_window) {
+    // Afternoon late time-in window
+    if ($has_afternoon_in) {
+        error_log("Record Attendance - Afternoon late time-in window: User already has afternoon time-in");
+        $_SESSION['warning_message'] = "You have already timed in for the afternoon session.";
+        unset($_SESSION['qr_scan']);
+        redirect(BASE_URL . 'student/dashboard.php');
+        exit;
+    } else {
+        $session_type = 'afternoon';
+        $attendance_status = 'late';
+        $is_valid_time = true;
+        $is_late = true;
+        error_log("Record Attendance - Afternoon late time-in window: Allowing late time-in");
+    }
+    
+} elseif ($is_morning_timeout_window) {
+    // Morning time-out window (fallback if no time-in)
+    if (!$has_morning_in) {
+        error_log("Record Attendance - Morning time-out window: No time-in record found");
+        $_SESSION['warning_message'] = "You need to time in first before you can time out for the morning session.";
+        unset($_SESSION['qr_scan']);
+        redirect(BASE_URL . 'student/dashboard.php');
+        exit;
+    } elseif ($has_morning_out) {
+        error_log("Record Attendance - Morning time-out window: User already has morning time-out");
+        $_SESSION['warning_message'] = "You have already timed out for the morning session.";
+        unset($_SESSION['qr_scan']);
+        redirect(BASE_URL . 'student/dashboard.php');
+        exit;
+    } else {
+        $session_type = 'morning';
+        $attendance_status = 'present';
+        $is_valid_time = true;
+        error_log("Record Attendance - Morning time-out window: Allowing time-out");
+    }
+    
+} elseif ($is_afternoon_timeout_window) {
+    // Afternoon time-out window (fallback if no time-in)
+    if (!$has_afternoon_in) {
+        error_log("Record Attendance - Afternoon time-out window: No time-in record found");
+        $_SESSION['warning_message'] = "You need to time in first before you can time out for the afternoon session.";
+        unset($_SESSION['qr_scan']);
+        redirect(BASE_URL . 'student/dashboard.php');
+        exit;
+    } elseif ($has_afternoon_out) {
+        error_log("Record Attendance - Afternoon time-out window: User already has afternoon time-out");
+        $_SESSION['warning_message'] = "You have already timed out for the afternoon session.";
+        unset($_SESSION['qr_scan']);
+        redirect(BASE_URL . 'student/dashboard.php');
+        exit;
+    } else {
+        $session_type = 'afternoon';
+        $attendance_status = 'present';
+        $is_valid_time = true;
+        error_log("Record Attendance - Afternoon time-out window: Allowing time-out");
+    }
+}
+
+if (!$is_valid_time) {
+    error_log("Record Attendance - Invalid time for attendance");
     unset($_SESSION['qr_scan']);
-    
-    // Set error message for SweetAlert
-    $_SESSION['event_error'] = [
-        'title' => 'Outside Attendance Hours',
-        'message' => $status,
-        'subtitle' => "Current time: $current_time_formatted<br/>" .
-                     "Morning: $morning_in_formatted - $morning_out_formatted<br/>" .
-                     "Afternoon: $afternoon_in_formatted - $afternoon_out_formatted<br/>" .
-                     $next_session,
-        'event_title' => $event_title,
-        'icon' => 'warning'
-    ];
-    
     redirect(BASE_URL . 'student/dashboard.php');
     exit;
 }
+
+error_log("Record Attendance - Session: $session_type, Status: $attendance_status");
 
 // Get the QR code ID from the session data
 $qr_code_id = isset($_SESSION['qr_scan']['qr_code_id']) ? $_SESSION['qr_scan']['qr_code_id'] : null;
@@ -271,42 +434,77 @@ if (!empty($event['location_latitude']) && !empty($event['location_longitude']))
     error_log("Record Attendance - No geofencing required for this event");
 }
 
-// Check if attendance has already been recorded for this session
-$query = "SELECT id FROM attendance 
-          WHERE user_id = ? AND event_id = ? AND DATE(time_recorded) = CURRENT_DATE() AND session = ?";
-$stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "iis", $user_id, $event_id, $session_type);
-mysqli_stmt_execute($stmt);
-$attendance_result = mysqli_stmt_get_result($stmt);
-
-if (mysqli_num_rows($attendance_result) > 0) {
-    error_log("Record Attendance - Attendance already recorded for user $user_id at event $event_id for $session_type session");
-    $_SESSION['warning_message'] = "You have already recorded your attendance for this {$session_type} session.";
-    // Rather than redirect, we'll continue to show the success page
+// Determine the status field (time_in or time_out)
+if ($is_late && $attendance_status === 'late') {
+    $status = 'time_in';
+} elseif ($has_morning_in && !$has_morning_out && $session_type === 'morning') {
+    $status = 'time_out';
+} elseif ($has_afternoon_in && !$has_afternoon_out && $session_type === 'afternoon') {
+    $status = 'time_out';
 } else {
+    $status = 'time_in';
+}
+
+// Record the new attendance
     // Record the attendance (include location data if available)
     if ($user_latitude !== null && $user_longitude !== null) {
-        $query = "INSERT INTO attendance (user_id, event_id, session, qr_code_id, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO attendance (user_id, event_id, session, status, attendance_status, qr_code_id, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "iisidd", $user_id, $event_id, $session_type, $qr_code_id, $user_latitude, $user_longitude);
+        mysqli_stmt_bind_param($stmt, "iisssidd", $user_id, $event_id, $session_type, $status, $attendance_status, $qr_code_id, $user_latitude, $user_longitude);
     } else {
-    $query = "INSERT INTO attendance (user_id, event_id, session, qr_code_id) VALUES (?, ?, ?, ?)";
+        $query = "INSERT INTO attendance (user_id, event_id, session, status, attendance_status, qr_code_id) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "iisi", $user_id, $event_id, $session_type, $qr_code_id);
+        mysqli_stmt_bind_param($stmt, "iisssi", $user_id, $event_id, $session_type, $status, $attendance_status, $qr_code_id);
     }
     
-    error_log("Record Attendance - Attempting to insert attendance record: User $user_id, Event $event_id, Session $session_type, QR Code ID $qr_code_id");
+    error_log("Record Attendance - Attempting to insert attendance record: User $user_id, Event $event_id, Session $session_type, Status $attendance_status, QR Code ID $qr_code_id");
     
     if (mysqli_stmt_execute($stmt)) {
         error_log("Record Attendance - Successfully inserted attendance record");
-        $_SESSION['success_message'] = "Your {$session_type} attendance has been recorded successfully!";
+        $status_text = '';
+        if ($is_late && $attendance_status === 'late') {
+            $status_text = 'Late Time In';
+        } elseif ($status === 'time_in') {
+            $status_text = 'Time In';
+        } else {
+            $status_text = 'Time Out';
+        }
+        
+        $late_message = $is_late ? ' (marked as late)' : '';
+        $_SESSION['success_message'] = "Your {$session_type} {$status_text} has been recorded successfully!{$late_message}";
+        
+        // Trigger real-time notification (optional: create a flag file for real-time system)
+        $notification_data = [
+            'type' => 'new_attendance',
+            'user_id' => $user_id,
+            'event_id' => $event_id,
+            'session' => $session_type,
+            'status' => $attendance_status,
+            'timestamp' => time()
+        ];
+        
+        // Write notification to a temporary file that the real-time system can check
+        $notification_file = 'logs/realtime_notifications.json';
+        $notifications = [];
+        if (file_exists($notification_file)) {
+            $content = file_get_contents($notification_file);
+            $notifications = json_decode($content, true) ?: [];
+        }
+        $notifications[] = $notification_data;
+        
+        // Keep only last 50 notifications to prevent file from growing too large
+        if (count($notifications) > 50) {
+            $notifications = array_slice($notifications, -50);
+        }
+        
+        file_put_contents($notification_file, json_encode($notifications));
+        error_log("Record Attendance - Real-time notification triggered");
     } else {
         error_log("Record Attendance - Failed to insert attendance: " . mysqli_error($conn));
         $_SESSION['error_message'] = "Failed to record attendance: " . mysqli_error($conn);
         unset($_SESSION['qr_scan']);
         redirect(BASE_URL);
         exit;
-    }
 }
 
 // Clean up session
@@ -397,6 +595,15 @@ unset($_SESSION['qr_scan']);
                             <p class="text-gray-600"><span class="font-medium">Title:</span> <?php echo htmlspecialchars($event_title); ?></p>
                             <p class="text-gray-600"><span class="font-medium">Date:</span> <?php echo date('M d, Y'); ?></p>
                             <p class="text-gray-600"><span class="font-medium">Session:</span> <?php echo ucfirst($session_type); ?></p>
+                            <p class="text-gray-600"><span class="font-medium">Status:</span> <?php 
+                                if ($is_late && $attendance_status === 'late') {
+                                    echo 'Late Time In';
+                                } elseif ($status === 'time_in') {
+                                    echo 'Time In';
+                                } else {
+                                    echo 'Time Out';
+                                }
+                            ?></p>
                             <p class="text-gray-600"><span class="font-medium">Time:</span> <?php echo date('h:i A'); ?></p>
                         </div>
                         

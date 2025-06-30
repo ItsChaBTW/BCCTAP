@@ -124,6 +124,26 @@ $attendance_stats = mysqli_stmt_get_result($stmt)->fetch_assoc();
                 ?>
             <?php endif; ?>
             
+            <!-- Warning Messages -->
+            <?php if (isset($_SESSION['warning_message'])): ?>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: 'Attendance Notice',
+                            text: '<?php echo addslashes($_SESSION['warning_message']); ?>',
+                            icon: 'warning',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#F59E0B',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false
+                        });
+                    });
+                </script>
+                <?php 
+                    unset($_SESSION['warning_message']); 
+                ?>
+            <?php endif; ?>
+            
             <?php if (isset($_SESSION['device_warning']) && $_SESSION['device_warning'] === true): ?>
             <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mb-6" role="alert">
                 <div class="flex">

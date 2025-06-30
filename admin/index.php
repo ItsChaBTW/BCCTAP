@@ -39,7 +39,8 @@ $result = mysqli_query($conn, $query);
 $recentEvents = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 // Get recent attendance records
-$query = "SELECT a.*, u.full_name as student_name, e.title as event_title 
+$query = "SELECT a.id, a.user_id, a.event_id, a.session, a.status, a.attendance_status, a.time_recorded, 
+                 u.full_name as student_name, e.title as event_title 
           FROM attendance a 
           INNER JOIN users u ON a.user_id = u.id 
           INNER JOIN events e ON a.event_id = e.id 
@@ -139,19 +140,36 @@ ob_start();
                                     <td class="px-4 py-3 border-b border-gray-100"><?php echo ucfirst($attendance['session']); ?></td>
                                     <td class="px-4 py-3 border-b border-gray-100">
                                         <?php 
-                                        $status = str_replace('_', ' ', ucfirst($attendance['status']));
+                                        $attendance_status = $attendance['attendance_status'] ?? 'present';
                                         $statusColor = '';
+                                        $statusText = '';
                                         
-                                        if (stripos($status, 'present') !== false) {
-                                            $statusColor = 'bg-green-100 text-green-800';
-                                        } elseif (stripos($status, 'late') !== false) {
-                                            $statusColor = 'bg-yellow-100 text-yellow-800';
-                                        } elseif (stripos($status, 'absent') !== false) {
-                                            $statusColor = 'bg-red-100 text-red-800';
+                                        switch ($attendance_status) {
+                                            case 'present':
+                                                $statusColor = 'bg-green-100 text-green-800';
+                                                $statusText = 'Present';
+                                                break;
+                                            case 'late':
+                                                if ($record['status'] === 'time_in') {
+                                                    $statusColor = 'bg-orange-100 text-orange-800';
+                                                    $statusText = 'Late Time In';
+                                                } else {
+                                                    $statusColor = 'bg-yellow-100 text-yellow-800';
+                                                    $statusText = 'Late';
+                                                }
+                                                break;
+                                            case 'absent':
+                                                $statusColor = 'bg-red-100 text-red-800';
+                                                $statusText = 'Absent';
+                                                break;
+                                            default:
+                                                $statusColor = 'bg-gray-100 text-gray-800';
+                                                $statusText = ucfirst(str_replace('_', ' ', $attendance_status));
+                                                break;
                                         }
                                         ?>
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php echo $statusColor; ?>">
-                                            <?php echo $status; ?>
+                                            <?php echo $statusText; ?>
                                         </span>
                                     </td>
                                 </tr>
@@ -202,6 +220,235 @@ ob_start();
         </div>
     </div>
 </div>
+
+<!-- Real-time Status Indicator -->
+<div id="realtime-status" class="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-3 border-l-4 border-green-500 hidden">
+    <div class="flex items-center">
+        <div id="status-indicator" class="w-3 h-3 rounded-full bg-green-500 mr-2 animate-pulse"></div>
+        <span id="status-text" class="text-sm font-medium text-gray-700">Live Updates Active</span>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Real-time updates using Server-Sent Events
+    let eventSource;
+    let reconnectInterval = 3000; // 3 seconds
+    let maxReconnectAttempts = 5;
+    let reconnectAttempts = 0;
+    
+    function connectEventSource() {
+        // Close existing connection if any
+        if (eventSource) {
+            eventSource.close();
+        }
+        
+        eventSource = new EventSource('realtime-data.php');
+        
+        eventSource.onopen = function() {
+            console.log('Real-time connection established');
+            reconnectAttempts = 0;
+            updateConnectionStatus('connected', 'Live Updates Active');
+        };
+        
+        eventSource.addEventListener('stats', function(event) {
+            const data = JSON.parse(event.data);
+            updateStatistics(data.data);
+        });
+        
+        eventSource.addEventListener('attendance', function(event) {
+            const data = JSON.parse(event.data);
+            updateAttendanceTable(data.data);
+            showNotification('New attendance record added!', 'success');
+        });
+        
+        eventSource.addEventListener('heartbeat', function(event) {
+            // Update last heartbeat time
+            console.log('Heartbeat received');
+        });
+        
+        eventSource.onerror = function(event) {
+            console.error('Real-time connection error:', event);
+            updateConnectionStatus('error', 'Connection Lost');
+            
+            if (reconnectAttempts < maxReconnectAttempts) {
+                setTimeout(() => {
+                    reconnectAttempts++;
+                    updateConnectionStatus('reconnecting', 'Reconnecting...');
+                    connectEventSource();
+                }, reconnectInterval);
+            } else {
+                updateConnectionStatus('failed', 'Real-time Updates Disabled');
+            }
+        };
+    }
+    
+    function updateStatistics(stats) {
+        // Update stat cards with smooth animation
+        animateValueChange('.stat-card.blue .value', stats.students);
+        animateValueChange('.stat-card.green .value', stats.teachers);
+        animateValueChange('.stat-card.yellow .value', stats.events);
+        animateValueChange('.stat-card.purple .value', stats.attendance);
+    }
+    
+    function animateValueChange(selector, newValue) {
+        const element = document.querySelector(selector);
+        if (element && element.textContent != newValue) {
+            element.style.transform = 'scale(1.1)';
+            element.style.color = '#10B981'; // Green color
+            element.textContent = newValue;
+            
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+                element.style.color = '';
+            }, 300);
+        }
+    }
+    
+    function updateAttendanceTable(attendanceData) {
+        const tbody = document.querySelector('.content-panel:last-of-type tbody');
+        if (!tbody) return;
+        
+        // Clear existing rows
+        tbody.innerHTML = '';
+        
+        // Add new rows
+        attendanceData.forEach(record => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50 animate-fade-in';
+            
+            const attendanceStatus = record.attendance_status || 'present';
+            let statusColor = 'bg-gray-100 text-gray-800';
+            let statusText = '';
+            
+            switch (attendanceStatus) {
+                case 'present':
+                    statusColor = 'bg-green-100 text-green-800';
+                    statusText = 'Present';
+                    break;
+                case 'late':
+                    if (record.status === 'time_in') {
+                        statusColor = 'bg-orange-100 text-orange-800';
+                        statusText = 'Late Time In';
+                    } else {
+                        statusColor = 'bg-yellow-100 text-yellow-800';
+                        statusText = 'Late';
+                    }
+                    break;
+                case 'absent':
+                    statusColor = 'bg-red-100 text-red-800';
+                    statusText = 'Absent';
+                    break;
+                default:
+                    statusColor = 'bg-gray-100 text-gray-800';
+                    statusText = attendanceStatus.charAt(0).toUpperCase() + attendanceStatus.slice(1);
+                    break;
+            }
+            
+            row.innerHTML = `
+                <td class="px-4 py-3 border-b border-gray-100">${record.student_name}</td>
+                <td class="px-4 py-3 border-b border-gray-100">${record.event_title}</td>
+                <td class="px-4 py-3 border-b border-gray-100">${record.session.charAt(0).toUpperCase() + record.session.slice(1)}</td>
+                <td class="px-4 py-3 border-b border-gray-100">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor}">
+                        ${statusText}
+                    </span>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+    
+    function updateConnectionStatus(status, message) {
+        const statusElement = document.getElementById('realtime-status');
+        const indicatorElement = document.getElementById('status-indicator');
+        const textElement = document.getElementById('status-text');
+        
+        statusElement.classList.remove('hidden');
+        textElement.textContent = message;
+        
+        // Reset classes
+        indicatorElement.className = 'w-3 h-3 rounded-full mr-2';
+        
+        switch(status) {
+            case 'connected':
+                indicatorElement.classList.add('bg-green-500', 'animate-pulse');
+                statusElement.className = statusElement.className.replace('border-red-500', '').replace('border-yellow-500', '') + ' border-green-500';
+                break;
+            case 'reconnecting':
+                indicatorElement.classList.add('bg-yellow-500', 'animate-ping');
+                statusElement.className = statusElement.className.replace('border-green-500', '').replace('border-red-500', '') + ' border-yellow-500';
+                break;
+            case 'error':
+            case 'failed':
+                indicatorElement.classList.add('bg-red-500');
+                statusElement.className = statusElement.className.replace('border-green-500', '').replace('border-yellow-500', '') + ' border-red-500';
+                break;
+        }
+    }
+    
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 animate-slide-down`;
+        
+        let bgColor = 'bg-blue-500';
+        if (type === 'success') bgColor = 'bg-green-500';
+        if (type === 'error') bgColor = 'bg-red-500';
+        if (type === 'warning') bgColor = 'bg-yellow-500';
+        
+        notification.innerHTML = `
+            <div class="${bgColor} text-white px-4 py-2 rounded-lg flex items-center">
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    // Start real-time connection
+    connectEventSource();
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        if (eventSource) {
+            eventSource.close();
+        }
+    });
+});
+</script>
+
+<style>
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+}
+
+.stat-card .value {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+</style>
 <?php
 $page_content = ob_get_clean();
 

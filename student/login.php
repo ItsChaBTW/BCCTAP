@@ -95,8 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             --text: #1e293b;
             --text-light: #64748b;
             --bg: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.75); /* glassy */
-            --card-blur: blur(16px);
+            --card-bg: rgba(255, 255, 255, 0.96);
             --error: #dc2626;
         }
 
@@ -115,38 +114,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             max-width: 26rem;
             background: var(--card-bg);
-            border-radius: 1.5rem;
-            box-shadow: 0 12px 32px -8px rgba(22,163,74,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.04);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            border: 1.5px solid rgba(22,163,74,0.10);
-            backdrop-filter: var(--card-blur);
-            -webkit-backdrop-filter: var(--card-blur);
-            transition: box-shadow 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .login-header {
             background: var(--primary);
             color: white;
-            padding: 2rem 2rem 1.5rem 2rem;
+            padding: 1.75rem 2rem;
             text-align: center;
-            border-bottom: 1.5px solid rgba(255,255,255,0.12);
         }
 
         .login-header h1 {
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 1.75rem;
+            font-weight: 700;
             margin-bottom: 0.25rem;
-            letter-spacing: 0.01em;
         }
 
         .login-header p {
-            font-size: 1rem;
-            opacity: 0.92;
-            font-weight: 500;
+            font-size: 0.875rem;
+            opacity: 0.9;
         }
 
         .login-content {
-            padding: 2.25rem 2rem 2rem 2rem;
+            padding: 2rem;
         }
 
         .qr-container {
@@ -194,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .form-group label {
@@ -207,58 +200,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .input-wrapper {
             position: relative;
-            margin-bottom: 0.2rem;
+            margin-bottom: 1rem;
         }
 
         .input-field {
             width: 100%;
-            padding: 1rem 1.1rem 1rem 3.1rem;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 1rem;
-            font-size: 1rem;
-            background-color: rgba(248,250,252,0.85);
-            transition: border 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 8px 0 rgba(22,163,74,0.04);
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.9375rem;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+            box-sizing: border-box;
         }
 
         .input-field:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.13);
-            background: #fff;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
         }
 
         .input-icon {
             position: absolute;
-            left: 1.1rem;
+            left: 1rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--primary);
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             pointer-events: none;
         }
 
         .password-toggle {
             position: absolute;
-            right: 1.1rem;
+            right: 1rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-light);
             cursor: pointer;
-            font-size: 1.15rem;
-            transition: color 0.18s;
-        }
-
-        .password-toggle:hover {
-            color: var(--primary-dark);
+            font-size: 1.1rem;
         }
 
         .options {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 1.7rem 0 1.2rem 0;
-            font-size: 0.95rem;
+            margin: 1.5rem 0;
+            font-size: 0.875rem;
         }
 
         .checkbox-container {
@@ -275,42 +262,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .login-btn {
             width: 100%;
-            padding: 1.1rem;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            padding: 1rem;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 1rem;
-            font-weight: 700;
-            font-size: 1.08rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            box-shadow: 0 4px 16px 0 rgba(22,163,74,0.10);
-            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            transition: all 0.2s;
         }
 
         .login-btn:hover {
-            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 8px 24px 0 rgba(22,163,74,0.16);
+            background: var(--primary-dark);
+            transform: translateY(-1px);
         }
 
         .footer {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid rgba(0, 0, 0, 0.05);
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.875rem;
             color: var(--text-light);
-        }
-
-        .footer a {
-            color: var(--primary);
-            text-decoration: underline;
-            transition: color 0.18s;
-        }
-
-        .footer a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline wavy;
         }
 
         .error-message {
@@ -318,18 +292,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-left: 4px solid var(--error);
             padding: 1rem;
             margin-bottom: 1.5rem;
-            border-radius: 0.7rem;
-            box-shadow: 0 2px 8px 0 rgba(220,38,38,0.06);
+            border-radius: 0.5rem;
         }
 
         .error-message p {
             color: var(--error);
-            font-size: 0.95rem;
+            font-size: 0.875rem;
             margin-bottom: 0.25rem;
         }
 
         .error-message p.text-xs {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #b91c1c;
         }
 
@@ -386,22 +359,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             .login-content {
-                padding: 1.2rem;
-            }
-            
-            .input-field {
-                font-size: 0.97rem;
-                padding: 0.9rem 0.9rem 0.9rem 2.7rem;
-            }
-            
-            .input-icon {
-                font-size: 1.1rem;
-                left: 0.9rem;
-            }
-            
-            .password-toggle {
-                font-size: 1rem;
-                right: 0.9rem;
+                padding: 1.5rem;
             }
         }
     </style>

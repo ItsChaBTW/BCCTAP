@@ -15,14 +15,168 @@
     <link href="<?php echo BASE_URL; ?>assets/css/colors.css" rel="stylesheet">
     <link href="<?php echo BASE_URL; ?>assets/css/admin-style.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    body {
+      background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
+      font-family: 'Inter', sans-serif;
+    }
+    .admin-sidebar {
+      background: #166534;
+      color: #fff;
+      min-width: 256px;
+      width: 256px;
+      padding: 0;
+      margin: 0;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 24px 0 rgba(34,197,94,0.10);
+    }
+    .admin-sidebar .sidebar-logo {
+      padding: 1.5rem 1.5rem 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .admin-sidebar .sidebar-logo .logo-circle {
+      background: #fff;
+      border-radius: 9999px;
+      padding: 0.5rem 0.8rem;
+      box-shadow: 0 2px 8px 0 rgba(34,197,94,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-sidebar .sidebar-logo .logo-circle span {
+      color: #22c55e;
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    .admin-sidebar .sidebar-logo .logo-text h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.1rem;
+    }
+    .admin-sidebar .sidebar-logo .logo-text p {
+      font-size: 0.85rem;
+      color: #fff;
+      opacity: 0.7;
+      margin: 0;
+    }
+    .admin-sidebar .nav-menu {
+      flex: 1;
+      padding: 1.5rem 0.5rem 0.5rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .admin-sidebar .nav-menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0.5rem;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
+      background: transparent;
+      transition: background 0.18s, color 0.18s;
+      text-decoration: none;
+      margin-bottom: 0.1rem;
+    }
+    .admin-sidebar .nav-menu a.active {
+      background: #22c55e;
+      color: #fff;
+    }
+    .admin-sidebar .nav-menu a:hover {
+      background: rgba(255,255,255,0.08);
+      color: #bbf7d0;
+    }
+    .admin-sidebar .nav-menu svg {
+      min-width: 22px;
+      min-height: 22px;
+      color: #fff;
+      transition: color 0.18s;
+    }
+    .admin-sidebar .nav-menu a.active svg, .admin-sidebar .nav-menu a:hover svg {
+      color: #fff;
+    }
+    .admin-sidebar .sidebar-section {
+      padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      margin-top: 1.5rem;
+    }
+    .user-profile {
+      padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: transparent;
+    }
+    .profile-avatar {
+      background: #fff;
+      color: #22c55e;
+      width: 2.3rem;
+      height: 2.3rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px 0 rgba(34,197,94,0.10);
+    }
+    .user-profile .ml-3 {
+      margin-left: 0 !important;
+    }
+    .user-profile .text-sm {
+      font-size: 0.95rem;
+      color: #fff;
+      font-weight: 500;
+    }
+    .user-profile .text-xs {
+      font-size: 0.8rem;
+      color: #bbf7d0;
+    }
+    .user-profile .mt-3 {
+      margin-top: 0.3rem;
+    }
+    .user-profile a {
+      color: #bbf7d0;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      transition: color 0.18s;
+    }
+    .user-profile a:hover {
+      color: #fff;
+    }
+    .user-profile svg {
+      min-width: 16px;
+      min-height: 16px;
+      margin-right: 0.2rem;
+    }
+    </style>
     <?php if (isset($extra_css)): echo $extra_css; endif; ?>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="admin-sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <h1>BCCTAP</h1>
-            <p>Admin Portal</p>
+            <div class="logo-circle"><span>BCC</span></div>
+            <div class="logo-text">
+                <h1>BCCTAP</h1>
+                <p>Admin Portal</p>
+            </div>
         </div>
         <nav class="nav-menu">
             <a href="<?php echo BASE_URL; ?>admin/index.php" class="<?php echo strpos($_SERVER['PHP_SELF'], 'admin/index.php') !== false ? 'active' : ''; ?>">
@@ -68,21 +222,17 @@
                 Settings
             </a>
         </nav>
-        
-        <!-- User Account Section -->
-        <div class="user-profile fixed bottom-0 left-0">
+        <div class="user-profile">
             <?php if (isset($_SESSION['full_name']) && isset($_SESSION['role'])): ?>
-                <div class="flex items-center">
-                    <div class="profile-avatar">
-                        <span><?php echo substr($_SESSION['full_name'], 0, 1); ?></span>
-                    </div>
-                    <div class="ml-3">
-                        <div class="text-sm font-medium text-white"><?php echo htmlspecialchars($_SESSION['full_name']); ?></div>
-                        <div class="text-xs text-gray-400"><?php echo ucfirst($_SESSION['role']); ?></div>
-                    </div>
+                <div class="profile-avatar">
+                    <span><?php echo substr($_SESSION['full_name'], 0, 1); ?></span>
+                </div>
+                <div class="ml-3">
+                    <div class="text-sm font-medium"><?php echo htmlspecialchars($_SESSION['full_name']); ?></div>
+                    <div class="text-xs"><?php echo ucfirst($_SESSION['role']); ?></div>
                 </div>
                 <div class="mt-3">
-                    <a href="<?php echo BASE_URL; ?>logout.php" class="text-sm text-gray-400 hover:text-white flex items-center">
+                    <a href="<?php echo BASE_URL; ?>logout.php" class="text-sm flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm7 4a1 1 0 10-2 0v4a1 1 0 102 0V7z" clip-rule="evenodd" />
                         </svg>
@@ -96,7 +246,7 @@
     <!-- Main Content Area -->
     <div class="admin-main">
         <!-- Top Header Bar -->
-        <header class="admin-header bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6">
+        <header class="admin-header">
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center">
                     <button id="sidebar-toggle" class="md:hidden mr-4 text-white focus:outline-none">

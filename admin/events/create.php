@@ -382,7 +382,7 @@ ob_start();
                     </div>
                     
                     <div class="mt-8 border-t border-gray-200 pt-6 flex justify-end">
-                        <button type="reset" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-6 rounded-lg mr-4 transition duration-300">
+                        <button type="reset" class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-6 rounded-lg mr-4 transition duration-300">
                             Reset
                         </button>
                         <button type="submit" class="bg-blue-600 hover:opacity-90 font-medium py-2 px-6 rounded-lg text-white transition duration-300 flex items-center">

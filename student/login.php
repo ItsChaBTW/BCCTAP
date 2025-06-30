@@ -1,9 +1,9 @@
 <?php
 /**
- * Student Login Page
+ * Student Login Page - Modern Redesign
  */
 require_once '../config/config.php';
-require_once '../config/auth.php'; // Direct include of auth.php
+require_once '../config/auth.php';
 
 // Check if already logged in
 if (isLoggedIn() && $_SESSION['role'] === 'student') {
@@ -19,44 +19,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($student_id) || empty($password)) {
         $error = "Student ID and password are required";
     } else {
-        // Get device identifier
         $device_id = getDeviceIdentifier();
-        
-        // ALWAYS try TechnoPal API authentication first
-        // This is the primary authentication method for students
         $api_auth_result = authenticateStudentWithTechnoPal($student_id, $password);
         
         if ($api_auth_result) {
-            // API authentication successful
-            
-            // Verify device match
             $device_result = verifyDeviceMatch($_SESSION['user_id'], $device_id);
             
-            // Check if device verification was successful
             if ($device_result['status']) {
-                // Set a flag to show the loading animation
                 $_SESSION['show_loading'] = true;
-                
-                // Check if redirect URL is set in session
-                if (isset($_SESSION['redirect_after_login']) && !empty($_SESSION['redirect_after_login'])) {
-                    $redirect_url = $_SESSION['redirect_after_login'];
-                    unset($_SESSION['redirect_after_login']);
-                    $_SESSION['redirect_url'] = $redirect_url;
-                } else {
-                    $_SESSION['redirect_url'] = BASE_URL . 'student/dashboard.php';
-                }
-                
-                // Don't redirect here, we'll handle it with JavaScript
+                $_SESSION['redirect_url'] = isset($_SESSION['redirect_after_login']) ? 
+                    $_SESSION['redirect_after_login'] : 
+                    BASE_URL . 'student/dashboard.php';
+                unset($_SESSION['redirect_after_login']);
             } else {
-                // Device verification failed - show error and prevent login
                 $error = $device_result['message'];
-                
-                // Destroy the session since we're blocking the login
                 session_destroy();
             }
         } else {
-            // API authentication failed, fall back to local database
-            // Only as a backup if API is unavailable
+            // Fallback to local authentication
             $query = "SELECT * FROM users WHERE student_id = ? AND role = 'student'";
             $stmt = mysqli_prepare($conn, $query);
             mysqli_stmt_bind_param($stmt, "s", $student_id);
@@ -67,42 +47,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $user = mysqli_fetch_assoc($result);
                 
                 if (password_verify($password, $user['password'])) {
-                    // Local authentication successful
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['role'] = $user['role'];
                     $_SESSION['full_name'] = $user['full_name'];
                     $_SESSION['student_id'] = $user['student_id'];
                     
-                    // Verify device match
                     $device_result = verifyDeviceMatch($_SESSION['user_id'], $device_id);
                     
-                    // Check if device verification was successful
                     if ($device_result['status']) {
-                        // Update last login time
                         $query = "UPDATE users SET last_login = NOW() WHERE id = ?";
                         $stmt = mysqli_prepare($conn, $query);
                         mysqli_stmt_bind_param($stmt, "i", $user['id']);
                         mysqli_stmt_execute($stmt);
                         
-                        // Set a flag to show the loading animation
                         $_SESSION['show_loading'] = true;
-                        
-                        // Check if redirect URL is set in session
-                        if (isset($_SESSION['redirect_after_login']) && !empty($_SESSION['redirect_after_login'])) {
-                            $redirect_url = $_SESSION['redirect_after_login'];
-                            unset($_SESSION['redirect_after_login']);
-                            $_SESSION['redirect_url'] = $redirect_url;
-                        } else {
-                            $_SESSION['redirect_url'] = BASE_URL . 'student/dashboard.php';
-                        }
-                        
-                        // Don't redirect here, we'll handle it with JavaScript
+                        $_SESSION['redirect_url'] = isset($_SESSION['redirect_after_login']) ? 
+                            $_SESSION['redirect_after_login'] : 
+                            BASE_URL . 'student/dashboard.php';
+                        unset($_SESSION['redirect_after_login']);
                     } else {
-                        // Device verification failed - show error and prevent login
                         $error = $device_result['message'];
-                        
-                        // Destroy the session since we're blocking the login
                         session_destroy();
                     }
                 } else {
@@ -115,198 +80,443 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Login - BCCTAP</title>
-    <link href="../assets/css/styles.css" rel="stylesheet">
-    <link href="../assets/css/colors.css" rel="stylesheet">
-    <link href="../assets/css/loading-animation.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../assets/js/device-fingerprint.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #16a34a;
+            --primary-light: #86efac;
+            --primary-dark: #15803d;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.75); /* glassy */
+            --card-blur: blur(16px);
+            --error: #dc2626;
+        }
+
         body {
-            background: linear-gradient(135deg, #f8fafc 0%, #bbf7d0 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #dcfce7 100%);
             min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            line-height: 1.5;
         }
-        .login-glass {
-            background: rgba(255,255,255,0.7);
-            box-shadow: 0 8px 32px 0 rgba(34,197,94,0.15);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border-radius: 2rem;
-            border: 1px solid rgba(34,197,94,0.15);
+
+        .login-container {
+            width: 100%;
+            max-width: 26rem;
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            box-shadow: 0 12px 32px -8px rgba(22,163,74,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.04);
+            overflow: hidden;
+            border: 1.5px solid rgba(22,163,74,0.10);
+            backdrop-filter: var(--card-blur);
+            -webkit-backdrop-filter: var(--card-blur);
+            transition: box-shadow 0.2s;
         }
-        .login-floating {
-            animation: floaty 4s ease-in-out infinite;
+
+        .login-header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 2rem 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 1.5px solid rgba(255,255,255,0.12);
         }
-        @keyframes floaty {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
+
+        .login-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.01em;
         }
-        .green-blob {
+
+        .login-header p {
+            font-size: 1rem;
+            opacity: 0.92;
+            font-weight: 500;
+        }
+
+        .login-content {
+            padding: 2.25rem 2rem 2rem 2rem;
+        }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 auto 1.5rem;
+            width: fit-content;
+        }
+
+        .qr-code {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--primary-light);
+            width: 5.5rem;
+            height: 5.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        .qr-code svg {
+            width: 3rem;
+            height: 3rem;
+            color: var(--primary);
+        }
+
+        .scan-line {
             position: absolute;
+            left: 0.5rem;
+            right: 0.5rem;
+            top: 0.5rem;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary-light), var(--primary), var(--primary-light));
+            opacity: 0.8;
+            animation: scan 1.8s cubic-bezier(.4,0,.2,1) infinite alternate;
+        }
+
+        @keyframes scan {
+            0% { top: 0.5rem; }
+            100% { top: 4.5rem; }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.875rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 0.2rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem 1.1rem 1rem 3.1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1rem;
+            font-size: 1rem;
+            background-color: rgba(248,250,252,0.85);
+            transition: border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px 0 rgba(22,163,74,0.04);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.13);
+            background: #fff;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.25rem;
+            pointer-events: none;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1.15rem;
+            transition: color 0.18s;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-dark);
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.7rem 0 1.2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input {
+            margin-right: 0.5rem;
+            width: 1.1rem;
+            height: 1.1rem;
+            accent-color: var(--primary);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1.1rem;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            font-weight: 700;
+            font-size: 1.08rem;
+            cursor: pointer;
+            box-shadow: 0 4px 16px 0 rgba(22,163,74,0.10);
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 8px 24px 0 rgba(22,163,74,0.16);
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: underline;
+            transition: color 0.18s;
+        }
+
+        .footer a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline wavy;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border-left: 4px solid var(--error);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.7rem;
+            box-shadow: 0 2px 8px 0 rgba(220,38,38,0.06);
+        }
+
+        .error-message p {
+            color: var(--error);
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .error-message p.text-xs {
+            font-size: 0.8rem;
+            color: #b91c1c;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid rgba(22, 163, 74, 0.1);
+            border-top-color: var(--primary);
             border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.25;
-            z-index: 0;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .loading-subtext {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                border-radius: 1rem;
+            }
+            
+            .login-content {
+                padding: 1.2rem;
+            }
+            
+            .input-field {
+                font-size: 0.97rem;
+                padding: 0.9rem 0.9rem 0.9rem 2.7rem;
+            }
+            
+            .input-icon {
+                font-size: 1.1rem;
+                left: 0.9rem;
+            }
+            
+            .password-toggle {
+                font-size: 1rem;
+                right: 0.9rem;
+            }
         }
     </style>
 </head>
-<body class="relative min-h-screen flex flex-col justify-center items-center px-4 overflow-x-hidden">
-    <!-- Decorative background -->
-    <div class="absolute inset-0 -z-10">
-        <div class="green-blob bg-green-400 w-[32rem] h-[32rem] top-[-8rem] left-[-8rem] absolute"></div>
-        <div class="green-blob bg-green-300 w-[28rem] h-[28rem] bottom-[-6rem] right-[-6rem] absolute"></div>
-        <div class="absolute inset-0 pointer-events-none">
-            <svg width="100%" height="100%" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                <circle cx="1200" cy="200" r="120" fill="#bbf7d0" fill-opacity="0.18" />
-                <rect x="-80" y="700" width="400" height="200" rx="100" fill="#22c55e" fill-opacity="0.08" />
-                <circle cx="300" cy="150" r="80" fill="#22c55e" fill-opacity="0.10" />
-            </svg>
-        </div>
-        <div class="absolute inset-0 bg-gradient-to-br from-white/80 via-green-50/60 to-green-100/40"></div>
-    </div>
-    <!-- Loading overlay -->
+<body>
+    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">Logging you in...</div>
         <div class="loading-subtext">Please wait while we prepare your dashboard</div>
     </div>
-    <div class="min-h-screen flex flex-col justify-center items-center px-4 z-10">
-        <div class="w-full max-w-md login-floating">
-            <div class="login-glass p-10 md:p-12 shadow-2xl border border-green-100 relative">
-                <div class="flex flex-col items-center mb-8">
-                    <!-- Animated QR code stacked above avatar -->
-                    <div class="flex flex-col items-center gap-2 mb-4">
-                        <div class="relative flex items-center justify-center mb-1">
-                            <div class="bg-white rounded-lg shadow-lg border-2 border-green-300 relative w-14 h-14 flex items-center justify-center animate-pulse">
-                                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                                    <rect x="15" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                                    <rect x="3" y="15" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/>
-                                    <rect x="10" y="10" width="4" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
-                                    <rect x="15" y="15" width="2" height="2" rx="0.5" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                                <div class="absolute left-1 right-1 top-1 h-1 bg-gradient-to-r from-green-400 via-green-500 to-green-400 opacity-70 animate-scan"></div>
-                            </div>
-                        </div>
-                        <!-- <div class="p-2 bg-green-100 rounded-full shadow-lg flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div> -->
-                        <style>
-                        @keyframes scan {
-                            0% { top: 0.25rem; }
-                            100% { top: 2.75rem; }
-                        }
-                        .animate-scan {
-                            animation: scan 1.6s cubic-bezier(.4,0,.2,1) infinite alternate;
-                        }
-                        </style>
-                    </div>
-                    <h1 class="text-2xl md:text-3xl font-extrabold text-green-700 mb-1 tracking-tight drop-shadow-lg text-center">BCCTAP</h1>
-                    <p class="text-green-900 text-opacity-80 mb-1 text-center text-sm">Bago City College Time Attendance Platform</p>
-                    <h2 class="text-lg font-bold text-green-800 mb-1 mt-2 text-center">Student Login</h2>
-                    <p class="text-green-700 text-opacity-80 mb-2 text-center text-sm">Sign in with your TechnoPal credentials</p>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h1>BCCTAP</h1>
+            <p>Bago City College Time Attendance Platform</p>
+        </div>
+
+        <div class="login-content">
+            <!-- QR Code Animation -->
+            <!-- <div class="qr-container">
+                <div class="qr-code">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor"/>
+                        <rect x="15" y="3" width="6" height="6" rx="1.5" stroke="currentColor"/>
+                        <rect x="3" y="15" width="6" height="6" rx="1.5" stroke="currentColor"/>
+                        <rect x="10" y="10" width="4" height="4" rx="1" stroke="currentColor"/>
+                        <rect x="15" y="15" width="2" height="2" rx="0.5" stroke="currentColor"/>
+                    </svg>
+                    <div class="scan-line"></div>
                 </div>
-                <?php if (isset($error) && !empty($error)): ?>
-                    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6" role="alert">
-                        <p class="text-sm text-red-700"><?php echo $error; ?></p>
-                        <?php if (strpos($error, 'Access denied') !== false): ?>
-                            <p class="text-xs text-red-700 mt-2">
-                                For security reasons, you can only access your account from your registered device. 
-                                If you need to use a new device, please contact the system administrator.
-                            </p>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
-                <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" id="loginForm" class="space-y-6">
-                    <div>
-                        <label for="student_id" class="block text-green-800 text-sm font-medium mb-2">Student ID</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-green-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                            </span>
-                            <input type="text" id="student_id" name="student_id" pattern="[0-9]*" inputmode="numeric" class="w-full pl-10 pr-4 py-3 border border-green-200 rounded-xl bg-green-50 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition placeholder-green-400 text-base shadow-sm" value="<?php echo isset($_POST['student_id']) ? htmlspecialchars($_POST['student_id']) : ''; ?>" required autocomplete="username">
-                        </div>
-                        <p class="text-xs text-green-600 mt-1">Enter your numeric student ID (e.g., 2021116435)</p>
-                    </div>
-                    <div>
-                        <label for="password" class="block text-green-800 text-sm font-medium mb-2">Password</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-green-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0-1.657 1.343-3 3-3s3 1.343 3 3-1.343 3-3 3-3-1.343-3-3zm0 0V7m0 4v8m-7-7h14"/></svg>
-                            </span>
-                            <input type="password" id="password" name="password" class="w-full pl-10 pr-4 py-3 border border-green-200 rounded-xl bg-green-50 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition placeholder-green-400 text-base shadow-sm" required autocomplete="current-password">
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center text-sm text-green-700">
-                            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-green-600 focus:ring-green-500 border-green-300 rounded mr-2">
-                            Remember me
-                        </label>
-                        <a href="../forgot-password.php" class="text-sm text-green-600 hover:text-green-800 transition font-medium">Forgot password?</a>
-                    </div>
-                    <button type="submit" class="w-full py-3 bg-gradient-to-r from-green-500 to-green-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">Sign In</button>
-                    <input type="hidden" name="device_fingerprint" id="device_fingerprint" value="">
-                </form>
-                <div class="mt-8 pt-5 border-t border-green-100">
-                    <div class="flex items-center justify-center">
-                        <img src="../assets/images/technopal-logo.png" alt="TechnoPal" class="h-6 mr-2" onerror="this.style.display='none'">
-                        <p class="text-sm text-green-700">
-                            Powered by <span class="font-medium">TechnoPal</span> Authentication
+                <p class="text-sm text-green-600">Scan QR to authenticate</p>
+            </div> -->
+
+            <h2 class="text-xl font-bold text-center mb-6">Student Login</h2>
+
+            <?php if (isset($error) && !empty($error)): ?>
+                <div class="error-message" role="alert">
+                    <p><?php echo htmlspecialchars($error); ?></p>
+                    <?php if (strpos($error, 'Access denied') !== false): ?>
+                        <p class="text-xs">
+                            For security reasons, you can only access your account from your registered device. 
+                            If you need to use a new device, please contact the system administrator.
                         </p>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post" id="loginForm">
+                <div class="form-group">
+                    <label for="student_id">Student ID</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="student_id" name="student_id" class="input-field" 
+                               placeholder="e.g., 2021116435" required
+                               value="<?php echo isset($_POST['student_id']) ? htmlspecialchars($_POST['student_id']) : ''; ?>">
                     </div>
-                    <p class="text-xs text-green-600 text-center mt-2">
-                        Use the same credentials as your TechnoPal account
-                    </p>
                 </div>
-                <div class="mt-6 text-center">
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" class="input-field" 
+                               placeholder="Enter your password" required>
+                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <div class="options">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="remember_me" name="remember_me">
+                        <label for="remember_me">Remember me</label>
+                    </div>
+                    <a href="../forgot-password.php" class="text-green-600 hover:text-green-800">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-btn">Sign In</button>
+                <input type="hidden" name="device_fingerprint" id="device_fingerprint" value="">
+            </form>
+
+            <div class="footer">
+                <div class="flex items-center justify-center mb-3">
+                    <img src="../assets/images/technopal-logo.png" alt="TechnoPal" class="h-5 mr-2" onerror="this.style.display='none'">
                     <p class="text-sm text-green-700">
-                        Not a student? 
-                        <a href="../staff_login.php" class="text-green-600 hover:text-green-800 font-medium">Staff Login</a>
-                    </p>
-                    <p class="text-sm text-green-700 mt-4">
-                        <a href="../index.php" class="text-green-600 hover:text-green-800">← Back to Home</a>
+                        Powered by <span class="font-medium">TechnoPal</span> Authentication
                     </p>
                 </div>
+                <p class="text-xs text-green-600 mb-4">
+                    Use the same credentials as your TechnoPal account
+                </p>
+                <p class="text-sm">
+                    Not a student? <a href="../staff_login.php" class="text-green-600 font-medium">Staff Login</a>
+                </p>
+                <!-- <p class="text-sm mt-2">
+                    <a href="../index.php" class="text-green-600"><i class="fas fa-arrow-left mr-1"></i> Back to Home</a>
+                </p> -->
             </div>
         </div>
     </div>
 
     <script>
-        // Check if we should show browser recommendation
-        <?php if (isset($_SESSION['show_browser_recommendation']) && $_SESSION['show_browser_recommendation']): ?>
-            // Show browser recommendation every login using ChromeDetector
-            setTimeout(() => {
-                ChromeDetector.showLoginRecommendation({
-                    title: 'Welcome to BCCTAP!',
-                    message: 'For the best login and QR scanning experience, we recommend using Google Chrome.'
-                }).then((result) => {
-                    // Optional: Track user response for analytics
-                    if (result && result.isConfirmed) {
-                        console.log('User chose to download Chrome after login recommendation');
-                    }
-                });
-            }, 1500);
-            <?php unset($_SESSION['show_browser_recommendation']); ?>
-        <?php endif; ?>
-        
-        // Execute when the DOM is fully loaded
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const password = document.getElementById('password');
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // Form submission with device fingerprint
         document.addEventListener('DOMContentLoaded', function() {
-            // Get and generate device fingerprint using the new library
             const loginForm = document.getElementById('loginForm');
             
-            // Set up form submission handler
             loginForm.addEventListener('submit', async function(event) {
-                // Only prevent default if fingerprinting hasn't been done yet
                 if (!document.getElementById('device_fingerprint').value) {
                     event.preventDefault();
                     
@@ -354,4 +564,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     </script>
 </body>
-</html> 
+</html>

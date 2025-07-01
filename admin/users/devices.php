@@ -69,91 +69,73 @@ $page_title = "Device Management";
 // Start output buffering
 ob_start();
 ?>
-        <main class="flex-grow main-content px-4 py-8">
-            
-            
+        <main class="flex-grow main-content px-2 sm:px-4 py-8 max-w-6xl mx-auto">
+            <!-- Alerts -->
             <?php if (isset($_SESSION['success_message'])): ?>
-                <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-green-800"><?php echo $_SESSION['success_message']; ?></p>
-                        </div>
-                        <div class="ml-auto pl-3">
-                            <button type="button" class="close-alert inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100">
-                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-xl shadow flex items-center justify-between transition-all">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                        <span class="text-sm text-green-800"><?php echo $_SESSION['success_message']; ?></span>
                     </div>
+                    <button type="button" onclick="this.parentElement.remove()" class="ml-4 text-green-500 hover:text-green-700 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
                 </div>
                 <?php unset($_SESSION['success_message']); ?>
             <?php endif; ?>
-            
             <?php if (isset($_SESSION['error_message'])): ?>
-                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-red-800"><?php echo $_SESSION['error_message']; ?></p>
-                        </div>
-                        <div class="ml-auto pl-3">
-                            <button type="button" class="close-alert inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100">
-                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-xl shadow flex items-center justify-between transition-all">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                        <span class="text-sm text-red-800"><?php echo $_SESSION['error_message']; ?></span>
                     </div>
+                    <button type="button" onclick="this.parentElement.remove()" class="ml-4 text-red-500 hover:text-red-700 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
                 </div>
                 <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
-            
+
             <!-- Pending Device Verification Requests -->
-            <div class="mb-8">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Pending Verification Requests</h2>
-                
+            <div class="mb-10">
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+                    <h2 class="text-xl font-bold text-gray-800">Pending Verification Requests</h2>
+                    <?php if (!empty($unverified_devices)): ?>
+                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 animate-pulse">Pending: <?php echo count($unverified_devices); ?></span>
+                    <?php endif; ?>
+                </div>
                 <?php if (empty($unverified_devices)): ?>
-                    <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+                    <div class="bg-white rounded-2xl shadow p-8 text-center flex flex-col items-center justify-center">
                         <div class="bg-gray-100 inline-block p-4 rounded-full mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
-                        <p class="text-gray-600">No pending device verification requests</p>
+                        <p class="text-gray-500 text-lg font-medium">No pending device verification requests</p>
                     </div>
                 <?php else: ?>
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead class="bg-gray-50 sticky top-0 z-10">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device Info</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Seen</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Student</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Device Info</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Registration Date</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Last Seen</th>
+                                        <th class="px-6 py-3 text-center font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <?php foreach ($unverified_devices as $device): ?>
-                                        <tr>
+                                        <tr class="hover:bg-yellow-50 transition">
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900"><?php echo htmlspecialchars($device['full_name']); ?></div>
-                                                <div class="text-sm text-gray-500"><?php echo htmlspecialchars($device['student_id']); ?></div>
-                                                <div class="text-xs text-gray-400"><?php echo htmlspecialchars($device['email']); ?></div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-yellow-100 text-yellow-800"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>Pending</span>
+                                                    <div>
+                                                        <div class="text-sm font-bold text-gray-900"><?php echo htmlspecialchars($device['full_name']); ?></div>
+                                                        <div class="text-xs text-gray-500"><?php echo htmlspecialchars($device['student_id']); ?></div>
+                                                        <div class="text-xs text-gray-400"><?php echo htmlspecialchars($device['email']); ?></div>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <div class="text-sm text-gray-900"><?php echo htmlspecialchars($device['device_name']); ?></div>
+                                                <div class="text-sm text-gray-900 font-medium"><?php echo htmlspecialchars($device['device_name']); ?></div>
                                                 <div class="text-xs text-gray-500 truncate max-w-xs"><?php echo substr(htmlspecialchars($device['user_agent'] ?? 'N/A'), 0, 60); ?>...</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -165,18 +147,20 @@ ob_start();
                                                 <div class="text-xs text-gray-500"><?php echo date('h:i A', strtotime($device['last_seen'])); ?></div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <div class="flex justify-center space-x-2">
+                                                <div class="flex flex-col sm:flex-row justify-center gap-2">
                                                     <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="inline-block">
                                                         <input type="hidden" name="device_id" value="<?php echo $device['id']; ?>">
                                                         <input type="hidden" name="action" value="verify">
-                                                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md" onclick="return confirm('Are you sure you want to verify this device?')">
+                                                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-1 shadow transition" onclick="return confirm('Are you sure you want to verify this device?')">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                                                             Verify
                                                         </button>
                                                     </form>
                                                     <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="inline-block">
                                                         <input type="hidden" name="device_id" value="<?php echo $device['id']; ?>">
                                                         <input type="hidden" name="action" value="reject">
-                                                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md" onclick="return confirm('Are you sure you want to reject this device?')">
+                                                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-1 shadow transition" onclick="return confirm('Are you sure you want to reject this device?')">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
                                                             Reject
                                                         </button>
                                                     </form>
@@ -190,38 +174,51 @@ ob_start();
                     </div>
                 <?php endif; ?>
             </div>
-            
+
             <!-- Verified Devices -->
-            <div>
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Verified Devices</h2>
-                
+            <div class="mb-10">
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+                    <h2 class="text-xl font-bold text-gray-800">Verified Devices</h2>
+                    <?php if (!empty($verified_devices)): ?>
+                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Verified: <?php echo count($verified_devices); ?></span>
+                    <?php endif; ?>
+                </div>
                 <?php if (empty($verified_devices)): ?>
-                    <div class="bg-white rounded-xl shadow-sm p-8 text-center">
-                        <p class="text-gray-600">No verified devices found</p>
+                    <div class="bg-white rounded-2xl shadow p-8 text-center flex flex-col items-center justify-center">
+                        <div class="bg-gray-100 inline-block p-4 rounded-full mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <p class="text-gray-500 text-lg font-medium">No verified devices found</p>
                     </div>
                 <?php else: ?>
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead class="bg-gray-50 sticky top-0 z-10">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device Info</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verification Date</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Seen</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Student</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Device Info</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Verification Date</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Last Seen</th>
+                                        <th class="px-6 py-3 text-center font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <?php foreach ($verified_devices as $device): ?>
-                                        <tr>
+                                        <tr class="hover:bg-green-50 transition">
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900"><?php echo htmlspecialchars($device['full_name']); ?></div>
-                                                <div class="text-sm text-gray-500"><?php echo htmlspecialchars($device['student_id']); ?></div>
-                                                <div class="text-xs text-gray-400"><?php echo htmlspecialchars($device['email']); ?></div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>Verified</span>
+                                                    <div>
+                                                        <div class="text-sm font-bold text-gray-900"><?php echo htmlspecialchars($device['full_name']); ?></div>
+                                                        <div class="text-xs text-gray-500"><?php echo htmlspecialchars($device['student_id']); ?></div>
+                                                        <div class="text-xs text-gray-400"><?php echo htmlspecialchars($device['email']); ?></div>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <div class="text-sm text-gray-900"><?php echo htmlspecialchars($device['device_name']); ?></div>
+                                                <div class="text-sm text-gray-900 font-medium"><?php echo htmlspecialchars($device['device_name']); ?></div>
                                                 <div class="text-xs text-gray-500 truncate max-w-xs"><?php echo substr(htmlspecialchars($device['user_agent'] ?? 'N/A'), 0, 60); ?>...</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -236,7 +233,8 @@ ob_start();
                                                 <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="inline-block">
                                                     <input type="hidden" name="device_id" value="<?php echo $device['id']; ?>">
                                                     <input type="hidden" name="action" value="reject">
-                                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md" onclick="return confirm('Are you sure you want to remove this device? The student will need to verify again from this device.')">
+                                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-1 shadow transition" onclick="return confirm('Are you sure you want to remove this device? The student will need to verify again from this device.')">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
                                                         Remove
                                                     </button>
                                                 </form>
@@ -249,30 +247,24 @@ ob_start();
                     </div>
                 <?php endif; ?>
             </div>
-            
+
             <!-- Help Section -->
-            <div class="mt-8 bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">About Device Verification</h2>
-                
+            <div class="mt-12 bg-white rounded-2xl shadow-lg p-8">
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M13 16h-1v-4h-1m1-4h.01"/></svg>
+                    <h2 class="text-lg font-bold text-gray-800">About Device Verification</h2>
+                </div>
                 <div class="space-y-4 text-gray-600">
                     <p><strong>Cross-Browser Support:</strong> With the new system, students can use any browser on their verified device to access the platform.</p>
-                    
                     <p><strong>Device Recognition:</strong> The system uses advanced fingerprinting to identify the same physical device across different browsers.</p>
-                    
                     <p><strong>Security:</strong> Only verified devices are allowed to access student accounts, protecting against unauthorized access.</p>
-                    
                     <p><strong>Process:</strong> When a student attempts to log in from a new device, the login is blocked until you verify the device here.</p>
                 </div>
-                
                 <div class="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-medium text-blue-800">Important Note</h3>
+                    <div class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mt-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd" /></svg>
+                        <div>
+                            <h3 class="text-sm font-semibold text-blue-800">Important Note</h3>
                             <p class="mt-2 text-sm text-blue-700">
                                 When verifying a device, make sure to confirm the student's identity first, especially if there are multiple verification requests from different devices for the same student in a short period.
                             </p>

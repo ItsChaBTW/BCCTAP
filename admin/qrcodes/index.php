@@ -24,7 +24,12 @@ $page_title = "QR Codes";
 ob_start();
 ?>
         <main class="flex-grow main-content px-4 py-8">
-            
+            <!-- Modern Search Bar -->
+            <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">QR Code Management</h1>
+                <input id="searchInput" type="text" placeholder="Search by event, department, or date..." class="w-full sm:w-80 px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition text-sm bg-white shadow-sm" />
+            </div>
+
             <?php if (isset($_SESSION['success_message'])): ?>
                 <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md">
                     <div class="flex items-center">
@@ -71,84 +76,83 @@ ob_start();
                 <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
             
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="px-6 py-4 bg-gradient-primary">
-                    <h2 class="text-lg font-semibold">Events with QR Codes</h2>
+            <div class="bg-white rounded-2xl shadow-lg overflow-x-auto border border-gray-100">
+                <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-800">Events with QR Codes</h2>
                 </div>
                 
                 <?php if (count($events) > 0): ?>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dates</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">QR Codes</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <?php foreach ($events as $event): ?>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900"><?php echo htmlspecialchars($event['title']); ?></div>
-                                            <div class="text-sm text-gray-500">ID: <?php echo $event['id']; ?></div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">
-                                                <?php echo date('M d, Y', strtotime($event['start_date'])); ?> - 
-                                                <?php echo date('M d, Y', strtotime($event['end_date'])); ?>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">
-                                                <?php if (!empty($event['department'])): ?>
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
-                                                        <?php echo htmlspecialchars($event['department']); ?>
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                                        All Departments
-                                                    </span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                <?php echo $event['qr_count']; ?> QR Codes
+                    <table id="eventsTable" class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Event</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Dates</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Department</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">QR Codes</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <?php foreach ($events as $event): ?>
+                                <tr class="hover:bg-blue-50 transition" 
+                                    data-title="<?php echo htmlspecialchars(strtolower($event['title'])); ?>" 
+                                    data-department="<?php echo htmlspecialchars(strtolower($event['department'])); ?>" 
+                                    data-date="<?php echo date('Y-m-d', strtotime($event['start_date'])); ?> <?php echo date('Y-m-d', strtotime($event['end_date'])); ?>">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-base font-semibold text-gray-900"><?php echo htmlspecialchars($event['title']); ?></div>
+                                        <div class="text-xs text-gray-500">ID: <?php echo $event['id']; ?></div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            <?php echo date('M d, Y', strtotime($event['start_date'])); ?> - 
+                                            <?php echo date('M d, Y', strtotime($event['end_date'])); ?>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <?php if (!empty($event['department'])): ?>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
+                                                <?php echo htmlspecialchars($event['department']); ?>
                                             </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
-                                                <a href="view.php?id=<?php echo $event['id']; ?>" class="text-white bg-primary hover:bg-red-700 px-3 py-1 rounded-md text-sm flex items-center justify-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    View QR Code
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                        <?php else: ?>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                All Departments
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            <?php echo $event['qr_count']; ?> QR Codes
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
+                                            <a href="view.php?id=<?php echo $event['id']; ?>" class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-sm flex items-center justify-center transition">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                                </svg>
+                                                View QR Code
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 <?php else: ?>
                     <div class="p-6 text-center text-gray-500">
-                        <p>No events found. <a href="../events/create.php" class="text-primary hover:underline">Create an event</a> to automatically generate QR codes.</p>
+                        <p>No events found. <a href="../events/create.php" class="text-blue-600 hover:underline">Create an event</a> to automatically generate QR codes.</p>
                     </div>
                 <?php endif; ?>
             </div>
             
-            <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <div class="mt-8 bg-white rounded-2xl shadow-lg p-6">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">About QR Codes</h2>
                 
                 <div class="text-gray-600 space-y-2">
                     <div class="flex items-start">
                         <div class="bg-red-100 p-2 rounded-full mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd" />
                             </svg>
                         </div>
@@ -156,7 +160,7 @@ ob_start();
                     </div>
                     <div class="flex items-start">
                         <div class="bg-orange-100 p-2 rounded-full mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-secondary" viewBox="0 0 20 20" fill="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd" />
                             </svg>
                         </div>
@@ -189,6 +193,22 @@ ob_start();
                 </div>
             </div>
         </main>
+        <script>
+        // Client-side search filter
+        const searchInput = document.getElementById('searchInput');
+        const table = document.getElementById('eventsTable');
+        const rows = table ? Array.from(table.tBodies[0].rows) : [];
+        searchInput && searchInput.addEventListener('input', function() {
+            const val = this.value.trim().toLowerCase();
+            rows.forEach(row => {
+                const title = row.getAttribute('data-title') || '';
+                const dept = row.getAttribute('data-department') || '';
+                const date = row.getAttribute('data-date') || '';
+                const match = !val || title.includes(val) || dept.includes(val) || date.includes(val);
+                row.style.display = match ? '' : 'none';
+            });
+        });
+        </script>
         <?php
 $page_content = ob_get_clean();
 

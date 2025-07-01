@@ -147,50 +147,46 @@ $page_actions = '<button onclick="history.back()" class="bg-gradient-to-r from-b
 // Start output buffering
 ob_start();
 ?>
-        <main class="flex-grow main-content px-4 py-8">
+        <main class="flex-grow main-content px-2 sm:px-4 py-6 sm:py-8 max-w-3xl mx-auto">
             
             
             <?php if (isset($_SESSION['success_message'])): ?>
-                <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-md">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-xl shadow flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm font-medium text-green-800"><?php echo $_SESSION['success_message']; ?></p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button type="button" class="close-alert inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100">
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-green-800"><?php echo $_SESSION['success_message']; ?></p>
-                        </div>
-                        <div class="ml-auto pl-3">
-                            <button type="button" class="close-alert inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100">
-                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
+                        </button>
                     </div>
                 </div>
                 <?php unset($_SESSION['success_message']); ?>
             <?php endif; ?>
             
             <?php if (isset($_SESSION['error_message'])): ?>
-                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-xl shadow flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm font-medium text-red-800"><?php echo $_SESSION['error_message']; ?></p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button type="button" class="close-alert inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100">
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-red-800"><?php echo $_SESSION['error_message']; ?></p>
-                        </div>
-                        <div class="ml-auto pl-3">
-                            <button type="button" class="close-alert inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100">
-                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
+                        </button>
                     </div>
                 </div>
                 <?php unset($_SESSION['error_message']); ?>
@@ -198,31 +194,31 @@ ob_start();
             
             <!-- Event Details -->
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold text-primary mb-4">Event Details</h2>
+                <h2 class="text-xl font-semibold text-blue-700 mb-4">Event Details</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <p class="text-gray-600"><span class="font-medium">Dates:</span> <?php echo date('M d, Y', strtotime($event['start_date'])); ?> - <?php echo date('M d, Y', strtotime($event['end_date'])); ?></p>
-                        <p class="text-gray-600"><span class="font-medium">Department:</span> <?php echo !empty($event['department']) ? htmlspecialchars($event['department']) : 'All Departments'; ?></p>
+                        <p class="text-gray-700"><span class="font-medium">Dates:</span> <?php echo date('M d, Y', strtotime($event['start_date'])); ?> - <?php echo date('M d, Y', strtotime($event['end_date'])); ?></p>
+                        <p class="text-gray-700"><span class="font-medium">Department:</span> <?php echo !empty($event['department']) ? htmlspecialchars($event['department']) : 'All Departments'; ?></p>
                     </div>
                     <div>
-                        <p class="text-gray-600"><span class="font-medium">Morning:</span> <?php echo date('h:i A', strtotime($event['morning_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['morning_time_out'])); ?></p>
-                        <p class="text-gray-600"><span class="font-medium">Afternoon:</span> <?php echo date('h:i A', strtotime($event['afternoon_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['afternoon_time_out'])); ?></p>
+                        <p class="text-gray-700"><span class="font-medium">Morning:</span> <?php echo date('h:i A', strtotime($event['morning_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['morning_time_out'])); ?></p>
+                        <p class="text-gray-700"><span class="font-medium">Afternoon:</span> <?php echo date('h:i A', strtotime($event['afternoon_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['afternoon_time_out'])); ?></p>
                     </div>
                 </div>
             </div>
             
             <!-- QR Code -->
-            <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Attendance QR Code</h2>
                 
                 <?php if ($qrCode): ?>
                         <div class="flex flex-col items-center">
-                        <div class="bg-gradient-primary text-white py-2 px-4 rounded-lg mb-4">
-                            <p class="text-center font-medium">This QR code is for both morning and afternoon sessions</p>
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-400 text-white py-2 px-4 rounded-lg mb-4 w-full text-center">
+                            <p class="font-medium">This QR code is for both morning and afternoon sessions</p>
                         </div>
                         
-                        <div id="eventQrCode" class="mb-4 p-4 border-4 border-gray-100 rounded-lg">
+                        <div id="eventQrCode" class="mb-4 p-4 border-4 border-gray-100 rounded-lg flex items-center justify-center bg-gray-50">
                             <?php if (!empty($qrCode['image_path'])): ?>
                                 <!-- Display the saved QR code image -->
                                 <img src="<?php echo BASE_URL . $qrCode['image_path']; ?>" alt="QR Code" class="max-w-full" style="width: 300px; height: 300px;">
@@ -279,14 +275,14 @@ ob_start();
                         <p class="text-sm text-gray-500 mb-2">Code: <?php echo htmlspecialchars($qrCode['code']); ?></p>
                         <p class="text-xs text-gray-400 mb-4">Created: <?php echo date('M d, Y h:i A', strtotime($qrCode['created_at'])); ?></p>
                         
-                        <div class="flex space-x-4">
-                            <button class="bg-secondary hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center" onclick="printQRCode('eventQrCode', '<?php echo htmlspecialchars($event['title']); ?>')">
+                        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center">
+                            <button class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition font-medium" onclick="printQRCode('eventQrCode', '<?php echo htmlspecialchars($event['title']); ?>')">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0v3H7V4h6zm-3 11v-2h2v2H10z" clip-rule="evenodd" />
                                 </svg>
                                 Print
                             </button>
-                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center" onclick="downloadQRCode('<?php echo BASE_URL . $qrCode['image_path']; ?>', '<?php echo htmlspecialchars($event['title']); ?>')">
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center transition font-medium" onclick="downloadQRCode('<?php echo BASE_URL . $qrCode['image_path']; ?>', '<?php echo htmlspecialchars($event['title']); ?>')">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
@@ -311,38 +307,28 @@ ob_start();
                 
                 <div class="space-y-4">
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-red-100 flex items-center justify-center text-primary mr-3">
-                            1
-                        </div>
-                        <p class="text-gray-600">Print the QR code and post it in a visible location at your event.</p>
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-red-100 flex items-center justify-center text-blue-600 mr-3 font-bold">1</div>
+                        <p class="text-gray-700">Print the QR code and post it in a visible location at your event.</p>
                     </div>
                     
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-orange-100 flex items-center justify-center text-secondary mr-3">
-                            2
-                        </div>
-                        <p class="text-gray-600">Students scan this QR code using their phone's camera app.</p>
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 mr-3 font-bold">2</div>
+                        <p class="text-gray-700">Students scan this QR code using their phone's camera app.</p>
                     </div>
                     
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500 mr-3">
-                            3
-                        </div>
-                        <p class="text-gray-600">Students will be redirected to login with their student account.</p>
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500 mr-3 font-bold">3</div>
+                        <p class="text-gray-700">Students will be redirected to login with their student account.</p>
                     </div>
                     
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-3">
-                            4
-                        </div>
-                        <p class="text-gray-600">The system will automatically record their attendance based on the current time (morning or afternoon).</p>
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center text-green-500 mr-3 font-bold">4</div>
+                        <p class="text-gray-700">The system will automatically record their attendance based on the current time (morning or afternoon).</p>
                     </div>
                     
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mr-3">
-                            5
-                        </div>
-                        <p class="text-gray-600">Students can view their attendance records in their dashboard after logging in.</p>
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mr-3 font-bold">5</div>
+                        <p class="text-gray-700">Students can view their attendance records in their dashboard after logging in.</p>
                     </div>
                 </div>
             </div>

@@ -197,11 +197,23 @@
                   </svg>
                   Users
               </a>
-              <a href="<?php echo BASE_URL; ?>admin/users/devices.php" class="<?php echo strpos($_SERVER['PHP_SELF'], 'admin/users/devices.php') !== false ? 'active' : ''; ?>">
+              <a href="<?php echo BASE_URL; ?>admin/users/devices.php" class="<?php echo strpos($_SERVER['PHP_SELF'], 'admin/users/devices.php') !== false ? 'active' : ''; ?> relative group">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
                   </svg>
                   Student Devices
+                  <?php
+                  $devices_query = "SELECT COUNT(*) as count FROM user_devices ud 
+                                  JOIN users u ON ud.user_id = u.id 
+                                  WHERE ud.is_verified = 0 
+                                  AND u.active = 1 
+                                  AND u.role = 'student'";
+                  $devices_result = mysqli_query($conn, $devices_query);
+                  $devices_count = $devices_result->fetch_assoc()['count'];
+                  if ($devices_count > 0):
+                  ?>
+                  <span class="absolute -top-1 -right-1 bg-red-500 group-hover:bg-red-600 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1   group-hover:ring-2 group-hover:ring-red-400 group-hover:-translate-y-0.5"><?php echo $devices_count; ?></span>
+                  <?php endif; ?>
               </a>
               <a href="<?php echo BASE_URL; ?>admin/qrcodes/index.php" class="<?php echo strpos($_SERVER['PHP_SELF'], 'admin/qrcodes/') !== false ? 'active' : ''; ?>">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

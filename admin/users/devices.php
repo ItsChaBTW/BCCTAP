@@ -9,6 +9,40 @@ if (!isLoggedIn() || !isAdmin()) {
     redirect(BASE_URL . 'admin/login.php');
 }
 
+// Add this function at the top of the file after the config include
+function getBrowserAndOS($user_agent) {
+    $browser = "Unknown";
+    $os = "Unknown";
+
+    // Detect Browser
+    if (strpos($user_agent, 'Chrome') !== false) {
+        $browser = 'Chrome';
+    } elseif (strpos($user_agent, 'Firefox') !== false) {
+        $browser = 'Firefox';
+    } elseif (strpos($user_agent, 'Safari') !== false) {
+        $browser = 'Safari';
+    } elseif (strpos($user_agent, 'Edge') !== false) {
+        $browser = 'Edge';
+    } elseif (strpos($user_agent, 'Opera') !== false) {
+        $browser = 'Opera';
+    }
+
+    // Detect OS
+    if (strpos($user_agent, 'Windows') !== false) {
+        $os = 'Windows';
+    } elseif (strpos($user_agent, 'Mac') !== false) {
+        $os = 'MacOS';
+    } elseif (strpos($user_agent, 'Linux') !== false) {
+        $os = 'Linux';
+    } elseif (strpos($user_agent, 'Android') !== false) {
+        $os = 'Android';
+    } elseif (strpos($user_agent, 'iOS') !== false) {
+        $os = 'iOS';
+    }
+
+    return ['browser' => $browser, 'os' => $os];
+}
+
 // Handle device verification or rejection
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && isset($_POST['device_id']) && !empty($_POST['device_id'])) {
@@ -110,7 +144,7 @@ ob_start();
                     </div>
                 <?php else: ?>
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-visible">
                             <table class="min-w-full divide-y divide-gray-200 text-sm">
                                 <thead class="bg-gray-50 sticky top-0 z-10">
                                     <tr>
@@ -135,8 +169,32 @@ ob_start();
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <div class="text-sm text-gray-900 font-medium"><?php echo htmlspecialchars($device['device_name']); ?></div>
-                                                <div class="text-xs text-gray-500 truncate max-w-xs"><?php echo substr(htmlspecialchars($device['user_agent'] ?? 'N/A'), 0, 60); ?>...</div>
+                                                <div class="relative group">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="text-sm text-gray-900 font-medium"><?php echo htmlspecialchars($device['device_name']); ?></div>
+                                                        <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                    </div>
+                                                    
+                                                    <!-- Updated tooltip content -->
+                                                    <div class="absolute left-full ml-4 top-0 w-96 p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[9999]">
+                                                        <div class="space-y-2">
+                                                            <?php
+                                                            $device_info = getBrowserAndOS($device['user_agent'] ?? '');
+                                                            ?>
+                                                            <p><span class="font-semibold">Device Name:</span> <?php echo htmlspecialchars($device['device_name'] ?? 'Not specified'); ?></p>
+                                                            <p><span class="font-semibold">Browser:</span> <?php echo htmlspecialchars($device_info['browser']); ?></p>
+                                                            <p><span class="font-semibold">OS:</span> <?php echo htmlspecialchars($device_info['os']); ?></p>
+                                                            <p class="border-t border-gray-700 pt-2 mt-2"><span class="font-semibold">User Agent:</span> <span class="text-xs break-words"><?php echo htmlspecialchars($device['user_agent'] ?? 'Not available'); ?></span></p>
+                                                            <?php if (isset($device['device_id']) && !empty($device['device_id'])): ?>
+                                                            <p><span class="font-semibold">Device ID:</span> <?php echo htmlspecialchars($device['device_id']); ?></p>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <!-- Tooltip arrow -->
+                                                        <div class="absolute top-4 -left-2 w-4 h-4 bg-gray-900 transform rotate-45"></div>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm text-gray-900"><?php echo date('M d, Y', strtotime($device['registration_date'])); ?></div>
@@ -193,7 +251,7 @@ ob_start();
                     </div>
                 <?php else: ?>
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-visible">
                             <table class="min-w-full divide-y divide-gray-200 text-sm">
                                 <thead class="bg-gray-50 sticky top-0 z-10">
                                     <tr>
@@ -218,8 +276,32 @@ ob_start();
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <div class="text-sm text-gray-900 font-medium"><?php echo htmlspecialchars($device['device_name']); ?></div>
-                                                <div class="text-xs text-gray-500 truncate max-w-xs"><?php echo substr(htmlspecialchars($device['user_agent'] ?? 'N/A'), 0, 60); ?>...</div>
+                                                <div class="relative group">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="text-sm text-gray-900 font-medium"><?php echo htmlspecialchars($device['device_name']); ?></div>
+                                                        <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                    </div>
+                                                    
+                                                    <!-- Updated tooltip content -->
+                                                    <div class="absolute left-full ml-4 top-0 w-96 p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[9999]">
+                                                        <div class="space-y-2">
+                                                            <?php
+                                                            $device_info = getBrowserAndOS($device['user_agent'] ?? '');
+                                                            ?>
+                                                            <p><span class="font-semibold">Device Name:</span> <?php echo htmlspecialchars($device['device_name'] ?? 'Not specified'); ?></p>
+                                                            <p><span class="font-semibold">Browser:</span> <?php echo htmlspecialchars($device_info['browser']); ?></p>
+                                                            <p><span class="font-semibold">OS:</span> <?php echo htmlspecialchars($device_info['os']); ?></p>
+                                                            <p class="border-t border-gray-700 pt-2 mt-2"><span class="font-semibold">User Agent:</span> <span class="text-xs break-words"><?php echo htmlspecialchars($device['user_agent'] ?? 'Not available'); ?></span></p>
+                                                            <?php if (isset($device['device_id']) && !empty($device['device_id'])): ?>
+                                                            <p><span class="font-semibold">Device ID:</span> <?php echo htmlspecialchars($device['device_id']); ?></p>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <!-- Tooltip arrow -->
+                                                        <div class="absolute top-4 -left-2 w-4 h-4 bg-gray-900 transform rotate-45"></div>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm text-gray-900"><?php echo date('M d, Y', strtotime($device['verification_date'])); ?></div>

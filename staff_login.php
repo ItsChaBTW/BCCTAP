@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Username and password are required";
     } else {
         // Check if username exists (for either admin or teacher)
-        $query = "SELECT id, username, password, full_name, role FROM users WHERE username = ? AND (role = 'admin' OR role = 'teacher')";
+        $query = "SELECT id, username, password, full_name, role, active FROM users WHERE username = ? AND (role = 'admin' OR role = 'teacher')";
         
         $stmt = mysqli_prepare($conn, $query);
         mysqli_stmt_bind_param($stmt, "s", $username);
@@ -24,8 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (mysqli_num_rows($result) === 1) {
             $row = mysqli_fetch_assoc($result);
             
+            // Check if account is active
+            if (!$row['active']) {
+                $error = "Your account has been deactivated. Please contact the administrator.";
+            }
             // Verify password
-            if (password_verify($password, $row['password'])) {
+            else if (password_verify($password, $row['password'])) {
                 // Password is correct, set session variables
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['username'] = $row['username'];

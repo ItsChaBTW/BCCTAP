@@ -228,19 +228,58 @@ $departments = array_unique(array_filter(array_map(function($e){return $e['depar
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex flex-col">
-              <span class="text-sm text-gray-900">
-                <span class="inline-flex items-center">
-                  <svg class="h-4 w-4 mr-1 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
-                  <?php echo date('M d, Y', strtotime($event['start_date'])); ?>
+              <?php 
+                $start_timestamp = strtotime($event['start_date']);
+                $end_timestamp = strtotime($event['end_date']);
+                $current_timestamp = time();
+                
+                // Determine event status
+                $status = '';
+                $status_color = '';
+                if ($current_timestamp < $start_timestamp) {
+                    $status = 'Upcoming';
+                    $status_color = 'blue';
+                } elseif ($current_timestamp > $end_timestamp) {
+                    $status = 'Past';
+                    $status_color = 'gray';
+                } else {
+                    $status = 'Ongoing';
+                    $status_color = 'green';
+                }
+              ?>
+              <div class="mb-2">
+                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-<?php echo $status_color; ?>-100 text-<?php echo $status_color; ?>-800">
+                  <?php echo $status; ?>
                 </span>
-                to
+              </div>
+              <span class="text-sm text-gray-900 font-medium">
                 <span class="inline-flex items-center">
-                  <?php echo date('M d, Y', strtotime($event['end_date'])); ?>
+                  <svg class="h-4 w-4 mr-1 text-<?php echo $status_color; ?>-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
+                  </svg>
+                  <?php 
+                    // If start and end dates are in the same month and year
+                    if (date('Y-m', $start_timestamp) === date('Y-m', $end_timestamp)) {
+                      echo date('M j', $start_timestamp) . ' - ' . date('j, Y', $end_timestamp);
+                    } else {
+                      echo date('M j, Y', $start_timestamp) . ' - ' . date('M j, Y', $end_timestamp);
+                    }
+                  ?>
                 </span>
               </span>
-              <div class="mt-1 grid grid-cols-2 gap-1 text-xs text-gray-500">
-                <span>Morning: <?php echo date('h:i A', strtotime($event['morning_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['morning_time_out'])); ?></span>
-                <span>Afternoon: <?php echo date('h:i A', strtotime($event['afternoon_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['afternoon_time_out'])); ?></span>
+              <div class="mt-2 grid grid-cols-1 gap-1 text-xs text-gray-500">
+                <span class="inline-flex items-center">
+                  <svg class="h-3 w-3 mr-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zm1-6.41V4a1 1 0 10-2 0v4c0 .28.11.53.29.71l2.8 2.8a1 1 0 001.42-1.42L11 7.59z"/>
+                  </svg>
+                  Morning: <?php echo date('h:i A', strtotime($event['morning_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['morning_time_out'])); ?>
+                </span>
+                <span class="inline-flex items-center">
+                  <svg class="h-3 w-3 mr-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12zm1-6.41V4a1 1 0 10-2 0v4c0 .28.11.53.29.71l2.8 2.8a1 1 0 001.42-1.42L11 7.59z"/>
+                  </svg>
+                  Afternoon: <?php echo date('h:i A', strtotime($event['afternoon_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['afternoon_time_out'])); ?>
+                </span>
               </div>
             </div>
           </td>

@@ -30,6 +30,71 @@ $query = "SELECT COUNT(*) as total FROM attendance";
 $result = mysqli_query($conn, $query);
 $totalAttendance = mysqli_fetch_assoc($result)['total'];
 
+// Get attendance trends for the last 4 months (reduced from 6)
+$attendanceTrends = [];
+$trendLabels = [];
+$trendData = [];
+
+for ($i = 3; $i >= 0; $i--) {
+    $month = date('Y-m', strtotime("-$i months"));
+    $monthLabel = date('M Y', strtotime("-$i months"));
+    
+    $query = "SELECT COUNT(*) as count FROM attendance WHERE DATE_FORMAT(time_recorded, '%Y-%m') = ?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "s", $month);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $count = mysqli_fetch_assoc($result)['count'];
+    
+    $trendLabels[] = $monthLabel;
+    $trendData[] = $count;
+}
+
+// Get attendance status distribution for current month
+$currentMonth = date('Y-m');
+$query = "SELECT 
+            attendance_status,
+            COUNT(*) as count 
+          FROM attendance 
+          WHERE DATE_FORMAT(time_recorded, '%Y-%m') = ? 
+          GROUP BY attendance_status";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "s", $currentMonth);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$statusDistribution = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+// Prepare status data for chart
+$statusLabels = [];
+$statusData = [];
+$statusColors = [];
+foreach ($statusDistribution as $status) {
+    $statusLabels[] = ucfirst($status['attendance_status']);
+    $statusData[] = $status['count'];
+    
+    // Assign colors based on status
+    switch ($status['attendance_status']) {
+        case 'present':
+            $statusColors[] = '#16a34a'; // Green
+            break;
+        case 'late':
+            $statusColors[] = '#f59e0b'; // Yellow
+            break;
+        case 'absent':
+            $statusColors[] = '#dc2626'; // Red
+            break;
+        default:
+            $statusColors[] = '#6b7280'; // Gray
+    }
+}
+
+// If no status data exists, show default
+if (empty($statusData)) {
+    $statusLabels = ['No Data'];
+    $statusData = [1];
+    $statusColors = ['#e5e7eb'];
+}
+
 // Get recent events
 $query = "SELECT e.*, u.full_name as created_by_name 
           FROM events e 
@@ -69,7 +134,7 @@ ob_start();
     </div>
     <div>
       <div class="text-gray-500 text-xs font-semibold uppercase">Total Students</div>
-      <div class="text-2xl font-bold text-gray-800"><?php echo $totalStudents; ?></div>
+      <div id="total-students" class="text-2xl font-bold text-gray-800"><?php echo $totalStudents; ?></div>
     </div>
   </div>
   <div class="flex items-center p-6 bg-white rounded-2xl shadow group hover:shadow-lg transition">
@@ -81,7 +146,7 @@ ob_start();
     </div>
     <div>
       <div class="text-gray-500 text-xs font-semibold uppercase">Total Teachers</div>
-      <div class="text-2xl font-bold text-gray-800"><?php echo $totalTeachers; ?></div>
+      <div id="total-teachers" class="text-2xl font-bold text-gray-800"><?php echo $totalTeachers; ?></div>
     </div>
   </div>
   <div class="flex items-center p-6 bg-white rounded-2xl shadow group hover:shadow-lg transition">
@@ -92,7 +157,7 @@ ob_start();
     </div>
     <div>
       <div class="text-gray-500 text-xs font-semibold uppercase">Total Events</div>
-      <div class="text-2xl font-bold text-gray-800"><?php echo $totalEvents; ?></div>
+      <div id="total-events" class="text-2xl font-bold text-gray-800"><?php echo $totalEvents; ?></div>
     </div>
   </div>
   <div class="flex items-center p-6 bg-white rounded-2xl shadow group hover:shadow-lg transition">
@@ -104,7 +169,7 @@ ob_start();
     </div>
     <div>
       <div class="text-gray-500 text-xs font-semibold uppercase">Attendance Records</div>
-      <div class="text-2xl font-bold text-gray-800"><?php echo $totalAttendance; ?></div>
+      <div id="total-attendance" class="text-2xl font-bold text-gray-800"><?php echo $totalAttendance; ?></div>
     </div>
   </div>
 </div>
@@ -149,16 +214,32 @@ ob_start();
   <!-- Attendance Trends Chart -->
   <div class="bg-white rounded-2xl shadow p-6">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Attendance Trends</h3>
+      <div class="flex items-center gap-2">
+        <h3 class="text-lg font-semibold text-gray-800">Attendance Trends (Last 4 Months)</h3>
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Live Updates"></div>
+      </div>
+      <div class="text-sm text-gray-500">
+        Total: <span id="trends-total"><?php echo array_sum($trendData); ?></span> records
+      </div>
     </div>
-    <canvas id="attendanceTrendsChart" height="120"></canvas>
+    <div class="h-64 relative">
+      <canvas id="attendanceTrendsChart"></canvas>
+    </div>
   </div>
-  <!-- Student vs Teacher Ratio Pie Chart -->
+  <!-- Attendance Status Distribution Chart -->
   <div class="bg-white rounded-2xl shadow p-6">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Student vs Teacher Ratio</h3>
+      <div class="flex items-center gap-2">
+        <h3 class="text-lg font-semibold text-gray-800">Attendance Status (This Month)</h3>
+        <div class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" title="Live Updates"></div>
+      </div>
+      <div class="text-sm text-gray-500">
+        <?php echo date('F Y'); ?>
+      </div>
     </div>
-    <canvas id="ratioChart" height="120"></canvas>
+    <div class="h-64 relative">
+      <canvas id="statusChart"></canvas>
+    </div>
   </div>
 </div>
 
@@ -208,7 +289,7 @@ ob_start();
             <th class="px-4 py-2">Status</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="recent-attendance-tbody">
           <?php foreach ($recentAttendance as $attendance): ?>
             <tr class="hover:bg-green-50 transition">
               <td class="px-4 py-3"><?php echo htmlspecialchars($attendance['student_name']); ?></td>
@@ -241,43 +322,314 @@ ob_start();
 
 
 <script>
-// Example Chart.js data (replace with PHP data as needed)
+// Attendance Trends Chart with live data
 const attendanceTrendsCtx = document.getElementById('attendanceTrendsChart').getContext('2d');
 const attendanceTrendsChart = new Chart(attendanceTrendsCtx, {
   type: 'line',
   data: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], // Example months
+    labels: <?php echo json_encode($trendLabels); ?>,
     datasets: [{
-      label: 'Attendance',
-      data: [120, 150, 170, 140, 180, 200], // Replace with PHP data if needed
+      label: 'Attendance Records',
+      data: <?php echo json_encode($trendData); ?>,
       borderColor: '#16a34a',
       backgroundColor: 'rgba(22,163,74,0.1)',
       tension: 0.4,
       fill: true,
-      pointRadius: 4,
-      pointBackgroundColor: '#16a34a'
+      pointRadius: 6,
+      pointBackgroundColor: '#16a34a',
+      pointBorderColor: '#ffffff',
+      pointBorderWidth: 2,
+      pointHoverRadius: 8
     }]
   },
   options: {
     responsive: true,
-    plugins: { legend: { display: false } }
+    maintainAspectRatio: false,
+    plugins: { 
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#16a34a',
+        borderWidth: 1
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0,0,0,0.1)'
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        }
+      }
+    }
   }
 });
-const ratioCtx = document.getElementById('ratioChart').getContext('2d');
-const ratioChart = new Chart(ratioCtx, {
+
+// Attendance Status Distribution Chart with live data
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+const statusChart = new Chart(statusCtx, {
   type: 'doughnut',
   data: {
-    labels: ['Students', 'Teachers'],
+    labels: <?php echo json_encode($statusLabels); ?>,
     datasets: [{
-      data: [<?php echo $totalStudents; ?>, <?php echo $totalTeachers; ?>],
-      backgroundColor: ['#16a34a', '#3b82f6'],
-      borderWidth: 2
+      data: <?php echo json_encode($statusData); ?>,
+      backgroundColor: <?php echo json_encode($statusColors); ?>,
+      borderWidth: 3,
+      borderColor: '#ffffff',
+      hoverBorderWidth: 4
     }]
   },
   options: {
-    cutout: '70%',
-    plugins: { legend: { position: 'bottom' } }
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: { 
+      legend: { 
+        position: 'bottom',
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+          font: {
+            size: 12
+          }
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderWidth: 1,
+        callbacks: {
+          label: function(context) {
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = ((context.parsed / total) * 100).toFixed(1);
+            return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+          }
+        }
+      }
+    }
   }
+});
+</script>
+
+<!-- Real-time Dashboard Updates -->
+<script>
+// Real-time updates using Server-Sent Events
+let eventSource;
+let connectionStatus = document.createElement('div');
+connectionStatus.id = 'connection-status';
+connectionStatus.className = 'fixed top-4 right-4 px-3 py-2 rounded-lg text-xs font-semibold z-50 hidden';
+document.body.appendChild(connectionStatus);
+
+function showConnectionStatus(message, type = 'info') {
+    connectionStatus.textContent = message;
+    connectionStatus.className = `fixed top-4 right-4 px-3 py-2 rounded-lg text-xs font-semibold z-50 ${
+        type === 'success' ? 'bg-green-100 text-green-800' :
+        type === 'error' ? 'bg-red-100 text-red-800' :
+        type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+        'bg-blue-100 text-blue-800'
+    }`;
+    connectionStatus.classList.remove('hidden');
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        connectionStatus.classList.add('hidden');
+    }, 3000);
+}
+
+function animateNumber(element, newValue) {
+    const currentValue = parseInt(element.textContent) || 0;
+    if (currentValue === newValue) return;
+    
+    element.style.color = '#16a34a'; // Green color for updates
+    element.textContent = newValue;
+    
+    // Add pulse effect
+    element.style.transform = 'scale(1.1)';
+    setTimeout(() => {
+        element.style.transform = 'scale(1)';
+        element.style.color = ''; // Reset to original color
+    }, 300);
+}
+
+function formatAttendanceStatus(attendance) {
+    let status = attendance.status;
+    let statusColor = '';
+    
+    // Handle "Late Time In" case
+    if (attendance.attendance_status === 'late' && attendance.status === 'time_in') {
+        status = 'Late Time In';
+        statusColor = 'bg-orange-100 text-orange-800';
+    } else {
+        status = status.replace('_', ' ').split(' ').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+        
+        if (status.toLowerCase().includes('present')) statusColor = 'bg-green-100 text-green-800';
+        else if (status.toLowerCase().includes('late')) statusColor = 'bg-yellow-100 text-yellow-800';
+        else if (status.toLowerCase().includes('absent')) statusColor = 'bg-red-100 text-red-800';
+        else statusColor = 'bg-gray-100 text-gray-800';
+    }
+    
+    return { status, statusColor };
+}
+
+function updateRecentAttendance(attendanceData) {
+    const tbody = document.getElementById('recent-attendance-tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (attendanceData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-400 py-8">No attendance records found.</td></tr>';
+        return;
+    }
+    
+    attendanceData.forEach(attendance => {
+        const { status, statusColor } = formatAttendanceStatus(attendance);
+        
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-green-50 transition';
+        row.innerHTML = `
+            <td class="px-4 py-3">${attendance.student_name}</td>
+            <td class="px-4 py-3">${attendance.event_title}</td>
+            <td class="px-4 py-3">${attendance.session.charAt(0).toUpperCase() + attendance.session.slice(1)}</td>
+            <td class="px-4 py-3">
+                <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusColor}">
+                    ${status}
+                </span>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    // Add flash effect to indicate update
+    tbody.style.backgroundColor = '#f0f9ff';
+    setTimeout(() => {
+        tbody.style.backgroundColor = '';
+    }, 500);
+}
+
+function updateCharts(chartData) {
+    // Update Attendance Trends Chart
+    if (chartData.trends && attendanceTrendsChart) {
+        // Add smooth transition effect
+        attendanceTrendsChart.data.labels = chartData.trends.labels;
+        attendanceTrendsChart.data.datasets[0].data = chartData.trends.data;
+        
+        // Update the total count display
+        const totalCount = chartData.trends.data.reduce((sum, value) => sum + value, 0);
+        const totalElement = document.getElementById('trends-total');
+        if (totalElement) {
+            animateNumber(totalElement, totalCount);
+        }
+        
+        // Animate the chart update
+        attendanceTrendsChart.update('active');
+        
+        // Add visual feedback
+        const trendsContainer = document.getElementById('attendanceTrendsChart').parentElement;
+        trendsContainer.style.boxShadow = '0 0 20px rgba(22, 163, 74, 0.3)';
+        setTimeout(() => {
+            trendsContainer.style.boxShadow = '';
+        }, 1000);
+    }
+    
+    // Update Attendance Status Distribution Chart
+    if (chartData.status && statusChart) {
+        // Add smooth transition effect
+        statusChart.data.labels = chartData.status.labels;
+        statusChart.data.datasets[0].data = chartData.status.data;
+        statusChart.data.datasets[0].backgroundColor = chartData.status.colors;
+        
+        // Animate the chart update
+        statusChart.update('active');
+        
+        // Add visual feedback
+        const statusContainer = document.getElementById('statusChart').parentElement;
+        statusContainer.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.3)';
+        setTimeout(() => {
+            statusContainer.style.boxShadow = '';
+        }, 1000);
+    }
+    
+    console.log('✅ Charts updated successfully');
+}
+
+function initRealtimeConnection() {
+    if (eventSource) {
+        eventSource.close();
+    }
+    
+    eventSource = new EventSource('realtime-data.php');
+    
+    eventSource.onopen = function(e) {
+        console.log('✅ Real-time connection established');
+        showConnectionStatus('Connected to real-time updates', 'success');
+    };
+    
+    eventSource.addEventListener('stats', function(e) {
+        const data = JSON.parse(e.data);
+        console.log('📊 Statistics update received:', data.data);
+        
+        // Update statistics with animation
+        animateNumber(document.getElementById('total-students'), data.data.students);
+        animateNumber(document.getElementById('total-teachers'), data.data.teachers);
+        animateNumber(document.getElementById('total-events'), data.data.events);
+        animateNumber(document.getElementById('total-attendance'), data.data.attendance);
+        
+        showConnectionStatus('Statistics updated', 'info');
+    });
+    
+    eventSource.addEventListener('attendance', function(e) {
+        const data = JSON.parse(e.data);
+        console.log('👥 Attendance update received:', data.data.length, 'records');
+        
+        updateRecentAttendance(data.data);
+        showConnectionStatus('New attendance record!', 'success');
+    });
+    
+    eventSource.addEventListener('charts', function(e) {
+        const data = JSON.parse(e.data);
+        console.log('📊 Charts update received:', data.data);
+        
+        updateCharts(data.data);
+        showConnectionStatus('Charts updated!', 'info');
+    });
+    
+    eventSource.addEventListener('heartbeat', function(e) {
+        const data = JSON.parse(e.data);
+        console.log('💓 Heartbeat received:', new Date(data.timestamp * 1000).toLocaleTimeString());
+    });
+    
+    eventSource.onerror = function(e) {
+        console.error('❌ Real-time connection error:', e);
+        showConnectionStatus('Connection lost. Reconnecting...', 'error');
+        
+        // Reconnect after 5 seconds
+        setTimeout(() => {
+            initRealtimeConnection();
+        }, 5000);
+    };
+}
+
+// Initialize real-time connection when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initRealtimeConnection();
+    console.log('🚀 Real-time dashboard initialized');
+});
+
+// Clean up connection when page unloads
+window.addEventListener('beforeunload', function() {
+    if (eventSource) {
+        eventSource.close();
+    }
 });
 </script>
 <?php

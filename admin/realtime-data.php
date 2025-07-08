@@ -78,6 +78,78 @@ while (true) {
     $result = mysqli_query($conn, $query);
     $currentCounts['recent_attendance_count'] = mysqli_fetch_assoc($result)['total'];
     
+    // Get chart data for realtime updates
+    $chartData = [];
+    
+    // Attendance trends for the last 4 months
+    $trendLabels = [];
+    $trendData = [];
+    for ($i = 3; $i >= 0; $i--) {
+        $month = date('Y-m', strtotime("-$i months"));
+        $monthLabel = date('M Y', strtotime("-$i months"));
+        
+        $query = "SELECT COUNT(*) as count FROM attendance WHERE DATE_FORMAT(time_recorded, '%Y-%m') = ?";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "s", $month);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $count = mysqli_fetch_assoc($result)['count'];
+        
+        $trendLabels[] = $monthLabel;
+        $trendData[] = $count;
+    }
+    $chartData['trends'] = ['labels' => $trendLabels, 'data' => $trendData];
+    
+    // Attendance status distribution for current month
+    $currentMonth = date('Y-m');
+    $query = "SELECT 
+                attendance_status,
+                COUNT(*) as count 
+              FROM attendance 
+              WHERE DATE_FORMAT(time_recorded, '%Y-%m') = ? 
+              GROUP BY attendance_status";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "s", $currentMonth);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $statusDistribution = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    
+    $statusLabels = [];
+    $statusData = [];
+    $statusColors = [];
+    foreach ($statusDistribution as $status) {
+        $statusLabels[] = ucfirst($status['attendance_status']);
+        $statusData[] = $status['count'];
+        
+        // Assign colors based on status
+        switch ($status['attendance_status']) {
+            case 'present':
+                $statusColors[] = '#16a34a'; // Green
+                break;
+            case 'late':
+                $statusColors[] = '#f59e0b'; // Yellow
+                break;
+            case 'absent':
+                $statusColors[] = '#dc2626'; // Red
+                break;
+            default:
+                $statusColors[] = '#6b7280'; // Gray
+        }
+    }
+    
+    // If no status data exists, show default
+    if (empty($statusData)) {
+        $statusLabels = ['No Data'];
+        $statusData = [1];
+        $statusColors = ['#e5e7eb'];
+    }
+    
+    $chartData['status'] = [
+        'labels' => $statusLabels, 
+        'data' => $statusData, 
+        'colors' => $statusColors
+    ];
+    
     // Check for changes
     $hasChanges = false;
     foreach ($currentCounts as $key => $value) {
@@ -110,6 +182,12 @@ while (true) {
                 'type' => 'attendance_update',
                 'data' => $recentAttendance
             ], 'attendance');
+            
+            // Send updated chart data when attendance changes
+            sendSSE($eventId++, [
+                'type' => 'charts_update',
+                'data' => $chartData
+            ], 'charts');
         }
         
         $lastCounts = $currentCounts;

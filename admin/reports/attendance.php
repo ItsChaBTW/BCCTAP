@@ -134,13 +134,13 @@ foreach ($attendance_records as $record) {
 
 // Get department statistics including late time-in data
 $dept_stats_query = "SELECT u.department,
-    COUNT(*) as total,
-    COUNT(CASE WHEN a.attendance_status = 'present' THEN 1 END) as present,
-    COUNT(CASE WHEN a.attendance_status = 'late' THEN 1 END) as late,
+                      COUNT(*) as total,
+                      COUNT(CASE WHEN a.attendance_status = 'present' THEN 1 END) as present,
+                      COUNT(CASE WHEN a.attendance_status = 'late' THEN 1 END) as late,
     COUNT(CASE WHEN a.attendance_status = 'late' AND a.status = 'time_in' THEN 1 END) as late_time_in,
-    COUNT(CASE WHEN a.attendance_status = 'absent' THEN 1 END) as absent
-    FROM attendance a
-    INNER JOIN users u ON a.user_id = u.id
+                      COUNT(CASE WHEN a.attendance_status = 'absent' THEN 1 END) as absent
+               FROM attendance a
+               INNER JOIN users u ON a.user_id = u.id
     INNER JOIN events e ON a.event_id = e.id
     WHERE a.time_recorded BETWEEN ? AND DATE_ADD(?, INTERVAL 1 DAY)";
 
@@ -479,7 +479,7 @@ ob_start();
                                 <?php endif; ?>
                             </td>
                             <td class="py-3 px-4 text-sm">
-                                <?php
+                                <?php 
                                 $badge_class = '';
                                 $status_text = '';
                                 switch ($record['attendance_status']) {

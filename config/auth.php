@@ -15,14 +15,24 @@ function verifyTechnoPalCredentials($student_id, $password) {
     $log_file = dirname(__DIR__) . '/logs/api_debug.log';
     file_put_contents($log_file, date('Y-m-d H:i:s') . " - Attempting to authenticate: $student_id\n", FILE_APPEND);
     
-    // Build the direct URL with query parameters (instead of POST)
-    $api_url = "https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=$student_id&txtPassword=$password";
+    // URL encode parameters to handle special characters properly
+    $encoded_student_id = urlencode($student_id);
+    $encoded_password = urlencode($password);
     
-    // Initialize cURL session with GET request
+    // Build the direct URL with properly encoded query parameters
+    $api_url = "https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=$encoded_student_id&txtPassword=$encoded_password";
+    
+    // Initialize cURL session with proper UTF-8 encoding support
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Only use in development
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
+    curl_setopt($ch, CURLOPT_ENCODING, 'UTF-8'); // Set encoding to UTF-8
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Accept: application/json',
+        'Accept-Charset: UTF-8',
+        'Content-Type: application/json; charset=UTF-8'
+    ));
     
     // Execute cURL request
     $response = curl_exec($ch);
@@ -35,9 +45,16 @@ function verifyTechnoPalCredentials($student_id, $password) {
     // Close cURL session
     curl_close($ch);
     
-    // Process response
+    // Process response with proper UTF-8 handling
     if ($http_code == 200) {
-        $result = json_decode($response, true);
+        // Ensure the response is valid UTF-8
+        if (!mb_check_encoding($response, 'UTF-8')) {
+            // Try to convert from common encodings to UTF-8
+            $response = mb_convert_encoding($response, 'UTF-8', 'auto');
+        }
+        
+        // Decode JSON with proper flags for UTF-8
+        $result = json_decode($response, true, 512, JSON_UNESCAPED_UNICODE);
         
         // Log the decoded result for debugging
         file_put_contents($log_file, date('Y-m-d H:i:s') . " - Decoded: " . print_r($result, true) . "\n", FILE_APPEND);
@@ -81,24 +98,24 @@ function authenticateStudentWithTechnoPal($student_id, $password) {
         // Extract user_code as the student ID from TechnoPal
         $technopal_user_code = $user_data['user_code'];
         
-        // Format user data from API response
-        $first_name = $user_data['first_name'] ?? '';
-        $middle_name = $user_data['middle_name'] ?? '';
-        $last_name = $user_data['last_name'] ?? '';
+        // Format user data from API response with UTF-8 encoding checks
+        $first_name = isset($user_data['first_name']) ? mb_convert_encoding($user_data['first_name'], 'UTF-8', 'auto') : '';
+        $middle_name = isset($user_data['middle_name']) ? mb_convert_encoding($user_data['middle_name'], 'UTF-8', 'auto') : '';
+        $last_name = isset($user_data['last_name']) ? mb_convert_encoding($user_data['last_name'], 'UTF-8', 'auto') : '';
         $full_name = trim($first_name . ' ' . $middle_name . ' ' . $last_name);
-        $email = $user_data['email_address'] ?? '';
-        $program = $user_data['program_description'] ?? '';
+        $email = isset($user_data['email_address']) ? mb_convert_encoding($user_data['email_address'], 'UTF-8', 'auto') : '';
+        $program = isset($user_data['program_description']) ? mb_convert_encoding($user_data['program_description'], 'UTF-8', 'auto') : '';
         $year_level = $user_data['year_level'] ?? '';
-        $section = $user_data['section'] ?? '';
-        $address = $user_data['address'] ?? '';
-        $gender = $user_data['gender'] ?? '';
+        $section = isset($user_data['section']) ? mb_convert_encoding($user_data['section'], 'UTF-8', 'auto') : '';
+        $address = isset($user_data['address']) ? mb_convert_encoding($user_data['address'], 'UTF-8', 'auto') : '';
+        $gender = isset($user_data['gender']) ? mb_convert_encoding($user_data['gender'], 'UTF-8', 'auto') : '';
         $contact_number = $user_data['cp_number'] ?? '';
         $rfid = $user_data['rfid'] ?? '';
         
-        // Check if user already exists in our system using the TechnoPal user_code
-        $query = "SELECT * FROM users WHERE student_id = ?";
+        // Check if user already exists in our system using the TechnoPal user_code OR email
+        $query = "SELECT * FROM users WHERE student_id = ? OR email = ?";
         $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "s", $technopal_user_code);
+        mysqli_stmt_bind_param($stmt, "ss", $technopal_user_code, $email);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         
@@ -110,9 +127,10 @@ function authenticateStudentWithTechnoPal($student_id, $password) {
             $query = "UPDATE users SET 
                       full_name = ?, 
                       email = ?, 
+                      student_id = ?,
                       department = ?,
                       year_level = ?,
-                      section = ?,
+                      section = ?, 
                       address = ?,
                       gender = ?,
                       contact_number = ?,
@@ -121,9 +139,10 @@ function authenticateStudentWithTechnoPal($student_id, $password) {
                       WHERE id = ?";
             
             $stmt = mysqli_prepare($conn, $query);
-            mysqli_stmt_bind_param($stmt, "sssisssssi", 
+            mysqli_stmt_bind_param($stmt, "ssssisssssi", 
                 $full_name, 
                 $email, 
+                $technopal_user_code,
                 $program,
                 $year_level,
                 $section,
@@ -148,62 +167,118 @@ function authenticateStudentWithTechnoPal($student_id, $password) {
             return true;
         } else {
             // User doesn't exist in our system, create new account
-            $username = 'student_' . $technopal_user_code;
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            // Double-check email uniqueness before inserting
+            $email_check = "SELECT id FROM users WHERE email = ?";
+            $email_stmt = mysqli_prepare($conn, $email_check);
+            mysqli_stmt_bind_param($email_stmt, "s", $email);
+            mysqli_stmt_execute($email_stmt);
+            $email_result = mysqli_stmt_get_result($email_stmt);
             
-            // Get current device ID for first login
-            $device_id = getDeviceIdentifier();
-            
-            $query = "INSERT INTO users (
-                        username, 
-                        email, 
-                        password, 
-                        full_name, 
-                        student_id, 
-                        department, 
-                        year_level,
-                        section,
-                        address,
-                        gender,
-                        contact_number,
-                        rfid,
-                        role,
-                        device_id,
-                        first_device_date,
-                        created_at
-                      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'student', ?, NOW(), NOW())";
-            
-            $stmt = mysqli_prepare($conn, $query);
-            mysqli_stmt_bind_param($stmt, "sssssssssssss", 
-                $username, 
-                $email, 
-                $hashed_password, 
-                $full_name, 
-                $technopal_user_code, 
-                $program,
-                $year_level,
-                $section,
-                $address,
-                $gender,
-                $contact_number,
-                $rfid,
-                $device_id
-            );
-            
-            if (mysqli_stmt_execute($stmt)) {
-                $user_id = mysqli_insert_id($conn);
+            if (mysqli_num_rows($email_result) > 0) {
+                // Email already exists, use INSERT ... ON DUPLICATE KEY UPDATE
+                $existing_user = mysqli_fetch_assoc($email_result);
                 
-                // Set session variables
-                $_SESSION['user_id'] = $user_id;
-                $_SESSION['username'] = $username;
-                $_SESSION['role'] = 'student';
-                $_SESSION['full_name'] = $full_name;
-                $_SESSION['student_id'] = $technopal_user_code;
-                $_SESSION['program'] = $program;
-                $_SESSION['year_level'] = $year_level;
-                $_SESSION['section'] = $section;
+                // Update the existing user with TechnoPal data
+                $query = "UPDATE users SET 
+                          full_name = ?, 
+                          student_id = ?,
+                          department = ?,
+                          year_level = ?,
+                          section = ?,
+                          address = ?,
+                          gender = ?,
+                          contact_number = ?,
+                          rfid = ?,
+                          role = 'student',
+                          last_login = NOW() 
+                          WHERE id = ?";
                 
-                return true;
+                $stmt = mysqli_prepare($conn, $query);
+                mysqli_stmt_bind_param($stmt, "ssssssssi", 
+                    $full_name, 
+                    $technopal_user_code,
+                    $program,
+                    $year_level,
+                    $section,
+                    $address,
+                    $gender,
+                    $contact_number,
+                    $rfid,
+                    $existing_user['id']
+                );
+                
+                if (mysqli_stmt_execute($stmt)) {
+                    // Set session variables
+                    $_SESSION['user_id'] = $existing_user['id'];
+                    $_SESSION['username'] = 'student_' . $technopal_user_code;
+                    $_SESSION['role'] = 'student';
+                    $_SESSION['full_name'] = $full_name;
+                    $_SESSION['student_id'] = $technopal_user_code;
+                    $_SESSION['program'] = $program;
+                    $_SESSION['year_level'] = $year_level;
+                    $_SESSION['section'] = $section;
+                    
+                    return true;
+                }
+            } else {
+                // Email is unique, proceed with normal insert
+                $username = 'student_' . $technopal_user_code;
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                // Get current device ID for first login
+                $device_id = getDeviceIdentifier();
+                
+                $query = "INSERT INTO users (
+                            username, 
+                            email, 
+                            password, 
+                            full_name, 
+                            student_id, 
+                            department, 
+                            year_level,
+                            section,
+                            address,
+                            gender,
+                            contact_number,
+                            rfid,
+                            role,
+                            device_id,
+                            first_device_date,
+                            created_at
+                          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'student', ?, NOW(), NOW())";
+                
+                $stmt = mysqli_prepare($conn, $query);
+                mysqli_stmt_bind_param($stmt, "sssssssssssss", 
+                    $username, 
+                    $email, 
+                    $hashed_password, 
+                    $full_name, 
+                    $technopal_user_code, 
+                    $program,
+                    $year_level,
+                    $section,
+                    $address,
+                    $gender,
+                    $contact_number,
+                    $rfid,
+                    $device_id
+                );
+                
+                if (mysqli_stmt_execute($stmt)) {
+                    $user_id = mysqli_insert_id($conn);
+                    
+                    // Set session variables
+                    $_SESSION['user_id'] = $user_id;
+                    $_SESSION['username'] = $username;
+                    $_SESSION['role'] = 'student';
+                    $_SESSION['full_name'] = $full_name;
+                    $_SESSION['student_id'] = $technopal_user_code;
+                    $_SESSION['program'] = $program;
+                    $_SESSION['year_level'] = $year_level;
+                    $_SESSION['section'] = $section;
+                    
+                    return true;
+                }
             }
         }
     }

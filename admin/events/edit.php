@@ -31,10 +31,10 @@ if (mysqli_num_rows($result) === 0) {
 
 $event = mysqli_fetch_assoc($result);
 
-// Get departments for dropdown
-$query = "SELECT * FROM departments ORDER BY name ASC";
-$result = mysqli_query($conn, $query);
-$departments = mysqli_fetch_all($result, MYSQLI_ASSOC);
+// Get departments for dropdown - only those that have registered users
+$query = "SELECT DISTINCT department FROM users WHERE department IS NOT NULL AND department != '' ORDER BY department";
+$departments_result = mysqli_query($conn, $query);
+$departments = mysqli_fetch_all($departments_result, MYSQLI_ASSOC);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -271,8 +271,8 @@ ob_start();
                         <select id="department" name="department" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
                             <option value="">All Departments</option>
                             <?php foreach ($departments as $dept): ?>
-                                <option value="<?php echo htmlspecialchars($dept['name']); ?>" <?php echo ($event['department'] === $dept['name']) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($dept['name']); ?>
+                                <option value="<?php echo htmlspecialchars($dept['department']); ?>" <?php echo ($event['department'] === $dept['department']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($dept['department']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

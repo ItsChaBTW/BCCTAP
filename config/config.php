@@ -53,6 +53,14 @@ define('ASSETS_PATH', ROOT_PATH . 'assets/');
 // Time zone setting
 date_default_timezone_set('Asia/Manila');
 
+// Set internal encoding to UTF-8 for proper character handling
+mb_internal_encoding('UTF-8');
+mb_http_output('UTF-8');
+mb_regex_encoding('UTF-8');
+
+// Set default charset for HTML output
+ini_set('default_charset', 'UTF-8');
+
 // Include database configuration
 require_once 'database.php';
 
@@ -69,10 +77,32 @@ function redirect($location) {
     exit;
 }
 
-// Function to sanitize user input
+// Function to sanitize user input while preserving UTF-8 characters
 function sanitize($data) {
     global $conn;
-    return mysqli_real_escape_string($conn, trim($data));
+    // First trim the data
+    $data = trim($data);
+    
+    // Convert to UTF-8 if it's not already
+    if (!mb_check_encoding($data, 'UTF-8')) {
+        $data = mb_convert_encoding($data, 'UTF-8', 'auto');
+    }
+    
+    // Use mysqli_real_escape_string for SQL safety while preserving UTF-8
+    return mysqli_real_escape_string($conn, $data);
+}
+
+// Alternative sanitize function for display purposes (preserves special characters)
+function sanitize_display($data) {
+    // Just trim and ensure UTF-8 encoding for display
+    $data = trim($data);
+    
+    if (!mb_check_encoding($data, 'UTF-8')) {
+        $data = mb_convert_encoding($data, 'UTF-8', 'auto');
+    }
+    
+    // Only escape HTML entities for safe display
+    return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
 }
 
 // Function to check if user is logged in

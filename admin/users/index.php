@@ -13,6 +13,8 @@ if (!isLoggedIn() || !isAdmin()) {
 $search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 $role_filter = isset($_GET['role']) ? sanitize($_GET['role']) : '';
 $department_filter = isset($_GET['department']) ? sanitize($_GET['department']) : '';
+$section_filter = isset($_GET['section']) ? sanitize($_GET['section']) : '';
+$year_level_filter = isset($_GET['year_level']) ? sanitize($_GET['year_level']) : '';
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $per_page = 20;
 $offset = ($page - 1) * $per_page;
@@ -21,6 +23,16 @@ $offset = ($page - 1) * $per_page;
 $query = "SELECT DISTINCT department FROM users WHERE department IS NOT NULL AND department != '' ORDER BY department";
 $departments_result = mysqli_query($conn, $query);
 $departments = mysqli_fetch_all($departments_result, MYSQLI_ASSOC);
+
+// Get sections for filter dropdown
+$query = "SELECT DISTINCT section FROM users WHERE section IS NOT NULL AND section != '' ORDER BY section";
+$sections_result = mysqli_query($conn, $query);
+$sections = mysqli_fetch_all($sections_result, MYSQLI_ASSOC);
+
+// Get year levels for filter dropdown
+$query = "SELECT DISTINCT year_level FROM users WHERE year_level IS NOT NULL ORDER BY year_level";
+$year_levels_result = mysqli_query($conn, $query);
+$year_levels = mysqli_fetch_all($year_levels_result, MYSQLI_ASSOC);
 
 // Handle user actions (deactivate, activate, delete)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -94,6 +106,20 @@ if (!empty($department_filter)) {
     $query .= " AND department = ?";
     $query_count .= " AND department = ?";
     $params[] = $department_filter;
+    $types .= "s";
+}
+
+if (!empty($section_filter)) {
+    $query .= " AND section = ?";
+    $query_count .= " AND section = ?";
+    $params[] = $section_filter;
+    $types .= "s";
+}
+
+if (!empty($year_level_filter)) {
+    $query .= " AND year_level = ?";
+    $query_count .= " AND year_level = ?";
+    $params[] = $year_level_filter;
     $types .= "s";
 }
 
@@ -329,7 +355,7 @@ td, th {
 <!-- Filter Section -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
     <h2 class="text-lg font-semibold mb-4">Filter Users</h2>
-    <form action="" method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <form action="" method="get" class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
             <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
             <input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" 
@@ -360,7 +386,33 @@ td, th {
             </select>
         </div>
         
-        <div class="md:col-span-3 flex justify-end space-x-2">
+        <div>
+            <label for="section" class="block text-sm font-medium text-gray-700 mb-1">Section</label>
+            <select id="section" name="section" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary">
+                <option value="">All Sections</option>
+                <?php foreach ($sections as $section): ?>
+                    <option value="<?php echo htmlspecialchars($section['section']); ?>" 
+                            <?php echo $section_filter === $section['section'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($section['section']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        
+        <div>
+            <label for="year_level" class="block text-sm font-medium text-gray-700 mb-1">Year Level</label>
+            <select id="year_level" name="year_level" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary focus:border-primary">
+                <option value="">All Year Levels</option>
+                <?php foreach ($year_levels as $year_level): ?>
+                    <option value="<?php echo htmlspecialchars($year_level['year_level']); ?>" 
+                            <?php echo $year_level_filter === $year_level['year_level'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($year_level['year_level']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        
+        <div class="md:col-span-5 flex justify-end space-x-2">
             <a href="<?php echo BASE_URL; ?>admin/users/index.php" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded">Clear Filters</a>
             <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded">Apply Filters</button>
         </div>
@@ -392,7 +444,7 @@ td, th {
                 <thead class="bg-gray-50">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name/Email</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID/Department</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID/Department/Section</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
@@ -419,6 +471,16 @@ td, th {
                                 <?php endif; ?>
                                 <?php if (!empty($user['department'])): ?>
                                     <div class="text-sm text-gray-500"><?php echo htmlspecialchars($user['department']); ?></div>
+                                <?php endif; ?>
+                                <?php if ($user['role'] === 'student' && (!empty($user['year_level']) || !empty($user['section']))): ?>
+                                    <div class="text-xs text-gray-400">
+                                        <?php if (!empty($user['year_level'])): ?>
+                                            Year <?php echo htmlspecialchars($user['year_level']); ?>
+                                        <?php endif; ?>
+                                        <?php if (!empty($user['section'])): ?>
+                                            <?php echo !empty($user['year_level']) ? ' - ' : ''; ?>Section <?php echo htmlspecialchars($user['section']); ?>
+                                        <?php endif; ?>
+                                    </div>
                                 <?php endif; ?>
                             </td>
                             <td class="px-6 py-4">
@@ -522,13 +584,13 @@ td, th {
                     </div>
                     <div class="flex space-x-2">
                         <?php if ($page > 1): ?>
-                            <a href="?page=<?php echo $page - 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($role_filter) ? '&role=' . urlencode($role_filter) : ''; ?><?php echo !empty($department_filter) ? '&department=' . urlencode($department_filter) : ''; ?>" class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">
+                            <a href="?page=<?php echo $page - 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($role_filter) ? '&role=' . urlencode($role_filter) : ''; ?><?php echo !empty($department_filter) ? '&department=' . urlencode($department_filter) : ''; ?><?php echo !empty($section_filter) ? '&section=' . urlencode($section_filter) : ''; ?><?php echo !empty($year_level_filter) ? '&year_level=' . urlencode($year_level_filter) : ''; ?>" class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">
                                 Previous
                             </a>
                         <?php endif; ?>
                         
                         <?php if ($page < $total_pages): ?>
-                            <a href="?page=<?php echo $page + 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($role_filter) ? '&role=' . urlencode($role_filter) : ''; ?><?php echo !empty($department_filter) ? '&department=' . urlencode($department_filter) : ''; ?>" class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">
+                            <a href="?page=<?php echo $page + 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($role_filter) ? '&role=' . urlencode($role_filter) : ''; ?><?php echo !empty($department_filter) ? '&department=' . urlencode($department_filter) : ''; ?><?php echo !empty($section_filter) ? '&section=' . urlencode($section_filter) : ''; ?><?php echo !empty($year_level_filter) ? '&year_level=' . urlencode($year_level_filter) : ''; ?>" class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">
                                 Next
                             </a>
                         <?php endif; ?>

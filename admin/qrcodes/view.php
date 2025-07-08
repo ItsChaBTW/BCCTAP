@@ -276,7 +276,7 @@ ob_start();
                         <p class="text-xs text-gray-400 mb-4">Created: <?php echo date('M d, Y h:i A', strtotime($qrCode['created_at'])); ?></p>
                         
                         <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center">
-                            <button class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition font-medium" onclick="printQRCode('eventQrCode', '<?php echo htmlspecialchars($event['title']); ?>')">
+                            <button class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center justify-center transition font-medium" onclick="printQRCode('eventQrCode', '<?php echo htmlspecialchars($event['title']); ?>', '<?php echo date('M d, Y', strtotime($event['start_date'])); ?> - <?php echo date('M d, Y', strtotime($event['end_date'])); ?>', '<?php echo !empty($event['department']) ? htmlspecialchars($event['department']) : 'All Departments'; ?>', '<?php echo date('h:i A', strtotime($event['morning_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['morning_time_out'])); ?>', '<?php echo date('h:i A', strtotime($event['afternoon_time_in'])); ?> - <?php echo date('h:i A', strtotime($event['afternoon_time_out'])); ?>')">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0v3H7V4h6zm-3 11v-2h2v2H10z" clip-rule="evenodd" />
                                 </svg>
@@ -370,89 +370,238 @@ require_once '../../includes/admin_layout.php';
         }
         
         // Function to print a QR code
-        function printQRCode(elementId, title) {
+        function printQRCode(elementId, title, date, department, morningIn, morningOut, afternoonIn, afternoonOut) {
             const printWindow = window.open('', '_blank');
             const qrCodeImg = document.getElementById(elementId).querySelector('img').src;
-            
             printWindow.document.write(`
                 <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Print QR Code - ${title}</title>
-                    <style>
-                        body {
-                            font-family: 'Poppins', Arial, sans-serif;
-                            text-align: center;
-                            padding: 20px;
-                        }
-                        h1 {
-                            font-size: 24px;
-                            margin-bottom: 10px;
-                            color: #EF6161;
-                        }
-                        .subtitle {
-                            font-size: 16px;
-                            margin-bottom: 30px;
-                            color: #f3af3d;
-                        }
-                        .qr-container {
-                            margin-bottom: 20px;
-                            padding: 15px;
-                            border: 5px solid #f1f1f1;
-                            display: inline-block;
-                            border-radius: 10px;
-                        }
-                        img {
-                            max-width: 300px;
-                            height: auto;
-                        }
-                        .instructions {
-                            margin-top: 20px;
-                            font-size: 14px;
-                            color: #555;
-                            text-align: left;
-                            max-width: 400px;
-                            margin-left: auto;
-                            margin-right: auto;
-                        }
-                        .instruction-step {
-                            margin-bottom: 8px;
-                        }
-                        .footer {
-                            margin-top: 30px;
-                            font-size: 14px;
-                            color: #666;
-                            border-top: 1px solid #eee;
-                            padding-top: 15px;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h1>${title}</h1>
-                    <p class="subtitle">Attendance QR Code</p>
-                    <div class="qr-container">
-                        <img src="${qrCodeImg}" alt="QR Code">
-                    </div>
-                    <p>Scan this QR code to record your attendance</p>
-                    
-                    <div class="instructions">
-                        <div class="instruction-step">1. Open your camera app and scan this QR code</div>
-                        <div class="instruction-step">2. Login with your student credentials</div>
-                        <div class="instruction-step">3. Your attendance will be recorded automatically</div>
-                    </div>
-                    
-                    <div class="footer">
-                        <p>Bago City College Time Attendance Platform</p>
-                        <p>Event: ${title}</p>
-                    </div>
-                </body>
-                </html>
+<html>
+<head>
+  <title>Print QR Code - ${title}</title>
+  <style>
+    @page {
+      size: Letter portrait;
+      margin: 1in;
+    }
+
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        color: #000;
+        font-size: 12pt;
+      }
+
+      .qr-container,
+      .instructions {
+        background: none !important;
+        box-shadow: none !important;
+        border-color: #000 !important;
+      }
+
+      .footer {
+        border-top: 1px solid #000;
+        page-break-before: avoid;
+      }
+
+      .instruction-step::before {
+        content: "• ";
+        color: #000;
+      }
+
+      .logo {
+        display: none;
+      }
+
+      .qr-instructions {
+        flex-direction: row !important;
+      }
+
+      .event-details-table th {
+        background: #f0f0f0 !important;
+      }
+    }
+
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      padding: 40px;
+      margin: 0 auto;
+      max-width: 720px;
+      color: #1a1a1a;
+      background: #f8fdf8;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
+      color: #14532d;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #15803d;
+      font-weight: 500;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .event-details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      border: 1px solid #cbd5c0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .event-details-table th,
+    .event-details-table td {
+      padding: 12px 16px;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .event-details-table th {
+      background: #e6f4ea;
+      font-weight: 600;
+      color: #14532d;
+      width: 40%;
+    }
+
+    .event-details-table td {
+      font-weight: 500;
+      color: #0e2d1c;
+    }
+
+    .qr-instructions {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .qr-instructions {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+    }
+
+    .qr-container {
+      padding: 18px;
+      border: 2px dashed #15803d;
+      border-radius: 10px;
+      background: #fff;
+      text-align: center;
+      max-width: 260px;
+    }
+
+    .qr-container img {
+      width: 220px;
+      height: auto;
+      display: block;
+      margin: 0 auto 8px;
+    }
+
+    .scan-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: #166534;
+    }
+
+    .instructions {
+      border: 1.5px solid #15803d;
+      background: #f0fdf4;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 320px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #14532d;
+      text-align: left;
+    }
+
+    .instructions-title {
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 10px;
+      color: #166534;
+    }
+
+    .instruction-step {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    .instruction-step::before {
+      content: "✔";
+      position: absolute;
+      left: 0;
+      color: #15803d;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .footer {
+      margin-top: 50px;
+      padding-top: 20px;
+      font-size: 12px;
+      color: #166534;
+      border-top: 1px solid #d1e7d0;
+    }
+
+    .footer strong {
+      display: block;
+      font-weight: 600;
+      color: #14532d;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>${title}</h1>
+  <p class="subtitle">Attendance QR Code</p>
+
+  <table class="event-details-table">
+    <tr><th>Date</th><td>${date}</td></tr>
+    <tr><th>Department</th><td>${department}</td></tr>
+    <tr><th>Morning Time In and Out</th><td>${morningIn}</td></tr>
+    <tr><th>Afternoon Time In and Out</th><td>${morningOut}</td></tr>
+  </table>
+
+  <div class="qr-instructions">
+    <div class="qr-container">
+      <img src="${qrCodeImg}" alt="QR Code">
+      <p class="scan-text">📱 Scan this QR code to record your attendance</p>
+    </div>
+
+    <div class="instructions">
+      <div class="instructions-title">How to Use:</div>
+      <div class="instruction-step">Open your camera app and scan the QR code.</div>
+      <div class="instruction-step">Login with your student credentials.</div>
+      <div class="instruction-step">Your attendance will be recorded automatically.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>Bago City College Time Attendance Platform</strong>
+    <p>Event: ${title}</p>
+  </div>
+
+</body>
+</html>
+
             `);
-            
             printWindow.document.close();
             printWindow.focus();
-            
-            // Print after a short delay to ensure content is loaded
             setTimeout(function() {
                 printWindow.print();
                 printWindow.close();

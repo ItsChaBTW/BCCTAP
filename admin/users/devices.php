@@ -379,9 +379,7 @@ ob_start();
                 const rowsPerPage = 10;
 
                 function renderTable() {
-                    // Hide all rows
                     rows.forEach(row => row.style.display = 'none');
-                    // Show only filtered rows for current page
                     const start = (currentPage - 1) * rowsPerPage;
                     const end = start + rowsPerPage;
                     filteredRows.slice(start, end).forEach(row => row.style.display = '');
@@ -392,6 +390,7 @@ ob_start();
                     pagination.innerHTML = '';
                     const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
                     if (totalPages <= 1) return;
+
                     // Prev button
                     const prev = document.createElement('button');
                     prev.textContent = 'Prev';
@@ -399,14 +398,43 @@ ob_start();
                     prev.disabled = currentPage === 1;
                     prev.onclick = () => { currentPage--; renderTable(); };
                     pagination.appendChild(prev);
-                    // Page numbers
+
+                    // Page numbers (user-friendly, with ellipsis)
+                    let pageButtons = [];
                     for (let i = 1; i <= totalPages; i++) {
-                        const btn = document.createElement('button');
-                        btn.textContent = i;
-                        btn.className = 'px-3 py-1 rounded ' + (i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700') + ' text-sm';
-                        btn.onclick = () => { currentPage = i; renderTable(); };
-                        pagination.appendChild(btn);
+                        if (
+                            i === 1 ||
+                            i === totalPages ||
+                            (i >= currentPage - 2 && i <= currentPage + 2)
+                        ) {
+                            pageButtons.push(i);
+                        } else if (
+                            (i === currentPage - 3 && currentPage - 3 > 1) ||
+                            (i === currentPage + 3 && currentPage + 3 < totalPages)
+                        ) {
+                            pageButtons.push('...');
+                        }
                     }
+                    let lastWasEllipsis = false;
+                    pageButtons.forEach(i => {
+                        if (i === '...') {
+                            if (!lastWasEllipsis) {
+                                const ellipsis = document.createElement('span');
+                                ellipsis.textContent = '...';
+                                ellipsis.className = 'px-2 text-gray-400 select-none';
+                                pagination.appendChild(ellipsis);
+                                lastWasEllipsis = true;
+                            }
+                        } else {
+                            const btn = document.createElement('button');
+                            btn.textContent = i;
+                            btn.className = 'px-3 py-1 rounded ' + (i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700') + ' text-sm';
+                            btn.onclick = () => { currentPage = i; renderTable(); };
+                            pagination.appendChild(btn);
+                            lastWasEllipsis = false;
+                        }
+                    });
+
                     // Next button
                     const next = document.createElement('button');
                     next.textContent = 'Next';

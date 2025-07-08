@@ -135,6 +135,10 @@ ob_start();
                         <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 animate-pulse">Pending: <?php echo count($unverified_devices); ?></span>
                     <?php endif; ?>
                 </div>
+                <!-- Search for Pending -->
+                <div class="mb-4 flex justify-end">
+                    <input type="text" id="pending-search" placeholder="Search pending devices..." class="w-full sm:w-80 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-200 focus:border-yellow-400 text-sm" />
+                </div>
                 <?php if (empty($unverified_devices)): ?>
                     <div class="bg-white rounded-2xl shadow p-8 text-center flex flex-col items-center justify-center">
                         <div class="bg-gray-100 inline-block p-4 rounded-full mb-4">
@@ -145,7 +149,7 @@ ob_start();
                 <?php else: ?>
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="overflow-x-visible">
-                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <table id="pending-table" class="min-w-full divide-y divide-gray-200 text-sm">
                                 <thead class="bg-gray-50 sticky top-0 z-10">
                                     <tr>
                                         <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Student</th>
@@ -228,6 +232,7 @@ ob_start();
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
+                            <div id="pending-pagination" class="flex justify-end items-center gap-2 px-6 py-4"></div>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -242,6 +247,10 @@ ob_start();
                         <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Verified: <?php echo count($verified_devices); ?></span>
                     <?php endif; ?>
                 </div>
+                <!-- Search for Verified -->
+                <div class="mb-4 flex justify-end">
+                    <input type="text" id="verified-search" placeholder="Search verified devices..." class="w-full sm:w-80 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-200 focus:border-green-400 text-sm" />
+                </div>
                 <?php if (empty($verified_devices)): ?>
                     <div class="bg-white rounded-2xl shadow p-8 text-center flex flex-col items-center justify-center">
                         <div class="bg-gray-100 inline-block p-4 rounded-full mb-4">
@@ -252,7 +261,7 @@ ob_start();
                 <?php else: ?>
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="overflow-x-visible">
-                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <table id="verified-table" class="min-w-full divide-y divide-gray-200 text-sm">
                                 <thead class="bg-gray-50 sticky top-0 z-10">
                                     <tr>
                                         <th class="px-6 py-3 text-left font-semibold text-gray-500 uppercase tracking-wider">Student</th>
@@ -325,6 +334,7 @@ ob_start();
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
+                            <div id="verified-pagination" class="flex justify-end items-center gap-2 px-6 py-4"></div>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -355,7 +365,74 @@ ob_start();
                 </div>
             </div>
         </main>
-        <?php
+        <script>
+        // Search and Pagination for Pending/Verified Devices
+        document.addEventListener('DOMContentLoaded', function() {
+            function filterAndPaginateTable(inputId, tableId, paginationId) {
+                const input = document.getElementById(inputId);
+                const table = document.getElementById(tableId);
+                const pagination = document.getElementById(paginationId);
+                if (!input || !table || !pagination) return;
+                const rows = Array.from(table.querySelectorAll('tbody tr'));
+                let filteredRows = rows;
+                let currentPage = 1;
+                const rowsPerPage = 10;
+
+                function renderTable() {
+                    // Hide all rows
+                    rows.forEach(row => row.style.display = 'none');
+                    // Show only filtered rows for current page
+                    const start = (currentPage - 1) * rowsPerPage;
+                    const end = start + rowsPerPage;
+                    filteredRows.slice(start, end).forEach(row => row.style.display = '');
+                    renderPagination();
+                }
+
+                function renderPagination() {
+                    pagination.innerHTML = '';
+                    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+                    if (totalPages <= 1) return;
+                    // Prev button
+                    const prev = document.createElement('button');
+                    prev.textContent = 'Prev';
+                    prev.className = 'px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm';
+                    prev.disabled = currentPage === 1;
+                    prev.onclick = () => { currentPage--; renderTable(); };
+                    pagination.appendChild(prev);
+                    // Page numbers
+                    for (let i = 1; i <= totalPages; i++) {
+                        const btn = document.createElement('button');
+                        btn.textContent = i;
+                        btn.className = 'px-3 py-1 rounded ' + (i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700') + ' text-sm';
+                        btn.onclick = () => { currentPage = i; renderTable(); };
+                        pagination.appendChild(btn);
+                    }
+                    // Next button
+                    const next = document.createElement('button');
+                    next.textContent = 'Next';
+                    next.className = 'px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm';
+                    next.disabled = currentPage === totalPages;
+                    next.onclick = () => { currentPage++; renderTable(); };
+                    pagination.appendChild(next);
+                }
+
+                input.addEventListener('input', function() {
+                    const filter = input.value.toLowerCase();
+                    filteredRows = rows.filter(row => row.innerText.toLowerCase().includes(filter));
+                    currentPage = 1;
+                    renderTable();
+                });
+
+                // Initial render
+                filteredRows = rows;
+                currentPage = 1;
+                renderTable();
+            }
+            filterAndPaginateTable('pending-search', 'pending-table', 'pending-pagination');
+            filterAndPaginateTable('verified-search', 'verified-table', 'verified-pagination');
+        });
+        </script>
+<?php
 $page_content = ob_get_clean();
 
 // Include admin layout

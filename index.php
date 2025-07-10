@@ -88,7 +88,7 @@ if (isLoggedIn() && isStudent()) {
             <div class="blob bg-green-300 w-72 h-72 top-20 left-0"></div>
             <div class="blob bg-green-200 w-96 h-96 bottom-10 right-10"></div>
             
-            <div class="container mx-auto px-4 relative z-10">
+            <div class="container mx-auto px-4 relative z-1">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-12">
                     <div class="md:w-1/2 animate__animated animate__fadeInLeft">
                         <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full inline-block mb-4">BAGO CITY COLLEGE</span>

@@ -461,6 +461,73 @@ if ($is_late && $attendance_status === 'late') {
     
     if (mysqli_stmt_execute($stmt)) {
         error_log("Record Attendance - Successfully inserted attendance record");
+        
+        // DEVICE VERIFICATION LOGIC: Auto-verify device if geofence check passed
+        if ($geofence_result && $geofence_result['within_fence']) {
+            // Student is inside venue - auto-verify their device
+            $device_fingerprint = getDeviceIdentifier();
+            
+            // Check if device exists for this user
+            $device_check_query = "SELECT id, is_verified FROM user_devices WHERE user_id = ? AND fingerprint = ?";
+            $device_check_stmt = mysqli_prepare($conn, $device_check_query);
+            mysqli_stmt_bind_param($device_check_stmt, "is", $user_id, $device_fingerprint);
+            mysqli_stmt_execute($device_check_stmt);
+            $device_check_result = mysqli_stmt_get_result($device_check_stmt);
+            
+            if (mysqli_num_rows($device_check_result) > 0) {
+                $device_record = mysqli_fetch_assoc($device_check_result);
+                
+                // If device exists but is not verified, verify it automatically
+                if ($device_record['is_verified'] == 0) {
+                    $verify_device_query = "UPDATE user_devices SET is_verified = 1, verification_date = NOW() WHERE id = ?";
+                    $verify_device_stmt = mysqli_prepare($conn, $verify_device_query);
+                    mysqli_stmt_bind_param($verify_device_stmt, "i", $device_record['id']);
+                    
+                    if (mysqli_stmt_execute($verify_device_stmt)) {
+                        error_log("Record Attendance - Auto-verified device for user $user_id (successful geofence check)");
+                    }
+                }
+            } else {
+                // Device doesn't exist, create and verify it automatically since they're inside venue
+                $device_name = getDeviceNameFromUserAgent();
+                $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+                
+                $create_device_query = "INSERT INTO user_devices (user_id, fingerprint, device_name, is_verified, verification_date, last_seen, user_agent) 
+                                       VALUES (?, ?, ?, 1, NOW(), NOW(), ?)";
+                $create_device_stmt = mysqli_prepare($conn, $create_device_query);
+                mysqli_stmt_bind_param($create_device_stmt, "isss", $user_id, $device_fingerprint, $device_name, $user_agent);
+                
+                if (mysqli_stmt_execute($create_device_stmt)) {
+                    error_log("Record Attendance - Auto-created and verified device for user $user_id (successful geofence check)");
+                }
+            }
+        } elseif ($geofence_result === null || !$geofence_result['within_fence']) {
+            // Student attempted to scan from outside venue or no geofence - mark device as pending
+            $device_fingerprint = getDeviceIdentifier();
+            
+            // Check if device exists for this user
+            $device_check_query = "SELECT id, is_verified FROM user_devices WHERE user_id = ? AND fingerprint = ?";
+            $device_check_stmt = mysqli_prepare($conn, $device_check_query);
+            mysqli_stmt_bind_param($device_check_stmt, "is", $user_id, $device_fingerprint);
+            mysqli_stmt_execute($device_check_stmt);
+            $device_check_result = mysqli_stmt_get_result($device_check_stmt);
+            
+            if (mysqli_num_rows($device_check_result) == 0) {
+                // Device doesn't exist, create as unverified since they're outside venue or no geofence
+                $device_name = getDeviceNameFromUserAgent();
+                $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+                
+                $create_device_query = "INSERT INTO user_devices (user_id, fingerprint, device_name, is_verified, last_seen, user_agent) 
+                                       VALUES (?, ?, ?, 0, NOW(), ?)";
+                $create_device_stmt = mysqli_prepare($conn, $create_device_query);
+                mysqli_stmt_bind_param($create_device_stmt, "isss", $user_id, $device_fingerprint, $device_name, $user_agent);
+                
+                if (mysqli_stmt_execute($create_device_stmt)) {
+                    error_log("Record Attendance - Created unverified device for user $user_id (outside venue or no geofence)");
+                }
+            }
+        }
+        
         $status_text = '';
         if ($is_late && $attendance_status === 'late') {
             $status_text = 'Late Time In';

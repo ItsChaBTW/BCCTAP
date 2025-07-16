@@ -14,6 +14,14 @@
       <link href="<?php echo BASE_URL; ?>assets/css/styles.css" rel="stylesheet">
       <link href="<?php echo BASE_URL; ?>assets/css/colors.css" rel="stylesheet">
       <link href="<?php echo BASE_URL; ?>assets/css/admin-style.css" rel="stylesheet">
+      <link rel="icon" type="image/png" sizes="32x32" href="<?php echo BASE_URL; ?>assets/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="<?php echo BASE_URL; ?>assets/favicon/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="<?php echo BASE_URL; ?>assets/favicon/apple-touch-icon.png">
+<link rel="manifest" href="<?php echo BASE_URL; ?>assets/favicon/site.webmanifest">
+<link rel="mask-icon" href="<?php echo BASE_URL; ?>assets/favicon/safari-pinned-tab.svg" color="#22c55e">
+<meta name="msapplication-TileColor" content="#22c55e">
+<meta name="theme-color" content="#22c55e">
+
       <script src="https://cdn.tailwindcss.com"></script>
       <style>
       body {
